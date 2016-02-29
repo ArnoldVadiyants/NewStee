@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_marginTop="@dimen/outer_margin_big">
+
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:layout_marginLeft="@dimen/outer_margin_big"
+            android:layout_marginRight="@dimen/outer_margin_big"
+            android:layout_marginTop="@dimen/outer_margin_medium">
+
+            <ImageView
+                android:layout_width="@dimen/icon_size_medium"
+                android:layout_height="@dimen/icon_size_medium"
+                android:id="@+id/imageView3"
+                android:background="@drawable/profile"
+                android:layout_gravity="center_vertical"/>
+
+            <TextView
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textAllCaps="true"
+                android:textColor="@color/colorPrimary"
+                android:text="@string/profile"
+                android:id="@+id/textView2"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/icon_margin"
+                android:layout_weight="1"
+                android:textStyle="bold"/>
+
+                />
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginBottom="@dimen/outer_margin_medium"
+            android:layout_marginTop="@dimen/outer_margin_medium"
+            android:layout_marginLeft="@dimen/outer_margin_big"
+            android:layout_marginRight="@dimen/outer_margin_big"
+            >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/profile_imageView"
+                android:background="@android:color/transparent"
+                android:src="@drawable/profile_back"
+                android:scaleType="fitXY"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/name"
+                    android:id="@+id/profile_name_TextView"
+                    android:textColor="@android:color/black"
+                    android:textAllCaps="true"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/surname"
+                    android:id="@+id/profile_surname_TextView"
+                    android:textColor="@android:color/black"
+                    android:textAllCaps="true"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="@dimen/outer_margin"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/outer_margin_big"
+            android:layout_marginRight="@dimen/outer_margin_big">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:layout_gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorPrimary"
+                    android:id="@+id/textView4"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/subscriptions"
+                    android:id="@+id/textView5"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_marginTop="@dimen/outer_margin"/>
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+            </FrameLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:layout_gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4"
+                    android:id="@+id/textView6"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorPrimary"
+                    android:singleLine="false"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/likes"
+                    android:id="@+id/textView7"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_marginTop="@dimen/outer_margin"/>
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4">
+            </FrameLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/icon_size"
+                android:text="@string/edit"
+                android:id="@+id/button"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textAllCaps="true"
+                android:textColor="@color/colorPrimary"
+                android:background="@drawable/button_shape"
+                android:layout_gravity="center_vertical"/>
+
+        </LinearLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="1dp"
+        android:background="@color/colorPrimary"
+        >
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/profile_tabs"
+            style="@style/MyCustomTabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            app:tabBackground="@android:color/transparent"
+            app:tabIndicatorColor="@color/colorPrimary"
+            app:tabIndicatorHeight="4dp"
+            android:background="@color/colorBackground"
+            />
+    </FrameLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/profile_container"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/outer_margin"
+        android:layout_marginBottom="@dimen/outer_margin"
+        />
+
+</LinearLayout>

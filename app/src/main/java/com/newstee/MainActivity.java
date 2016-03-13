@@ -17,7 +17,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-
+    private final  int[] tabIcons = {
+            R.drawable.tab_image_thread,
+            R.drawable.tab_image_list,
+            R.drawable.tab_image_player,
+            R.drawable.tab_image_profile,
+            R.drawable.tab_image_car_mode};
+    private boolean isMPShow = false;
+private View mediaPlayer;
+    private  TabLayout mTabLayout;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -37,7 +45,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        View view =  findViewById(R.id.main_toolbar);
+        mediaPlayer = view.findViewById(R.id.main_media_player);
+        mediaPlayer.setVisibility( View.GONE);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -48,20 +59,15 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setCurrentItem(0);
+        mViewPager.setCurrentItem(2);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-        int[] tabIcons = {
-                R.drawable.tab_image_thread,
-                R.drawable.tab_image_list,
-                R.drawable.tab_image_player,
-                R.drawable.tab_image_profile,
-                R.drawable.tab_image_car_mode};
+        mTabLayout = (TabLayout) findViewById(R.id.tabs);
+        mTabLayout.setupWithViewPager(mViewPager);
 
-        for(int i = 0; i<tabLayout.getTabCount(); i++)
+
+        for(int i = 0; i<mTabLayout.getTabCount(); i++)
         {
-            tabLayout.getTabAt(i).setIcon(tabIcons[i]);
+            mTabLayout.getTabAt(i).setIcon(tabIcons[i]);
         }
       /*  FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +78,49 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
+    }
+    public void showCanalDeatails() {
+        startActivity(new Intent(MainActivity.this, CanalFragmentActivity.class));
+    }
+
+    public void showMediaPlayer()
+    {
+        startActivity(new Intent(MainActivity.this, MediaPlayerFragmentActivity.class));
+      /*  isMPShow = true;
+        //mViewPager = null;
+     //   mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+
+        // Set up the ViewPager with the sections adapter.
+      //  mViewPager = (ViewPager) findViewById(R.id.container);
+       // mViewPager.setAdapter(mSectionsPagerAdapter);
+       // mViewPager.setCurrentItem(2);
+
+        //TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        //tabLayout.setupWithViewPager(mViewPager);
+
+//        mViewPager.setCurrentItem(2);
+     *//*   int[] tabIcons = {
+                R.drawable.tab_image_thread,
+                R.drawable.tab_image_list,
+                R.drawable.tab_image_player,
+                R.drawable.tab_image_profile,
+                R.drawable.tab_image_car_mode};
+
+        for(int i = 0; i<tabLayout.getTabCount(); i++)
+        {
+            tabLayout.getTabAt(i).setIcon(tabIcons[i]);
+        }
+        isMPShow = true;*//*
+      //  mSectionsPagerAdapter.notifyDataSetChanged();
+        mViewPager.setCurrentItem(2);
+        mTabLayout = (TabLayout) findViewById(R.id.tabs);
+        mTabLayout.setupWithViewPager(mViewPager);
+        for(int i = 0; i<mTabLayout.getTabCount(); i++)
+        {
+            mTabLayout.getTabAt(i).setIcon(tabIcons[i]);
+        }
+        mViewPager.setCurrentItem(2);*/
     }
 
     @Override
@@ -106,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -118,15 +168,27 @@ public class MainActivity extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
+
                     return new NewsThreadFragment();
                 case 1:
+
                     return new CatalogFragment();
                 case 2:
-                    return new MediaPlayerFragment();
-                            //MyPlaylistFragment();
+                    if (isMPShow) {
+                       // isMPShow = false;
+                        return new MediaPlayerFragment();
+
+                    } else
+                    {
+                        return new MyPlaylistFragment();
+                    }
+
+                            // MediaPlayerFragment();
                 case 3:
+
                     return new ProfileFragment();
                 case 4:
+
                     return PlaceholderFragment.newInstance(position + 1);
             }
 
@@ -201,5 +263,6 @@ public class MainActivity extends AppCompatActivity {
             stopService(new Intent(this, MusicService.class));
 
     }
+
 
 }

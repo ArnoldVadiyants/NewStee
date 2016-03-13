@@ -1,18 +1,22 @@
 package com.newstee;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +25,7 @@ import java.util.List;
 
 public class CatalogListFragment extends ListFragment
 {
-
+	private final static String TAG = "CatalogListFragment";
 
 	private static final String ARG_IS_CANAL = "is_canal";
 	private boolean mIsCanal;
@@ -71,11 +75,13 @@ public class CatalogListFragment extends ListFragment
 		public final ImageView imageView;
 		public final TextView title;
 		public final ImageButton addBtn;
+		public final LinearLayout catalogFeed;
 
-		public ViewHolder(ImageView imageView, TextView title, ImageButton addBtn) {
+		public ViewHolder(ImageView imageView, TextView title, ImageButton addBtn, LinearLayout catalogFeed) {
 			this.imageView = imageView;
 			this.title = title;
 			this.addBtn = addBtn;
+			this.catalogFeed = catalogFeed;
 		}
 	}
 	
@@ -97,11 +103,12 @@ public class CatalogListFragment extends ListFragment
 				view = LayoutInflater.from(getContext()).inflate(R.layout.catalog_item_title, parent, false);
 				TextView titleTextView = (TextView)view.findViewById(R.id.title_TextView);
 				ImageView imageView = (ImageView)view.findViewById(R.id.canal_icon_ImageVew);
+				LinearLayout catalogFeed = (LinearLayout)view.findViewById(R.id.catalog_feed);
 				ImageButton imageButton =(ImageButton)view.findViewById(R.id.catalog_item_add_ImageButton);
 
 
 
-				view.setTag(new ViewHolder(imageView, titleTextView, imageButton));
+				view.setTag(new ViewHolder(imageView, titleTextView, imageButton, catalogFeed));
 			}
 			if(holder == null && view != null)
 			{
@@ -118,15 +125,33 @@ public class CatalogListFragment extends ListFragment
 				if(mIsCanal)
 				{
 				//	holder.imageView.set
+					holder.catalogFeed.setTag(position);
+					holder.catalogFeed.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							startActivity(new Intent(getContext(), CanalFragmentActivity.class));
+
+							Log.d(TAG, "List_item onCLick" + " " + (v.getTag()));
+						}
+					});
 
 				}
 				else
 				{
+					holder.catalogFeed.setOnClickListener(null);
 					holder.imageView.setVisibility(View.GONE);
 					holder.title.setTypeface(Typeface.DEFAULT_BOLD);
 				//	holder
 				}
+				holder.addBtn.setTag(position);
+				holder.addBtn.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
 
+						Toast.makeText(getActivity(), "Canal #" + v.getTag() + " is added", Toast.LENGTH_SHORT).show();
+						((ImageButton) v).setImageResource(R.drawable.ic_is_added);
+					}
+				});
 				holder.title.setText(item.title);
 			//	holder
 			}

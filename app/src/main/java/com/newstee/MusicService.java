@@ -26,6 +26,24 @@ public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener {
 
+    private final static String TAG = "MusicService";
+
+    public boolean getNewSongValue() {
+        return newSongValue;
+    }
+    private void updateNewSongValue()
+    {
+        if(newSongValue)
+        {
+            newSongValue = false;
+        }
+        else
+        {
+            newSongValue = true;
+        }
+    }
+    private boolean newSongValue = false;
+
     public boolean isPaused() {
         return paused;
     }
@@ -33,15 +51,8 @@ public class MusicService extends Service implements
     //media player
     private boolean paused = false;
 
-    public boolean isNewSong() {
-        return isNewSong;
-    }
 
-    public void setIsNewSong(boolean isNewSong) {
-        this.isNewSong = isNewSong;
-    }
 
-    private boolean isNewSong = false;
     private MediaPlayer player;
     //song list
     private ArrayList<Song> songs;
@@ -78,7 +89,7 @@ public class MusicService extends Service implements
             public void run() {
                 while(true)
                 {
-                    Log.d("********Tag*********  ",""+ songPosn );
+                    Log.d(TAG ,""+ songPosn );
 
                     try {
                         Thread.sleep(500);
@@ -122,8 +133,14 @@ public class MusicService extends Service implements
     //release resources when unbind
     @Override
     public boolean onUnbind(Intent intent){
-        player.stop();
-        player.release();
+        if(player != null) {
+            if (player.isPlaying()) {
+                player.stop();
+            }
+            player.release();
+            player = null;
+        }
+
         return false;
     }
 
@@ -197,7 +214,7 @@ public class MusicService extends Service implements
         Notification not = builder.build();
         startForeground(NOTIFY_ID, not);
         paused = false;
-        isNewSong = true;
+        updateNewSongValue();
     }
 
 
@@ -209,8 +226,10 @@ public class MusicService extends Service implements
     public int getDur(){
         return player.getDuration();
     }
-
-    public boolean isPng(){
+    public boolean isNullPlayer(){
+       return player==null;
+    }
+    public boolean isPlaying(){
         return player.isPlaying();
     }
 
@@ -230,7 +249,6 @@ public class MusicService extends Service implements
     public void playPrev(){
         songPosn--;
         if(songPosn<0) songPosn=songs.size()-1;
-        int a = songPosn;
         playSong();
     }
 
@@ -247,7 +265,6 @@ public class MusicService extends Service implements
             songPosn++;
             if(songPosn>=songs.size()) songPosn=0;
         }
-        int b = songPosn;
         playSong();
     }
 

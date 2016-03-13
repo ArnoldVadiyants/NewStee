@@ -18,7 +18,7 @@
         android:id="@android:id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent" 
-        android:text="@string/empty"
+        android:text="@string/check_internet_con"
         android:layout_gravity="center"/>
 
 </FrameLayout>

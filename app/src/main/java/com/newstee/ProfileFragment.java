@@ -9,15 +9,18 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by Arnold on 17.02.2016.
  */
 public class ProfileFragment extends Fragment {
+    private Button editButton;
     TextView publish_titleTextView;
     TextView article_titleTextView;
     TextView mixes_titleTextView;
@@ -51,6 +54,13 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        editButton = (Button)rootView.findViewById(R.id.profile_edit_btn);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "edit profile clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
         ProfilePagerAdapter mProfilePagerAdapter = new ProfilePagerAdapter(getChildFragmentManager());
         // Set up the ViewPager with the sections adapter.
         ViewPager mViewPager = (ViewPager)rootView.findViewById(R.id.profile_container);

@@ -12,17 +12,32 @@
     <string name="publish">Издания</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="description">Descr</string>
-    <string name="empty">Интернет соединение отсутствует</string>
+    <string name="check_internet_con">Невозможно подключиться. Пожалуйста,проверьте параметры подключения к интернету</string>
+    <string name="empty_my_play_list">Ваш плейлист пуст. Чтобы заполнить его подпишитесь на интересующие вас категории и издания в каталоге или добавьте новости из потока. </string>
     <string name="subscriptions">Подписки</string>
+    <string name="subscribers">Подписчики</string>
     <string name="my_subscriptions">Мои подписки</string>
     <string name="my_likes">Мне нравится</string>
     <string name="added">Добавленные</string>
     <string name="name">Имя</string>
     <string name="surname">Фамилия</string>
     <string name="edit">Редактировать</string>
+    <string name="to_subscript">Подписаться</string>
     <string name="registration_via_email"><b>Зарегистрироваться</b> через <b>e-mail</b> </string>
-    <string name="if_have_registration">Уже есть учетная запись?</string>
+    <string name="if_have_registration">Уже есть учетная запись? <b>ВХОД</b></string>
     <string name="sign_in">Вход</string>
     <string name="resume_without_registr">Продолжить без регистрации</string>
     <string name="privacy_policy">Условия|Политика конфиденциальности</string>
+
+
+
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Пароль</string>
+    <string name="hint_name">Полное имя</string>
+    <string name="btn_login">ВХОД</string>
+    <string name="btn_register">РЕГИСТРАЦИЯ</string>
+    <string name="btn_link_to_register">Not a member? Sign up now.</string>
+    <string name="btn_link_to_login">Already registred! Login Me.</string>
+    <string name="welcome">Welcome</string>
+    <string name="btn_logout">LOGOUT</string>
 </resources>

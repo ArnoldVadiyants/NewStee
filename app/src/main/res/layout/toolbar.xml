@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.Toolbar
-    xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="?android:attr/actionBarSize"
-    android:background="@drawable/news_tee_vector"
-    app:popupTheme="@style/AppTheme.PopupOverlay"
-    app:layout_scrollFlags="scroll|enterAlways"
-    android:layout_gravity="bottom">
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+               xmlns:app="http://schemas.android.com/apk/res-auto"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="vertical">
+  <android.support.v7.widget.Toolbar
+      android:id="@+id/toolbar"
+      android:layout_width="match_parent"
+      android:layout_height="?android:attr/actionBarSize"
+      android:background="@drawable/news_tee_vector"
+      app:popupTheme="@style/AppTheme.PopupOverlay"
+      app:layout_scrollFlags="scroll|enterAlways"
+      android:layout_gravity="bottom">
 
-</android.support.v7.widget.Toolbar>
+  </android.support.v7.widget.Toolbar>
+  <include layout="@layout/media_player_small" android:id="@+id/main_media_player"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           />
+</LinearLayout>
+
+

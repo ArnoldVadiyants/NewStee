@@ -1,12 +1,14 @@
 package com.newstee;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,25 +16,27 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class NewsListFragment extends ListFragment {
+    private final static String TAG = "NewsListFragment";
     private  final List<Item> items = new ArrayList<Item>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-   //     Bitmap canalIcon  = BitmapFactory.decodeResource(getActivity().getResources(),
+   //     Bitmap canalIcon  = BitmapFactoCatalogFragmentry.decodeResource(getActivity().getResources(),
    //             R.drawable.test_canal_icon);
                 //getRoundedShape();
    //     Bitmap newPicture  = BitmapFactory.decodeResource(getActivity().getResources(),
       //          R.drawable.test_picture);
         Bitmap canalIcon = Bitmap.createBitmap(100,100, Bitmap.Config.ARGB_8888);
         Bitmap newPicture = Bitmap.createBitmap(100,100, Bitmap.Config.ARGB_8888);
-        items.add(new Item(canalIcon, newPicture, "UkraineNews", 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.",News.STATUS_IS_PLAYING));
+       items.add(new Item(canalIcon, newPicture, "UkraineNews", 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.",News.STATUS_IS_PLAYING));
         for(int i =0; i<50; i++)
         {
             items.add(new Item(canalIcon, newPicture, "Vazgen.com", 777, 100747, "In the Democratic contest, Hillary Clinton beat Vermont Senator Bernie Sanders in a tight race in Nevada.", News.STATUS_NOT_ADDED));
@@ -65,6 +69,7 @@ public abstract class NewsListFragment extends ListFragment {
     }
 
     private  class ViewHolder {
+        public final RelativeLayout newsFeed;
         public final ImageView canalImage;
         public final ImageView newsImage;
         public final TextView canalTitle;
@@ -74,7 +79,7 @@ public abstract class NewsListFragment extends ListFragment {
         public final ImageButton statusButton;
 
 
-        public ViewHolder(ImageView canalImage, ImageView newsImage, TextView canalTitle, TextView likeCount, TextView time, TextView description, ImageButton statusButton) {
+        public ViewHolder(ImageView canalImage, ImageView newsImage, TextView canalTitle, TextView likeCount, TextView time, TextView description, ImageButton statusButton, RelativeLayout newsFeed) {
             this.canalImage = canalImage;
             this.newsImage = newsImage;
             this.canalTitle = canalTitle;
@@ -82,10 +87,19 @@ public abstract class NewsListFragment extends ListFragment {
             this.time = time;
             this.description = description;
             this.statusButton = statusButton;
+            this.newsFeed = newsFeed;
         }
     }
 
     private class ItemAdapter extends ArrayAdapter<Item> {
+        RelativeLayout newsFeed;
+        ImageView canalImage ;
+        ImageView newsImage;
+        TextView canalTitle ;
+        TextView likeCount ;
+        TextView time ;
+        TextView description ;
+        ImageButton statusButton;
 
         public ItemAdapter(Context context) {
             super(context, R.layout.news_list_item, items);
@@ -97,14 +111,15 @@ public abstract class NewsListFragment extends ListFragment {
             ViewHolder holder = null;
             if (view == null) {
                 view = LayoutInflater.from(getContext()).inflate(R.layout.news_list_item, parent, false);
-                ImageView canalImage = (ImageView) view.findViewById(R.id.canal_icon_ImageVew);
-                ImageView newsImage = (ImageView) view.findViewById(R.id.news_picture_imageView);
-                TextView canalTitle = (TextView) view.findViewById(R.id.canal_title_TextView);
-                TextView likeCount = (TextView) view.findViewById(R.id.like_count_TextView);
-                TextView time = (TextView) view.findViewById(R.id.date_TextView);
-                TextView description = (TextView) view.findViewById(R.id.news_description_textView);
-                ImageButton statusButton = (ImageButton)view.findViewById(R.id.news_status_ImageButton);
-                view.setTag(new ViewHolder(canalImage, newsImage, canalTitle, likeCount, time, description, statusButton));
+                 newsFeed = (RelativeLayout)view.findViewById(R.id.news_feed);
+                canalImage = (ImageView) view.findViewById(R.id.canal_icon_ImageVew);
+                 newsImage = (ImageView) view.findViewById(R.id.news_picture_imageView);
+                canalTitle = (TextView) view.findViewById(R.id.canal_title_TextView);
+               likeCount = (TextView) view.findViewById(R.id.like_count_TextView);
+                time = (TextView) view.findViewById(R.id.date_TextView);
+                 description = (TextView) view.findViewById(R.id.news_description_textView);
+                 statusButton = (ImageButton)view.findViewById(R.id.news_status_ImageButton);
+                view.setTag(new ViewHolder(canalImage, newsImage, canalTitle, likeCount, time, description, statusButton, newsFeed));
             }
             if (holder == null && view != null) {
                 Object tag = view.getTag();
@@ -120,12 +135,38 @@ public abstract class NewsListFragment extends ListFragment {
                 holder.likeCount.setText("" + item.likeCount);
              //   holder.time.setText(""+item.millisecondsDuring);
                 holder.description.setText(item.description);
-                setStatusImageButton(holder.statusButton,item.status);
+                holder.newsFeed.setTag(position);
+               holder.newsFeed.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       startActivity(new Intent(getContext(), MediaPlayerFragmentActivity.class));
+
+                       Log.d(TAG, "List_item onCLick" + " " + (v.getTag()));
+                   }
+               });
+                holder.statusButton.setTag(position);
+               setStatusImageButton(holder.statusButton, item.status);
               //  getTime(item.millisecondsDuring)
             }
             return view;
         }
+        private View.OnClickListener mClickListenerItem = new View.OnClickListener() {
+
+            public void onClick(View v) {
+                if(v.getId() ==  statusButton.getId())
+                {
+
+                }
+                else
+                {
+
+                }
+
+            }
+        };
+
     }
+
 
     public Bitmap getRoundedShape(Bitmap scaleBitmapImage) {
         int targetWidth = 50;
@@ -184,7 +225,9 @@ public abstract class NewsListFragment extends ListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.news_listview, container, false);
+        View view = inflater.inflate(R.layout.news_listview, container, false);
+
+        return  view;
     }
 
     @Override
@@ -192,5 +235,9 @@ public abstract class NewsListFragment extends ListFragment {
         super.onActivityCreated(savedInstanceState);
         ListAdapter adapter = new ItemAdapter(getActivity());
         setListAdapter(adapter);
+        TextView tv = (TextView)getListView().getEmptyView();
+        //    TextView tv = (TextView)view.findViewById(R.id.empty);
+        tv.setText(getEmpty());
     }
+    abstract String getEmpty();
 }

@@ -28,18 +28,23 @@ public class NewsThreadListFragment extends NewsListFragment {
                 switch (newsStatus)
                 {
                     case News.STATUS_NOT_ADDED:
-                        Toast.makeText(getActivity(),"This news is added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"News #"+v.getTag()+" is added", Toast.LENGTH_SHORT).show();
                         statusImageButton.setImageResource(R.drawable.news_to_play_button);
                         break;
                     case News.STATUS_WAS_ADDED:
                         statusImageButton.setImageResource(R.drawable.news_is_playing_button);
-                        Toast.makeText(getActivity(),"This news started playing", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"News #"+v.getTag()+" started playing", Toast.LENGTH_SHORT).show();
                         break;
                     case News.STATUS_IS_PLAYING:
-                        Toast.makeText(getActivity(),"Media player is opening", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"News #"+v.getTag()+" is opening", Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
         });
+    }
+
+    @Override
+    String getEmpty() {
+        return getString(R.string.check_internet_con);
     }
 }

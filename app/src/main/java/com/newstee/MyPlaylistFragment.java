@@ -11,11 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by Arnold on 23.02.2016.
  */
 public class MyPlaylistFragment extends Fragment{
+    public static boolean ifShowMediaPlayer = false;
+    private LinearLayout startButton;
     private PlayListPager mPlayListPager;
 
     @Override
@@ -30,7 +33,15 @@ public class MyPlaylistFragment extends Fragment{
     // private ViewPager mViewPager;
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(ifShowMediaPlayer)
+        {
 
+        }
+
+    }
     @Override
     public View getView() {
         return super.getView();
@@ -39,11 +50,11 @@ public class MyPlaylistFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_playlist, container, false);
-        LinearLayout startButton = (LinearLayout)rootView.findViewById(R.id.my_playlist_start_button);
+        startButton = (LinearLayout)rootView.findViewById(R.id.my_playlist_start_button);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Toast.makeText(getActivity(), "add all news to playlist", Toast.LENGTH_SHORT).show();
             }
         });
          mPlayListPager = new PlayListPager(getChildFragmentManager());

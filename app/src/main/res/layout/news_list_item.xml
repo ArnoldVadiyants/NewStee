@@ -6,17 +6,21 @@
              android:layout_height="wrap_content"
     >
 
-        <LinearLayout
+        <RelativeLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/outer_margin">
+            android:padding="@dimen/outer_margin"
+            android:id="@+id/news_feed">
 
             <LinearLayout
+                android:id="@+id/news_header"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0">
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true">
 
                 <ImageView
                     android:layout_width="@dimen/icon_size_medium"
@@ -66,25 +70,25 @@
                     android:layout_marginLeft="@dimen/icon_margin"
                     android:layout_marginRight="@dimen/icon_margin"/>
 
-                <ImageButton
-                    android:layout_width="@dimen/icon_size_small_2"
-                    android:layout_height="@dimen/icon_size_small_2"
-                    android:id="@+id/news_status_ImageButton"
-                    android:layout_gravity="bottom"
-                    android:layout_marginLeft="@dimen/icon_margin"
-                    android:cropToPadding="false"
-                    android:adjustViewBounds="false"
-                    android:background="@android:color/transparent"
-                    android:scaleType="fitXY"/>
+                <FrameLayout
+                    android:layout_width="@dimen/icon_size"
+                    android:layout_height="@dimen/icon_size_medium"
+                    android:layout_gravity="top">
+                </FrameLayout>
+
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/news_title_and_image"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_below="@+id/news_header"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_marginTop="@dimen/outer_margin"
-                android:layout_marginLeft="@dimen/outer_margin">
+                android:layout_marginLeft="@dimen/outer_margin"
+                >
 
                 <ImageView
                     android:layout_width="@dimen/picture_size"
@@ -103,9 +107,31 @@
                     android:layout_weight="1"
                     android:layout_gravity="top"
                     android:layout_marginLeft="@dimen/icon_margin"/>
-            </LinearLayout>
-        </LinearLayout>
 
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    <ImageButton
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        android:id="@+id/news_status_ImageButton"
+        android:cropToPadding="false"
+        android:adjustViewBounds="false"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:visibility="visible"
+        android:src="@drawable/news_to_add_button"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:baselineAlignBottom="true"
+        android:layout_alignBottom="@+id/news_header"
+        android:layout_gravity="top|right"
+        android:layout_marginRight="@dimen/outer_margin"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="4dp"/>
 
 
 </FrameLayout>

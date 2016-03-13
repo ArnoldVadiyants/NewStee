@@ -30,6 +30,9 @@ import java.util.Comparator;
  * Created by Arnold on 17.02.2016.
  */
 public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarChangeListener {
+    private final static String TAG = "MediaPlayerFragment";
+    private boolean newSongValue = false;
+    private boolean playingValue = false;
     private ImageButton btnPlay;
     private ImageButton btnForward;
     private ImageButton btnBackward;
@@ -64,14 +67,34 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         songList = new ArrayList<Song>();
         getSongList();
 
-        Log.d("TAG", "******onCreate*****");
+        Log.d(TAG, "******onCreate*****");
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "******onResume*****");
+        if (musicBound) {
+            updateMPNews();
+        }
+    }
+
+    public void updateMPNews() {
+        if (musicSrv != null) {
+            if (musicSrv.isPlaying()) {
+                btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+            } else {
+                btnPlay.setImageResource(android.R.drawable.ic_media_play);
+            }
+            songTitleLabel.setText(musicSrv.getSongTitle());
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("TAG", "******onCreateView*****");
+        Log.d(TAG, "******onCreateView*****");
         //retrieve list view
         View root = inflater.inflate(R.layout.media_conroller,container, false );
         btnPlay = (ImageButton) root.findViewById(R.id.pause);
@@ -87,6 +110,12 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         songTotalDurationLabel = (TextView) root.findViewById(R.id.total_time_TextView);
         utils = new Utilities();
         songProgressBar.setOnSeekBarChangeListener(this);
+        btnPlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+            }
+        });
         btnForward.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -104,6 +133,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
                 }
             }
         });
+
         btnBackward.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -144,7 +174,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
             @Override
             public void onClick(View arg0) {
                 // check for already playing
-                if(musicSrv.isPng()){
+                if(musicSrv.isPlaying()){
                     if(musicBound){
                         musicSrv.pausePlayer();
                         btnPlay.setImageResource(android.R.drawable.ic_media_play);
@@ -187,7 +217,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d("TAG", "******onServiceConnected*****");
+            Log.d(TAG, "******onServiceConnected*****");
             MusicBinder binder = (MusicBinder)service;
             //get service
             musicSrv = binder.getService();
@@ -195,6 +225,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
             musicSrv.setList(songList);
             musicBound = true;
             playSong(0);
+
         }
 
         @Override
@@ -203,16 +234,26 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         }
     };
 
-    //start and bind the service when the activity starts
-    @Override
-    public  void onStart() {
-        super.onStart();
-        Log.d("TAG", "******onStart*****");
+    public  void connectService()
+    {
         if(playIntent==null){
             playIntent = new Intent(getActivity(), MusicService.class);
             getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
             getActivity().startService(playIntent);
         }
+    }
+    @Override
+    public void onStop() {
+        Log.d(TAG, "******onStop*****");
+        super.onStop();
+    //    getActivity().unbindService(musicConnection);
+    }
+    //start and bind the service when the activity starts
+    @Override
+    public  void onStart() {
+        super.onStart();
+        Log.d(TAG, "******onStart*****");
+       connectService();
 
     }
 
@@ -300,29 +341,40 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
      * */
     private Runnable mUpdateTimeTask = new Runnable() {
         public void run() {
-            if(!musicSrv.isPaused())
-            {
-                long totalDuration = musicSrv.getDur();
-                long currentDuration = musicSrv.getPosn();
-                if(musicSrv.isNewSong())
-                {
-    songTitleLabel.setText(musicSrv.getSongTitle());
-    musicSrv.setIsNewSong(false);
+            if(musicSrv != null) {
+                if (!musicSrv.isNullPlayer()) {
+
+                    if (!musicSrv.isPaused()) {
+                        long totalDuration = musicSrv.getDur();
+                        long currentDuration = musicSrv.getPosn();
+                        if (newSongValue != musicSrv.getNewSongValue()) {
+                            songTitleLabel.setText(musicSrv.getSongTitle());
+
+                            newSongValue = !newSongValue;
+                        }
+                        if (playingValue != musicSrv.isPlaying()) {
+                            if (playingValue) {
+                                btnPlay.setImageResource(android.R.drawable.ic_media_play);
+                            } else {
+                                btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+
+                            }
+                            playingValue = !playingValue;
+                        }
+
+                        songTotalDurationLabel.setText("" + utils.milliSecondsToTimer(totalDuration));
+                        songCurrentDurationLabel.setText("" + utils.milliSecondsToTimer(currentDuration));
+
+                        // Updating progress bar
+                        int progress = (utils.getProgressPercentage(currentDuration, totalDuration));
+                        //Log.d("Progress", ""+progress);
+                        songProgressBar.setProgress(progress);
+
+                    }
                 }
-                // Displaying Total Duration time
-                songTotalDurationLabel.setText(""+utils.milliSecondsToTimer(totalDuration));
-                // Displaying time completed playing
-                songCurrentDurationLabel.setText(""+utils.milliSecondsToTimer(currentDuration));
-
-                // Updating progress bar
-                int progress = (utils.getProgressPercentage(currentDuration, totalDuration));
-                //Log.d("Progress", ""+progress);
-                songProgressBar.setProgress(progress);
-
             }
-
             // Running this thread after 100 milliseconds
-            mHandler.postDelayed(this, 100);
+               mHandler.postDelayed(this, 100);
         }
     };
     @Override
@@ -424,18 +476,25 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     @Override
     public void onPause(){
         super.onPause();
+        Log.d(TAG, "******onPause*****");
+    }
+
+
+
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
-   public void onResume(){
-        super.onResume();
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDetach() {
+        super.onDetach();
     }
-
-
-
 }

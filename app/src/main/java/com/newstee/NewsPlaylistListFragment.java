@@ -20,4 +20,9 @@ public class NewsPlaylistListFragment extends NewsListFragment {
 
     }
 
+    @Override
+    String getEmpty() {
+        return getString(R.string.empty_my_play_list);
+    }
+
 }

@@ -97,7 +97,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/registration_via_email"
-        android:id="@+id/button2"
+        android:id="@+id/registration_via_email_button"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:background="@drawable/button_registraton_shape"
         android:textColor="@android:color/white"
@@ -107,7 +107,9 @@
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/outer_margin_big"
+        android:id="@+id/sign_in_layout">
 
         <TextView
             android:layout_width="wrap_content"
@@ -118,16 +120,6 @@
 
             android:id="@+id/textView9"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sign_in"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textAllCaps="true"
-            android:id="@+id/button4"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:background="@android:color/transparent"/>
     </LinearLayout>
 
     <FrameLayout
@@ -143,7 +135,7 @@
         android:textColor="@android:color/white"
         android:text="@string/resume_without_registr"
         android:textAllCaps="true"
-        android:id="@+id/button3"
+        android:id="@+id/resume_button"
         android:layout_gravity="center_horizontal"/>
 
     <TextView

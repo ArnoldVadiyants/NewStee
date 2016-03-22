@@ -29,7 +29,7 @@
                 android:layout_width="@dimen/icon_size_medium"
                 android:layout_height="@dimen/icon_size_medium"
                 android:id="@+id/imageView3"
-                android:background="@drawable/thread"
+                android:background="@drawable/stream"
                 android:layout_gravity="center_vertical"/>
 
             <TextView

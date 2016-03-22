@@ -47,7 +47,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     private Handler mHandler = new Handler();
     private int seekForwardTime = 5000; // 5000 milliseconds
     private int seekBackwardTime = 5000; // 5000 milliseconds
-    //song list variables
+    //song catalogue variables
     private ArrayList<Song> songList;
     //service
     private MusicService musicSrv;
@@ -95,7 +95,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "******onCreateView*****");
-        //retrieve list view
+        //retrieve catalogue view
         View root = inflater.inflate(R.layout.media_conroller,container, false );
         btnPlay = (ImageButton) root.findViewById(R.id.pause);
         btnForward = (ImageButton) root.findViewById(R.id.ffwd);
@@ -190,7 +190,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
 
             }
         });
-        //instantiate list
+        //instantiate catalogue
 
         //get songs from device
 
@@ -221,7 +221,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
             MusicBinder binder = (MusicBinder)service;
             //get service
             musicSrv = binder.getService();
-            //pass list
+            //pass catalogue
             musicSrv.setList(songList);
             musicBound = true;
             playSong(0);
@@ -296,7 +296,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
                     (android.provider.MediaStore.Audio.Media._ID);
             int artistColumn = musicCursor.getColumnIndex
                     (android.provider.MediaStore.Audio.Media.ARTIST);
-            //ic_add songs to list
+            //ic_add songs to catalogue
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
@@ -337,7 +337,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     }
 
     /**
-     * Background Runnable thread
+     * Background Runnable stream
      * */
     private Runnable mUpdateTimeTask = new Runnable() {
         public void run() {
@@ -373,7 +373,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
                     }
                 }
             }
-            // Running this thread after 100 milliseconds
+            // Running this stream after 100 milliseconds
                mHandler.postDelayed(this, 100);
         }
     };

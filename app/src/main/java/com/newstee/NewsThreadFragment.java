@@ -102,7 +102,7 @@ public class NewsThreadFragment extends Fragment {
             MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
             //get service
             musicSrv = binder.getService();
-            //pass list
+            //pass catalogue
             musicBound = true;
 
 
@@ -130,7 +130,7 @@ public class NewsThreadFragment extends Fragment {
     }
 
     /**
-     * Background Runnable thread
+     * Background Runnable stream
      * */
     private Runnable mUpdateTimeTask = new Runnable() {
         public void run() {
@@ -156,7 +156,7 @@ public class NewsThreadFragment extends Fragment {
                     }
                 }
             }
-            // Running this thread after 100 milliseconds
+            // Running this stream after 100 milliseconds
             mHandler.postDelayed(this, 100);
         }
     };

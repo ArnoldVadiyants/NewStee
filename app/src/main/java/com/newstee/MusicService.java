@@ -48,13 +48,13 @@ public class MusicService extends Service implements
         return paused;
     }
 
-    //media player
+    //media play
     private boolean paused = false;
 
 
 
     private MediaPlayer player;
-    //song list
+    //song catalogue
     private ArrayList<Song> songs;
     //current position
     private int songPosn;
@@ -80,7 +80,7 @@ public class MusicService extends Service implements
         songPosn=0;
         //random
         rand=new Random();
-        //create player
+        //create play
         player = new MediaPlayer();
         //initialize
         initMusicPlayer();
@@ -102,7 +102,7 @@ public class MusicService extends Service implements
     }
 
     public void initMusicPlayer(){
-        //set player properties
+        //set play properties
         player.setWakeMode(getApplicationContext(),
                 PowerManager.PARTIAL_WAKE_LOCK);
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -112,7 +112,7 @@ public class MusicService extends Service implements
         player.setOnErrorListener(this);
     }
 
-    //pass song list
+    //pass song catalogue
     public void setList(ArrayList<Song> theSongs){
         songs=theSongs;
     }

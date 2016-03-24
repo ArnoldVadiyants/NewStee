@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:textAllCaps="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/player"
+            android:text="@string/tab_player"
             android:id="@+id/textView"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"

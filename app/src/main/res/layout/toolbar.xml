@@ -22,8 +22,8 @@
       </android.support.v7.widget.Toolbar>
 
         <ImageView
-            android:layout_width="198dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/logo_title_width"
+            android:layout_height="@dimen/logo_title_height"
             android:id="@+id/imageView6"
             android:background="@android:color/transparent"
             android:src="@drawable/logo_title"

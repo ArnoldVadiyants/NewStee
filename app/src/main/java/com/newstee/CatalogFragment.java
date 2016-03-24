@@ -277,9 +277,9 @@ mediaPlayer.setVisibility(View.GONE);
 
             switch (position) {
                 case 0:
-                    return getActivity().getResources().getString(R.string.category);
+                    return getActivity().getResources().getString(R.string.tab_category);
                 case 1:
-                    return getActivity().getResources().getString(R.string.publish);
+                    return getActivity().getResources().getString(R.string.tab_publish);
 
             }
 

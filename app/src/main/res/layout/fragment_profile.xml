@@ -31,7 +31,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textAllCaps="true"
                 android:textColor="@color/colorPrimary"
-                android:text="@string/profile"
+                android:text="@string/tab_profile"
                 android:id="@+id/textView2"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/icon_margin"

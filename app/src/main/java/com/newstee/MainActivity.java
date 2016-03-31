@@ -14,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -63,12 +65,30 @@ private View mediaPlayer;
 
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mTabLayout.setupWithViewPager(mViewPager);
-
-
+        int dpValue1 = 6;
+        int dpValue2 = 8;// padding in dips
+        float d = getResources().getDisplayMetrics().density;
+        int padding1 = (int)(dpValue1 * d);
+        int padding2 = (int)(dpValue2 * d);// padding in pixels
         for(int i = 0; i<mTabLayout.getTabCount(); i++)
         {
-            mTabLayout.getTabAt(i).setIcon(tabIcons[i]);
+      //    mTabLayout.getTabAt(i).setIcon(tabIcons[i]);
+            LinearLayout layout = ((LinearLayout)((LinearLayout)mTabLayout.getChildAt(0)).getChildAt(i));
+            //  layout.setBackground(getDrawable(tabIcons[i]));
+            ImageView tab = new ImageView(this);
+            tab.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+            tab.setImageResource(tabIcons[i]);
+            tab.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+           if(i == 0 || i ==2)
+           {
+               tab.setPadding(padding2, padding2, padding2, padding2);
+           }
+           else tab.setPadding(padding1, padding1, padding1, padding1);
+            tab.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            layout.addView(tab);
         }
+        mViewPager.setCurrentItem(1);
+        mViewPager.setCurrentItem(2);
       /*  FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,7 +209,7 @@ private View mediaPlayer;
                     return new ProfileFragment();
                 case 4:
 
-                    return PlaceholderFragment.newInstance(position + 1);
+                    return new CarModeFragment();
             }
 
             return PlaceholderFragment.newInstance(position + 1);
@@ -201,15 +221,15 @@ private View mediaPlayer;
             return 5;
         }
 
-        @Override
+     /*   @Override
         public CharSequence getPageTitle(int position) {
-            /*Drawable image = ContextCompat.getDrawable(getApplicationContext(), R.drawable.tab_image_thread);
+            Drawable image = ContextCompat.getDrawable(getApplicationContext(), R.drawable.tab_image_thread);
             image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
-            SpannableString sb = new SpannableString(" ");
+            SpannableString sb = new SpannableString("");
             ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
             sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            return sb;*/
-           /* switch (position) {
+            return sb;
+       *//*    switch (position) {
                 case 0:
                     return (getResources().getString(R.string.lenta)).toUpperCase();
                 case 1:
@@ -217,9 +237,9 @@ private View mediaPlayer;
                 case 2:
                     return (getResources().getString(R.string.play_list)).toUpperCase();
             }
-            return null;*/
-            return null;
-        }
+            return null;*//*
+         //   return null;
+        }*/
     }
 
     /**

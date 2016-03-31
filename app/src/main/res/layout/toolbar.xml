@@ -27,7 +27,9 @@
             android:id="@+id/imageView6"
             android:background="@android:color/transparent"
             android:src="@drawable/logo_title"
-            android:layout_gravity="bottom|center_horizontal"/>
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginTop="@dimen/outer_margin_medium"
+            />
     </FrameLayout>
 
     <include layout="@layout/media_player_small" android:id="@+id/main_media_player"

@@ -15,16 +15,17 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.27"
-        android:layout_marginLeft="@dimen/outer_margin_big"
-        android:layout_marginRight="@dimen/outer_margin_big"
+        android:layout_marginLeft="@dimen/outer_margin_medium"
+        android:layout_marginRight="@dimen/outer_margin_medium"
         >
 
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginRight="@dimen/outer_margin_medium"
-            android:background="@drawable/car_mode_tab_back">
+            android:layout_marginRight="@dimen/outer_margin"
+            android:background="@drawable/car_mode_tab_back"
+            android:id="@+id/car_mode_tab_stream">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -37,7 +38,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/imageView11"
                     android:background="@drawable/stream_clicked"
-                    android:layout_gravity="center_horizontal"/>
+                    android:layout_gravity="center_horizontal"
+                    />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -58,7 +60,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/car_mode_tab_back"
-            android:layout_marginLeft="@dimen/outer_margin_medium">
+            android:layout_marginLeft="@dimen/outer_margin"
+            android:id="@+id/car_mode_tab_playlist">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -93,16 +96,17 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.27"
-        android:layout_marginRight="@dimen/outer_margin_big"
-        android:layout_marginLeft="@dimen/outer_margin_big"
-        android:layout_marginTop="@dimen/outer_margin_big">
+        android:layout_marginRight="@dimen/outer_margin_medium"
+        android:layout_marginLeft="@dimen/outer_margin_medium"
+        android:layout_marginTop="@dimen/outer_margin_medium">
 
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginRight="@dimen/outer_margin_medium"
-            android:background="@drawable/car_mode_tab_back">
+            android:layout_marginRight="@dimen/outer_margin"
+            android:background="@drawable/car_mode_tab_back"
+            android:id="@+id/car_mode_tab_recent">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -138,7 +142,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/car_mode_tab_back"
-            android:layout_marginLeft="@dimen/outer_margin_medium">
+            android:layout_marginLeft="@dimen/outer_margin"
+            android:id="@+id/car_mode_tab_recommend">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -173,13 +178,14 @@
         android:layout_height="0dp"
         android:id="@+id/car_mode_tab_exit"
         android:layout_weight="0.12"
-        android:layout_marginLeft="@dimen/outer_margin_big"
-        android:layout_marginRight="@dimen/outer_margin_big"
-        android:layout_marginTop="@dimen/outer_margin_big"
+        android:layout_marginLeft="@dimen/outer_margin_medium"
+        android:layout_marginRight="@dimen/outer_margin_medium"
+        android:layout_marginTop="@dimen/outer_margin_medium"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textAllCaps="true"
         android:text="@string/car_mode_tab_exit"
         android:textColor="@color/white"
-        android:background="@drawable/car_mode_tab_exit"/>
+        android:background="@drawable/car_mode_tab_exit"
+        android:layout_marginBottom="@dimen/outer_margin_medium"/>
 
 </LinearLayout>

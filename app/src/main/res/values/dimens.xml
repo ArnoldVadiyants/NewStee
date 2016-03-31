@@ -21,6 +21,6 @@
     <dimen name = "thread_media_player_picture_height">42dp</dimen>
     <dimen name = "thread_media_player_picture_width">62dp</dimen>
     <dimen name = "news_list_item_height">100dp</dimen>
-    <dimen name = "logo_title_height">48dp</dimen>
-    <dimen name = "logo_title_width">198dp</dimen>
+    <dimen name = "logo_title_height">40dp</dimen>
+    <dimen name = "logo_title_width">164dp</dimen>
 </resources>

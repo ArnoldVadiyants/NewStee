@@ -7,24 +7,31 @@
     <ImageView
         android:layout_width="@dimen/logo_title_width"
         android:layout_height="@dimen/logo_title_height"
-        android:id="@+id/imageView10"
+        android:id="@+id/car_mode_header_title"
         android:src="@drawable/logo_title"
         android:layout_gravity="center"
         android:layout_weight="0"
-        android:visibility="gone"/>
+        android:visibility="invisible"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible"
-        android:layout_margin="@dimen/outer_margin_big">
+        android:layout_margin="@dimen/outer_margin_medium"
+        android:id="@+id/car_mode_header_player">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.3">
+        </FrameLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text"
-            android:id="@+id/textView10"
+            android:id="@+id/car_mode_header_title_canal"
             android:layout_gravity="center_horizontal"
             android:textAllCaps="true"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -34,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text"
-            android:id="@+id/textView11"
+            android:id="@+id/car_mode_header_title_news"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/outer_margin_medium"
             android:textAllCaps="true"
@@ -44,22 +51,28 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             >
         </FrameLayout>
 
         <ImageButton
             android:layout_width="64dp"
             android:layout_height="42dp"
-            android:id="@+id/imageButton"
+            android:id="@+id/car_mode_header_play"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/button_shape_light"
+            android:background="@drawable/button_shape_car_mode_light"
             android:src="@drawable/ic_start_car_mode_white"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
             android:paddingRight="8dp"
             android:paddingLeft="8dp"
             android:scaleType="fitXY"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2">
+        </FrameLayout>
     </LinearLayout>
 
 </FrameLayout>

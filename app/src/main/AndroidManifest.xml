@@ -16,7 +16,7 @@
             android:name=".LoginActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" >
-            CarModeFragmentActivity
+           
         </activity>
         <activity
             android:name=".CarModeListActivity"

@@ -39,25 +39,33 @@ public class CarModeFragmentActivity extends AppCompatActivity {
 		streamTab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(CarModeFragmentActivity.this, CarModeListActivity.class));
+				Intent i = (new Intent(CarModeFragmentActivity.this, CarModeListActivity.class));
+				i.putExtra(CarModeListActivity.ARG_SECTION_NUMBER, CarModeListActivity.TAB_STREAM);
+				startActivity(i);
 			}
 		});
 		playlistTab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(CarModeFragmentActivity.this, CarModeListActivity.class));
+				Intent i = (new Intent(CarModeFragmentActivity.this, CarModeListActivity.class));
+				i.putExtra(CarModeListActivity.ARG_SECTION_NUMBER, CarModeListActivity.TAB_MY_PLAYLIST);
+				startActivity(i);
 			}
 		});
 		recentTab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(CarModeFragmentActivity.this, CarModeListActivity.class));
+				Intent i = (new Intent(CarModeFragmentActivity.this, CarModeListActivity.class));
+				i.putExtra(CarModeListActivity.ARG_SECTION_NUMBER, CarModeListActivity.TAB_RECENT);
+				startActivity(i);
 			}
 		});
 		recommendTab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(CarModeFragmentActivity.this, CarModeListActivity.class));
+				Intent i = (new Intent(CarModeFragmentActivity.this, CarModeListActivity.class));
+				i.putExtra(CarModeListActivity.ARG_SECTION_NUMBER, CarModeListActivity.TAB_RECOMMEND);
+				startActivity(i);
 			}
 		});
 		exitTab.setOnClickListener(new View.OnClickListener() {

@@ -21,10 +21,10 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.AppConfig;
-import app.AppController;
-import helper.SQLiteHandler;
-import helper.SessionManager;
+import com.newstee.app.AppConfig;
+import com.newstee.app.AppController;
+import com.newstee.helper.SQLiteHandler;
+import com.newstee.helper.SessionManager;
 
 
 public class LoginActivity extends Activity {

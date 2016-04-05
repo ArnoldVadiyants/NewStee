@@ -36,13 +36,13 @@ public abstract class NewsListFragment extends ListFragment {
       //          R.drawable.test_picture);
         Bitmap canalIcon = Bitmap.createBitmap(100,100, Bitmap.Config.ARGB_8888);
         Bitmap newPicture = Bitmap.createBitmap(100,100, Bitmap.Config.ARGB_8888);
-       items.add(new Item(canalIcon, newPicture, "UkraineNews", 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.",News.STATUS_IS_PLAYING));
+       items.add(new Item(canalIcon, newPicture, "UkraineNews", false, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_IS_PLAYING));
         for(int i =0; i<50; i++)
         {
-            items.add(new Item(canalIcon, newPicture, "Vazgen.com", 777, 100747, "In the Democratic contest, Hillary Clinton beat Vermont Senator Bernie Sanders in a tight race in Nevada.", News.STATUS_NOT_ADDED));
-            items.add(new Item(canalIcon, newPicture, "UkraineNews", 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", News.STATUS_NOT_ADDED));
-            items.add(new Item(canalIcon, newPicture, "NightAmerica", 100, 351237, "Donald Trump has won the South Carolina primary in the Republican race for president.",News.STATUS_WAS_ADDED));
-            items.add(new Item(canalIcon, newPicture, "UkraineNews", 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", News.STATUS_NOT_ADDED));
+            items.add(new Item(canalIcon, newPicture, "Vazgen.com", false, 777, 100747, "In the Democratic contest, Hillary Clinton beat Vermont Senator Bernie Sanders in a tight race in Nevada.", Constants.STATUS_NOT_ADDED));
+            items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
+            items.add(new Item(canalIcon, newPicture, "NightAmerica",false, 100, 351237, "Donald Trump has won the South Carolina primary in the Republican race for president.", Constants.STATUS_WAS_ADDED));
+            items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
         }
 
     }
@@ -51,16 +51,18 @@ public abstract class NewsListFragment extends ListFragment {
         public final Bitmap canalImage;
         public final Bitmap newsImage;
         public final String canalTitle;
+        public final boolean isLiked;
         public final int likeCount;
         public final long millisecondsDuring;
         public final String description;
         public final int status;
 
 
-        public Item(Bitmap canalImage, Bitmap newsImage, String canalTitle, int likeCount, long millisecondsDuring, String description, int status) {
+        public Item(Bitmap canalImage, Bitmap newsImage, String canalTitle,boolean isLiked, int likeCount, long millisecondsDuring, String description, int status) {
             this.canalImage = canalImage;
             this.newsImage = newsImage;
             this.canalTitle = canalTitle;
+            this.isLiked = isLiked;
             this.likeCount = likeCount;
             this.millisecondsDuring = millisecondsDuring;
             this.description = description;
@@ -73,16 +75,18 @@ public abstract class NewsListFragment extends ListFragment {
         public final ImageView canalImage;
         public final ImageView newsImage;
         public final TextView canalTitle;
+        public final ImageView likeView;
         public final TextView likeCount;
         public final TextView time;
         public final TextView description;
         public final ImageButton statusButton;
 
 
-        public ViewHolder(ImageView canalImage, ImageView newsImage, TextView canalTitle, TextView likeCount, TextView time, TextView description, ImageButton statusButton, RelativeLayout newsFeed) {
+        public ViewHolder(ImageView canalImage, ImageView newsImage, TextView canalTitle, ImageView likeView, TextView likeCount, TextView time, TextView description, ImageButton statusButton, RelativeLayout newsFeed) {
             this.canalImage = canalImage;
             this.newsImage = newsImage;
             this.canalTitle = canalTitle;
+            this.likeView = likeView;
             this.likeCount = likeCount;
             this.time = time;
             this.description = description;
@@ -96,6 +100,7 @@ public abstract class NewsListFragment extends ListFragment {
         ImageView canalImage ;
         ImageView newsImage;
         TextView canalTitle ;
+        ImageView likeView;
         TextView likeCount ;
         TextView time ;
         TextView description ;
@@ -115,11 +120,12 @@ public abstract class NewsListFragment extends ListFragment {
                 canalImage = (ImageView) view.findViewById(R.id.canal_icon_ImageVew);
                  newsImage = (ImageView) view.findViewById(R.id.news_picture_imageView);
                 canalTitle = (TextView) view.findViewById(R.id.canal_title_TextView);
+                likeView = (ImageView)view.findViewById(R.id.like_ImageView);
                likeCount = (TextView) view.findViewById(R.id.like_count_TextView);
-                time = (TextView) view.findViewById(R.id.date_TextView);
+                time = (TextView) view.findViewById(R.id.news_date_TextView);
                  description = (TextView) view.findViewById(R.id.news_description_textView);
                  statusButton = (ImageButton)view.findViewById(R.id.news_status_ImageButton);
-                view.setTag(new ViewHolder(canalImage, newsImage, canalTitle, likeCount, time, description, statusButton, newsFeed));
+                view.setTag(new ViewHolder(canalImage, newsImage, canalTitle,likeView, likeCount, time, description, statusButton, newsFeed));
             }
             if (holder == null && view != null) {
                 Object tag = view.getTag();
@@ -131,20 +137,25 @@ public abstract class NewsListFragment extends ListFragment {
             if (item != null && holder != null) {
         //       holder.canalImage.setImageBitmap(item.canalImage);
           //      holder.newsImage.setImageBitmap(item.newsImage);
+                int textColor = getTextColor();
                 holder.canalTitle.setText(item.canalTitle);
                 holder.likeCount.setText("" + item.likeCount);
+                holder.canalTitle.setTextColor(getTextColor());
              //   holder.time.setText(""+item.millisecondsDuring);
+                holder.time.setTextColor(textColor);
                 holder.description.setText(item.description);
+                holder.description.setTextColor(textColor);
                 holder.newsFeed.setTag(position);
-               holder.newsFeed.setOnClickListener(new View.OnClickListener() {
-                   @Override
-                   public void onClick(View v) {
-                       startActivity(new Intent(getContext(), MediaPlayerFragmentActivity.class));
+                holder.newsFeed.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(getContext(), MediaPlayerFragmentActivity.class));
 
-                       Log.d(TAG, "List_item onCLick" + " " + (v.getTag()));
+                        Log.d(TAG, "List_item onCLick" + " " + (v.getTag()));
                    }
-               });
+                });
                 holder.statusButton.setTag(position);
+                setLikeView(holder.likeCount, holder.likeView, item.isLiked);
                setStatusImageButton(holder.statusButton, item.status);
               //  getTime(item.millisecondsDuring)
             }
@@ -220,7 +231,7 @@ public abstract class NewsListFragment extends ListFragment {
         return finalTimerString;
     }
 
-  public  abstract void setStatusImageButton(ImageButton statusImageButton,final int newsStatus);
+  abstract void setStatusImageButton(ImageButton statusImageButton,final int newsStatus);
 
 
     @Override
@@ -240,4 +251,6 @@ public abstract class NewsListFragment extends ListFragment {
         tv.setText(getEmpty());
     }
     abstract String getEmpty();
+    abstract int  getTextColor();
+    abstract void setLikeView(TextView likeTextView, ImageView likeImageView, boolean isLiked);
 }

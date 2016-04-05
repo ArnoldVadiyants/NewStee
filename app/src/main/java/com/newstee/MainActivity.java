@@ -18,6 +18,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.newstee.model.data.Author;
+
+import java.io.IOException;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainActivity extends AppCompatActivity {
     private final  int[] tabIcons = {
             R.drawable.tab_image_thread,
@@ -37,7 +49,13 @@ private View mediaPlayer;
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
+    private String BASE_URL = "http://213.231.4.68/music-web/app/php/android/";
+    private Gson gson = new GsonBuilder().create();
+    private Retrofit retrofit = new Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .baseUrl(BASE_URL)
+            .build();
+    private NewsTeeInterface newsTeeInterface = retrofit.create(NewsTeeInterface.class);
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -97,6 +115,27 @@ private View mediaPlayer;
                         .setAction("Action", null).show();
             }
         });*/
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Call<List<Author>> call = newsTeeInterface.getAuthors();
+                try {
+                    Response<List<Author>> response = call.execute();
+                    List<Author> authors = response.body();
+                    for(Author author : authors)
+                    {
+                        System.out.println("*************");
+                        System.out.println("Id " + author.getId() + "name "+ author.getAuthorName() + "avatar " + author.getAvatar() + "subs" + author.getQuantitySubs() );
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
+
+
 
     }
     public void showCanalDeatails() {

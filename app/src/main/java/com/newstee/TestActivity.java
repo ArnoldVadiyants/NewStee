@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 
-import helper.SQLiteHandler;
-import helper.SessionManager;
+import com.newstee.helper.SQLiteHandler;
+import com.newstee.helper.SessionManager;
 
 public class TestActivity extends Activity {
 

@@ -42,7 +42,7 @@
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
                  android:layout_gravity="center_vertical"
-            ></include>
+                 android:layout_marginLeft="@dimen/outer_margin_big"></include>
         <ImageButton
             android:layout_width="@dimen/icon_size_small"
             android:layout_height="@dimen/icon_size_small"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -40,60 +41,70 @@
 
                 />
         </LinearLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_marginBottom="@dimen/outer_margin_medium"
-            android:layout_marginTop="@dimen/outer_margin_medium"
-            android:layout_marginLeft="@dimen/outer_margin_big"
-            android:layout_marginRight="@dimen/outer_margin_big"
-            >
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/profile_imageView"
-                android:background="@android:color/transparent"
-                android:src="@drawable/profile_back"
-                android:scaleType="fitXY"/>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:id="@+id/profile_background_imageView"
+        android:background="@android:color/transparent"
+        android:src="@drawable/test_canal_icon"
+        android:scaleType="centerCrop"
+        android:alpha="0.5"
+        android:layout_marginLeft="@dimen/outer_margin_big"
+        android:layout_marginRight="@dimen/outer_margin_big"
+        android:layout_marginTop="@dimen/outer_margin_medium"
+        />
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true">
+    <ImageView
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:id="@+id/profile_avatar_imageView"
+        android:layout_gravity="center"
+        tools:src="@drawable/profile_image"
+        android:scaleType="fitXY"
+        android:layout_marginTop="-56dp"
+        android:background="@drawable/circle_button"
+        android:cropToPadding="false"
+        />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="@string/name"
-                    android:id="@+id/profile_name_TextView"
-                    android:textColor="@android:color/black"
-                    android:textAllCaps="true"
-                    android:layout_weight="1"/>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        >
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="@string/surname"
-                    android:id="@+id/profile_surname_TextView"
-                    android:textColor="@android:color/black"
-                    android:textAllCaps="true"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="@dimen/outer_margin"/>
-            </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/name"
+            android:id="@+id/profile_name_TextView"
+            android:textColor="@color/colorPrimary"
+            android:textAllCaps="true"
+            android:layout_weight="1"/>
 
-        </RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/surname"
+            android:id="@+id/profile_surname_TextView"
+            android:textColor="@color/colorPrimary"
+            android:textAllCaps="true"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/outer_margin"/>
+    </LinearLayout>
 
-        <LinearLayout
+    <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/outer_margin_big"
-            android:layout_marginRight="@dimen/outer_margin_big">
+            android:layout_marginRight="@dimen/outer_margin_big"
+            android:layout_marginTop="@dimen/outer_margin">
 
             <LinearLayout
                 android:orientation="vertical"

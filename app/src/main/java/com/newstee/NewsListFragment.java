@@ -180,8 +180,9 @@ public abstract class NewsListFragment extends ListFragment {
 
 
     public Bitmap getRoundedShape(Bitmap scaleBitmapImage) {
-        int targetWidth = 50;
-        int targetHeight = 50;
+
+        int targetHeight= scaleBitmapImage.getHeight();
+        int targetWidth =  scaleBitmapImage.getWidth();
         Bitmap targetBitmap = Bitmap.createBitmap(targetWidth,
                 targetHeight, Bitmap.Config.ARGB_8888);
 

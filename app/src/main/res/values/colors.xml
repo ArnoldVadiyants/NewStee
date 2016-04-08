@@ -20,6 +20,6 @@
     <color name="lbl_name">#333333</color>
     <color name="btn_logut_bg">#ff6861</color>
     <color name ="car_mode_back_color">#121A1C</color>
-    <color name = "edit_profile_header">#00FFFF</color>
+    <color name = "edit_profile_header">#00B2FF</color>
 
 </resources>

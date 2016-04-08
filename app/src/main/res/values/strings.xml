@@ -3,12 +3,14 @@
     <string name="action_settings">Настройки</string>
     <string name="tab_profile">Мой профиль</string>
     <string name="catalog">Каталог</string>
-    <string name="tab_stream">Поток</string>
+    <string name="likes">Нравится</string>
+    <string name="edit_profile">Редактировать профиль</string>
     <string name="edit_profile_common">Общее</string>
     <string name="edit_profile_avatar_user">Фото профиля</string>
     <string name="edit_profile_avatar_background">Фото обложки</string>
     <string name="edit_profile_name">Имя</string>
-    <string name="likes">Нравится</string>
+    <string name="edit_profile_save">Сохранить</string>
+    <string name="tab_stream">Поток</string>
     <string name="tab_play_list">Мой плейлист</string>
     <string name="tab_player">Проигрыватель</string>
     <string name="tab_category">Категории</string>

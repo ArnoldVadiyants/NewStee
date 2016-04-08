@@ -1,5 +1,11 @@
 package com.newstee;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -10,27 +16,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.newstee.utils.CircleTransform;
 
 /**
  * Created by Arnold on 17.02.2016.
  */
 public class ProfileFragment extends Fragment {
     private Button editButton;
-    TextView publish_titleTextView;
-    TextView article_titleTextView;
-    TextView mixes_titleTextView;
-    RelativeLayout publish_relative;
-    RelativeLayout article_relative;
-    RelativeLayout mixes_relative;
-    ImageView publish_icon;
-    ImageView article_icon;
-    ImageView mixes_icon;
-    ImageButton filter_button;
+
+    ImageView backgroundImgView;
+    ImageView avatarImgView;
+
   private ProfilePagerAdapter mProfilePagerAdapter;
 
     @Override
@@ -54,10 +54,17 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        avatarImgView = (ImageView)rootView.findViewById(R.id.profile_avatar_imageView);
+        BitmapFactory.Options o=new BitmapFactory.Options();
+        o.inSampleSize = 4;
+        o.inDither=false;                     //Disable Dithering mode
+        o.inPurgeable=true;
+        avatarImgView.setImageBitmap(new CircleTransform().transform(BitmapFactory.decodeResource(getResources(),R.drawable.avatar_test,o)));
         editButton = (Button)rootView.findViewById(R.id.profile_edit_btn);
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getActivity().startActivity(new Intent(getContext(), EditProfileActivity.class));
                 Toast.makeText(getActivity(), "edit profile clicked", Toast.LENGTH_SHORT).show();
             }
         });
@@ -91,6 +98,58 @@ public class ProfileFragment extends Fragment {
 */
         return rootView;
     }
+    public Bitmap getRoundedShape(Bitmap source) {
+        int size = Math.min(source.getWidth(), source.getHeight());
+
+     int   x = (source.getWidth() - size) / 2;
+      int  y = (source.getHeight() - size) / 2;
+
+        Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
+        if (squaredBitmap != source) {
+            source.recycle();
+        }
+
+        Bitmap.Config config = source.getConfig() != null ? source.getConfig() : Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = Bitmap.createBitmap(size, size, config);
+
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        BitmapShader shader = new BitmapShader(squaredBitmap, BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
+        paint.setShader(shader);
+        paint.setAntiAlias(true);
+
+        float r = size/2f;
+        canvas.drawCircle(r, r, r, paint);
+
+        squaredBitmap.recycle();
+        return bitmap;
+    }
+
+
+    /*
+      int targetHeight= source.getHeight();
+        int targetWidth =  source.getWidth();
+        Bitmap targetBitmap = Bitmap.createBitmap(targetWidth,
+                targetHeight, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(targetBitmap);
+        Path path = new Path();
+        path.addCircle(((float) targetWidth - 1) / 2,
+                ((float) targetHeight - 1) / 2,
+                (Math.min(((float) targetWidth),
+                        ((float) targetHeight)) / 2),
+                Path.Direction.CCW);
+
+        canvas.clipPath(path);
+        Bitmap sourceBitmap = source;
+
+
+        canvas.drawBitmap(sourceBitmap,
+                new Rect(0, 0, sourceBitmap.getWidth(),
+                        sourceBitmap.getHeight()),
+                new Rect(0, 0, targetWidth, targetHeight), null);
+        return targetBitmap;
+    }*/
 public class ProfilePagerAdapter extends FragmentPagerAdapter {
 
     public ProfilePagerAdapter(FragmentManager fm) {

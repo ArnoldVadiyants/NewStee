@@ -1,11 +1,13 @@
 package com.newstee;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -15,16 +17,45 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.newstee.model.data.News;
+import com.newstee.model.data.NewsLab;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class NewsListFragment extends ListFragment {
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+public abstract class NewsListFragment extends ListFragment  {
+    public  final static String AUDIO_ID = "audio_id";
+    static ImageLoader imageLoader= ImageLoader.getInstance();
+    static DisplayImageOptions loaderOptions =  new DisplayImageOptions.Builder()
+            .showImageOnLoading(R.drawable.loading_animation)
+            .cacheInMemory(true)
+            .cacheOnDisk(true)
+            .build();
     private final static String TAG = "NewsListFragment";
     private  final List<Item> items = new ArrayList<Item>();
+    ItemAdapter adapter;
+     Thread threadA;
+    ProgressDialog mProgressDialog;
+    private  String BASE_URL = "http://213.231.4.68/audiotest/";
+    private Gson gson = new GsonBuilder().create();
+    private Retrofit retrofit = new Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .baseUrl(BASE_URL)
+            .build();
+    private NewsTeeInterface newsTeeInterface = retrofit.create(NewsTeeInterface.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,31 +65,136 @@ public abstract class NewsListFragment extends ListFragment {
                 //getRoundedShape();
    //     Bitmap newPicture  = BitmapFactory.decodeResource(getActivity().getResources(),
       //          R.drawable.test_picture);
-        Bitmap canalIcon = Bitmap.createBitmap(100,100, Bitmap.Config.ARGB_8888);
-        Bitmap newPicture = Bitmap.createBitmap(100,100, Bitmap.Config.ARGB_8888);
-       items.add(new Item(canalIcon, newPicture, "UkraineNews", false, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_IS_PLAYING));
-        for(int i =0; i<50; i++)
-        {
-            items.add(new Item(canalIcon, newPicture, "Vazgen.com", false, 777, 100747, "In the Democratic contest, Hillary Clinton beat Vermont Senator Bernie Sanders in a tight race in Nevada.", Constants.STATUS_NOT_ADDED));
-            items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
-            items.add(new Item(canalIcon, newPicture, "NightAmerica",false, 100, 351237, "Donald Trump has won the South Carolina primary in the Republican race for president.", Constants.STATUS_WAS_ADDED));
-            items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
+        final Bitmap canalIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        final Bitmap newPicture = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setMessage("Loading...");
+      //  mProgressDialog.show();
+        MyAsyncTask myAsyncTask = new MyAsyncTask();
+        myAsyncTask.execute();
+     /* threadA  = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Call<NewsLab> call = newsTeeInterface.newsLab();
+                try {
+                    Response<NewsLab> response = call.execute();
+                    List<News> news = response.body().getNews();
+                   for(int i =0; i<50; i++)
+                    {
+                        for(News n: news)
+                        {
+                            final Bitmap[] newsAvatar = new Bitmap[1];
+
+                            items.add(new Item(canalIcon,n.getAvatar() , "Vazgen.com", false, 777, 100747, n.getTitle(), Constants.STATUS_NOT_ADDED));
+
+                            System.out.println("*************");
+                            System.out.println("Id " + n.getId() +"avatar "+ n.getAvatar());
+                        }
+                  *//*      items.add(new Item(canalIcon, newPicture, "Vazgen.com", false, 777, 100747, "In the Democratic contest, Hillary Clinton beat Vermont Senator Bernie Sanders in a tight race in Nevada.", Constants.STATUS_NOT_ADDED));
+                        items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
+                        items.add(new Item(canalIcon, newPicture, "NightAmerica",false, 100, 351237, "Donald Trump has won the South Carolina primary in the Republican race for president.", Constants.STATUS_WAS_ADDED));
+                        items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
+                *//*    }
+              //      mProgressDialog.dismiss();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        threadA.start();*/
+
+
+
+
+    }
+    class MyAsyncTask extends AsyncTask<String,Integer, NewsLab>
+
+    {
+        ProgressDialog pDialog;
+
+
+        @Override
+        protected NewsLab doInBackground(String... params) {
+            final Bitmap canalIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+            Call<NewsLab> call = newsTeeInterface.newsLab();
+            NewsLab newsLab = new NewsLab();
+            try {
+                Response<NewsLab> response = call.execute();
+                newsLab = response.body();
+                List<News> news = newsLab.getNews();
+                for(int i =0; i<50; i++)
+                {
+                    for(News n: news)
+                    {
+                        final Bitmap[] newsAvatar = new Bitmap[1];
+                        int likeCount = 0;
+                        try
+                        {
+                            likeCount = Integer.parseInt((n.getLikeCount().trim()));
+                        }
+                        catch (NumberFormatException nfe)
+                        {
+                        }
+
+                        items.add(new Item(canalIcon,n.getAvatar() , "Vazgen.com", false, likeCount, 100747, n.getTitle(), Constants.STATUS_NOT_ADDED, n.getAudioIds()));
+
+                        System.out.println("*************");
+                        System.out.println("Id " + n.getId() +"avatar "+ n.getAvatar());
+                    }
+                  /*      items.add(new Item(canalIcon, newPicture, "Vazgen.com", false, 777, 100747, "In the Democratic contest, Hillary Clinton beat Vermont Senator Bernie Sanders in a tight race in Nevada.", Constants.STATUS_NOT_ADDED));
+                        items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
+                        items.add(new Item(canalIcon, newPicture, "NightAmerica",false, 100, 351237, "Donald Trump has won the South Carolina primary in the Republican race for president.", Constants.STATUS_WAS_ADDED));
+                        items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
+                */    }
+                //      mProgressDialog.dismiss();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+
+            return newsLab;
         }
 
+        @Override
+        protected void onPreExecute() {
+            // Showing progress dialog before sending http request
+            pDialog = new ProgressDialog(getActivity());
+            pDialog.setMessage("Please wait..");
+            pDialog.setIndeterminate(true);
+            pDialog.setCancelable(false);
+            pDialog.show();        }
+
+        @Override
+        protected void onPostExecute(NewsLab newsLab) {
+            super.onPostExecute(newsLab);
+            pDialog.dismiss();
+            if(adapter!=null)
+            {
+                adapter.notifyDataSetChanged();
+            }
+
+        }
     }
 
     private  class Item {
         public final Bitmap canalImage;
-        public final Bitmap newsImage;
+        public final String newsImage;
         public final String canalTitle;
         public final boolean isLiked;
         public final int likeCount;
         public final long millisecondsDuring;
         public final String description;
         public final int status;
+        public final String audioId;
 
 
-        public Item(Bitmap canalImage, Bitmap newsImage, String canalTitle,boolean isLiked, int likeCount, long millisecondsDuring, String description, int status) {
+        public Item(Bitmap canalImage, String newsImage, String canalTitle,boolean isLiked, int likeCount, long millisecondsDuring, String description, int status, String audioId) {
             this.canalImage = canalImage;
             this.newsImage = newsImage;
             this.canalTitle = canalTitle;
@@ -67,6 +203,7 @@ public abstract class NewsListFragment extends ListFragment {
             this.millisecondsDuring = millisecondsDuring;
             this.description = description;
             this.status = status;
+            this.audioId = audioId;
         }
     }
 
@@ -133,8 +270,12 @@ public abstract class NewsListFragment extends ListFragment {
                     holder = (ViewHolder) tag;
                 }
             }
-            Item item = getItem(position);
+            final Item item = getItem(position);
             if (item != null && holder != null) {
+                imageLoader.displayImage(item.newsImage,holder.newsImage, loaderOptions);
+           //     Picasso.with(getActivity())
+             //           .load(item.newsImage)
+               //         .into( holder.newsImage);
         //       holder.canalImage.setImageBitmap(item.canalImage);
           //      holder.newsImage.setImageBitmap(item.newsImage);
                 int textColor = getTextColor();
@@ -149,7 +290,9 @@ public abstract class NewsListFragment extends ListFragment {
                 holder.newsFeed.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startActivity(new Intent(getContext(), MediaPlayerFragmentActivity.class));
+                        Intent i = new  Intent(getContext(), MediaPlayerFragmentActivity.class);
+                        i.putExtra(AUDIO_ID, item.audioId);
+                        startActivity(i);
 
                         Log.d(TAG, "List_item onCLick" + " " + (v.getTag()));
                    }
@@ -245,8 +388,11 @@ public abstract class NewsListFragment extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ListAdapter adapter = new ItemAdapter(getActivity());
+
+
+        adapter = new ItemAdapter(getActivity());
         setListAdapter(adapter);
+
         TextView tv = (TextView)getListView().getEmptyView();
         //    TextView tv = (TextView)view.findViewById(R.id.empty);
         tv.setText(getEmpty());

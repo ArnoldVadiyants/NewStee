@@ -15,27 +15,27 @@ public class News {
     @SerializedName("id")
     @Expose
     private String id;
-    @SerializedName("idauthor")
-    @Expose
-    private String idauthor;
-    @SerializedName("idtags")
-    @Expose
-    private String idtags;
-    @SerializedName("linksong")
-    @Expose
-    private String linksong;
-    @SerializedName("likes")
-    @Expose
-    private String likes;
-    @SerializedName("addition_time")
-    @Expose
-    private String additionTime;
-    @SerializedName("picture_news")
-    @Expose
-    private String pictureNews;
     @SerializedName("title")
     @Expose
     private String title;
+    @SerializedName("content")
+    @Expose
+    private String content;
+    @SerializedName("tag_ids")
+    @Expose
+    private String tagIds;
+    @SerializedName("audio_ids")
+    @Expose
+    private String audioIds;
+    @SerializedName("avatar")
+    @Expose
+    private String avatar;
+    @SerializedName("like_count")
+    @Expose
+    private String likeCount;
+    @SerializedName("author_id")
+    @Expose
+    private String authorId;
 
     /**
      *
@@ -58,114 +58,6 @@ public class News {
     /**
      *
      * @return
-     * The idauthor
-     */
-    public String getIdauthor() {
-        return idauthor;
-    }
-
-    /**
-     *
-     * @param idauthor
-     * The idauthor
-     */
-    public void setIdauthor(String idauthor) {
-        this.idauthor = idauthor;
-    }
-
-    /**
-     *
-     * @return
-     * The idtags
-     */
-    public String getIdtags() {
-        return idtags;
-    }
-
-    /**
-     *
-     * @param idtags
-     * The idtags
-     */
-    public void setIdtags(String idtags) {
-        this.idtags = idtags;
-    }
-
-    /**
-     *
-     * @return
-     * The linksong
-     */
-    public String getLinksong() {
-        return linksong;
-    }
-
-    /**
-     *
-     * @param linksong
-     * The linksong
-     */
-    public void setLinksong(String linksong) {
-        this.linksong = linksong;
-    }
-
-    /**
-     *
-     * @return
-     * The likes
-     */
-    public String getLikes() {
-        return likes;
-    }
-
-    /**
-     *
-     * @param likes
-     * The likes
-     */
-    public void setLikes(String likes) {
-        this.likes = likes;
-    }
-
-    /**
-     *
-     * @return
-     * The additionTime
-     */
-    public String getAdditionTime() {
-        return additionTime;
-    }
-
-    /**
-     *
-     * @param additionTime
-     * The addition_time
-     */
-    public void setAdditionTime(String additionTime) {
-        this.additionTime = additionTime;
-    }
-
-    /**
-     *
-     * @return
-     * The pictureNews
-     */
-    public String getPictureNews() {
-        return pictureNews;
-    }
-
-    /**
-     *
-     * @param pictureNews
-     * The picture_news
-     */
-    public void setPictureNews(String pictureNews) {
-        this.pictureNews = pictureNews;
-    }
-
-    /**
-     *
-     * @return
      * The title
      */
     public String getTitle() {
@@ -179,6 +71,114 @@ public class News {
      */
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    /**
+     *
+     * @return
+     * The content
+     */
+    public String getContent() {
+        return content;
+    }
+
+    /**
+     *
+     * @param content
+     * The content
+     */
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    /**
+     *
+     * @return
+     * The tagIds
+     */
+    public String getTagIds() {
+        return tagIds;
+    }
+
+    /**
+     *
+     * @param tagIds
+     * The tag_ids
+     */
+    public void setTagIds(String tagIds) {
+        this.tagIds = tagIds;
+    }
+
+    /**
+     *
+     * @return
+     * The audioIds
+     */
+    public String getAudioIds() {
+        return audioIds;
+    }
+
+    /**
+     *
+     * @param audioIds
+     * The audio_ids
+     */
+    public void setAudioIds(String audioIds) {
+        this.audioIds = audioIds;
+    }
+
+    /**
+     *
+     * @return
+     * The avatar
+     */
+    public String getAvatar() {
+        return avatar;
+    }
+
+    /**
+     *
+     * @param avatar
+     * The avatar
+     */
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    /**
+     *
+     * @return
+     * The likeCount
+     */
+    public String getLikeCount() {
+        return likeCount;
+    }
+
+    /**
+     *
+     * @param likeCount
+     * The like_count
+     */
+    public void setLikeCount(String likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    /**
+     *
+     * @return
+     * The authorId
+     */
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    /**
+     *
+     * @param authorId
+     * The author_id
+     */
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
     }
 
 }

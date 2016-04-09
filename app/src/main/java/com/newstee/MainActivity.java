@@ -20,13 +20,14 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.newstee.model.data.Author;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 
-import java.io.IOException;
-import java.util.List;
+import java.io.File;
 
-import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -115,7 +116,7 @@ private View mediaPlayer;
                         .setAction("Action", null).show();
             }
         });*/
-        new Thread(new Runnable() {
+      /*  new Thread(new Runnable() {
             @Override
             public void run() {
                 Call<List<Author>> call = newsTeeInterface.getAuthors();
@@ -132,8 +133,19 @@ private View mediaPlayer;
                 }
             }
         }).start();
-
-
+*/
+        ImageLoader imageLoader = ImageLoader.getInstance();
+        File cacheDir = StorageUtils.getCacheDirectory(getApplicationContext());
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+                .diskCacheExtraOptions(480, 800, null)
+                .denyCacheImageMultipleSizesInMemory()
+                .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+                .memoryCacheSize(2 * 1024 * 1024)
+                .diskCache(new UnlimitedDiskCache(cacheDir))
+                .diskCacheSize(100 * 1024 * 1024)
+                .writeDebugLogs()
+                .build();
+        imageLoader.init(config);
 
 
 

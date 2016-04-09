@@ -163,6 +163,7 @@ public class MusicService extends Service implements
                 currSong);
         //set the data source
         try{
+
             player.setDataSource(getApplicationContext(), trackUri);
         }
         catch(Exception e){

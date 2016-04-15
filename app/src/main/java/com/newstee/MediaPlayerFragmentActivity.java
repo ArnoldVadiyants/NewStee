@@ -6,8 +6,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
 public class MediaPlayerFragmentActivity extends AppCompatActivity {
-	
 
+	public  final static String ARG_AUDIO_ID = "audio_id";
 	
 
 	@Override
@@ -17,7 +17,7 @@ public class MediaPlayerFragmentActivity extends AppCompatActivity {
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
 		if (fragment == null) {
-			fragment = new MediaPlayerFragment();
+			fragment = MediaPlayerFragment.newInstance(getIntent().getStringExtra(ARG_AUDIO_ID));
 			fm.beginTransaction().add(R.id.fragmentContainer, fragment)
 					.commit();
 		}

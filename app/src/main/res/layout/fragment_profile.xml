@@ -47,7 +47,7 @@
         android:layout_height="140dp"
         android:id="@+id/profile_background_imageView"
         android:background="@android:color/transparent"
-        android:src="@drawable/test_canal_icon"
+        android:src="@drawable/avatar_test"
         android:scaleType="centerCrop"
         android:alpha="0.5"
         android:layout_marginLeft="@dimen/outer_margin_big"

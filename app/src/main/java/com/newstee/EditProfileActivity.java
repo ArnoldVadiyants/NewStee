@@ -31,7 +31,7 @@ ImageView avatarImgView;
         o.inPurgeable=true;
         avatarImgView.setImageBitmap(new CircleTransform().transform(BitmapFactory.decodeResource(getResources(), R.drawable.avatar_test, o)));;
         backgroundImgView =(ImageView)findViewById(R.id.edit_profile_back_imgView);
-      backgroundImgView.setImageResource(R.drawable.profile_back2);
+      backgroundImgView.setImageResource(R.drawable.avatar_test);
 
     }
     @Override

@@ -1,5 +1,8 @@
 package com.newstee.model.data;
 
+/**
+ * Created by Arnold on 12.04.2016.
+ */
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -11,15 +14,15 @@ public class Author {
     @SerializedName("id")
     @Expose
     private String id;
-    @SerializedName("author_name")
+    @SerializedName("name")
     @Expose
-    private String authorName;
+    private String name;
     @SerializedName("avatar")
     @Expose
     private String avatar;
-    @SerializedName("quantity_subs")
+    @SerializedName("sub_count")
     @Expose
-    private String quantitySubs;
+    private String subCount;
 
     /**
      *
@@ -42,19 +45,19 @@ public class Author {
     /**
      *
      * @return
-     * The authorName
+     * The name
      */
-    public String getAuthorName() {
-        return authorName;
+    public String getName() {
+        return name;
     }
 
     /**
      *
-     * @param authorName
-     * The author_name
+     * @param name
+     * The name
      */
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -78,19 +81,22 @@ public class Author {
     /**
      *
      * @return
-     * The quantitySubs
+     * The subCount
      */
-    public String getQuantitySubs() {
-        return quantitySubs;
+    public String getSubCount() {
+        return subCount;
     }
 
     /**
      *
-     * @param quantitySubs
-     * The quantity_subs
+     * @param subCount
+     * The sub_count
      */
-    public void setQuantitySubs(String quantitySubs) {
-        this.quantitySubs = quantitySubs;
+    public void setSubCount(String subCount) {
+        this.subCount = subCount;
     }
 
 }
+
+
+

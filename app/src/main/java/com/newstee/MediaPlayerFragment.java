@@ -224,7 +224,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
             //pass catalogue
             musicSrv.setList(songList);
             musicBound = true;
-            playSong(0);
+            playSong(getArguments().getString(MediaPlayerFragmentActivity.ARG_AUDIO_ID));
 
         }
 
@@ -312,13 +312,13 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         });
     }
 
-    public void  playSong(int songIndex){
+    public void  playSong(String audioId){
         // Play song
-        musicSrv.setSong(songIndex);
+        musicSrv.setSong(audioId);
         musicSrv.playSong();
             // Displaying Song title
-            String songTitle = songList.get(songIndex).getTitle();
-            songTitleLabel.setText(songTitle);
+      //      String songTitle = songList.get(songIndex).getTitle();
+    //        songTitleLabel.setText(songTitle);
         btnPlay.setImageResource(android.R.drawable.ic_media_pause);
             // Changing Button Image to pause image
 
@@ -479,7 +479,13 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         Log.d(TAG, "******onPause*****");
     }
 
-
+    public static MediaPlayerFragment newInstance(String audioId) {
+        MediaPlayerFragment fragment = new MediaPlayerFragment();
+        Bundle args = new Bundle();
+        args.putString(MediaPlayerFragmentActivity.ARG_AUDIO_ID, audioId);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
 
 

@@ -1,9 +1,4 @@
 package com.newstee.model.data;
-
-/**
- * Created by Arnold on 09.04.2016.
- */
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -24,10 +19,11 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class NewsLab {
+public class AuthorLab {
 
-    private List<News> mNews = new ArrayList<>();
-    private static NewsLab sNewsLab;
+
+    private List<Author> mAuthors = new ArrayList<>();
+    private static AuthorLab sAuthorLab;
     private Context mAppContext;
     private Gson gson = new GsonBuilder().create();
     private Retrofit retrofit = new Retrofit.Builder()
@@ -35,58 +31,59 @@ public class NewsLab {
             .baseUrl(NewsTeeApiInterface.BASE_URL)
             .build();
     private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);
-    private NewsLab(Context appContext) {
+    private AuthorLab(Context appContext) {
         mAppContext = appContext;
-        loadNews();
+        loadAuthors();
     }
 
-    public static NewsLab getInstance(Context context){
-        if (sNewsLab == null) {
-            sNewsLab = new NewsLab(context.getApplicationContext());
+    public static AuthorLab getInstance(Context context){
+        if (sAuthorLab == null) {
+            sAuthorLab = new AuthorLab(context.getApplicationContext());
         }
-        return sNewsLab;
+        return sAuthorLab;
     }
-    public void loadNews()
+    public void loadAuthors()
     {
-        NewsAsyncTask task = new NewsAsyncTask();
-       task.execute();
+       AuthorAsyncTask task = new AuthorAsyncTask();
+        task.execute();
     }
-    public List<News> getNews() {
-        return mNews;
-    }
-    public void setNews(List<News> News) {
-        this.mNews = News;
-    }
-    public News getNewsItem(String id) {
-        for (News n : mNews) {
-            if (n.getId().equals(id)) {
-                return n;
+    public Author getAuthor(String id) {
+        for (Author a : mAuthors) {
+            if (a.getId().equals(id)) {
+                return a;
             }
         }
         return null;
     }
+    public List<Author> getAuthors() {
+        return mAuthors;
+    }
+    public void setAuthors(List<Author> authors) {
+        this.mAuthors = authors;
+    }
 
-    private  class NewsAsyncTask extends AsyncTask<String,Integer, DataNews>
+
+    private  class AuthorAsyncTask extends AsyncTask<String,Integer, DataAuthor>
 
     {
         ProgressDialog pDialog;
 
 
         @Override
-        protected DataNews doInBackground(String... params) {
+        protected DataAuthor doInBackground(String... params) {
 
-            Call<DataNews> call = newsTeeApiInterface.getNews();
-            DataNews dataNews = new DataNews();
+            Call<DataAuthor> call = newsTeeApiInterface.getAuthors();
+            DataAuthor dataAuthor = new DataAuthor();
             try {
-                Response<DataNews> response = call.execute();
-                dataNews = response.body();
-                mNews = dataNews.getNews();
+                Response<DataAuthor> response = call.execute();
+                dataAuthor = response.body();
+                mAuthors = dataAuthor.getData();
                
             /*    if(songId.equals("3") )
                 {
                     songId = "2";
                 }
-                for(News a : News)
+                for(Author a : Author)
                 {
                     if(a.getId().equals(songId))
                     {
@@ -98,7 +95,7 @@ public class NewsLab {
                 e.printStackTrace();
             }
 
-            return dataNews;
+            return dataAuthor;
         }
 
         @Override
@@ -106,19 +103,19 @@ public class NewsLab {
             //     player.reset();
             // Showing progress dialog before sending http request
             pDialog = new ProgressDialog(mAppContext);
-            pDialog.setMessage(mAppContext.getString(R.string.loadingNews));
+            pDialog.setMessage(mAppContext.getString(R.string.loadingAuthor));
             pDialog.setIndeterminate(true);
             pDialog.setCancelable(false);
             pDialog.show();       }
 
         @Override
-        protected void onPostExecute( DataNews dataNews) {
-            super.onPostExecute(dataNews);
-            Toast toast = Toast.makeText(mAppContext, dataNews.getResult(), Toast.LENGTH_SHORT);
+        protected void onPostExecute( DataAuthor dataAuthor) {
+            super.onPostExecute(dataAuthor);
+            Toast toast = Toast.makeText(mAppContext, dataAuthor.getResult(), Toast.LENGTH_SHORT);
             //      pDialog.dismiss();
             //  Uri trackUri =Uri.parse(songUrl);
        /*         ContentUris.withAppendedId(
-                android.provider.MediaStore.News.Media.EXTERNAL_CONTENT_URI,
+                android.provider.MediaStore.Author.Media.EXTERNAL_CONTENT_URI,
                 currSong);*/
             //set the data source
       /*      try{
@@ -136,4 +133,5 @@ public class NewsLab {
 
         }
     }
+
 }

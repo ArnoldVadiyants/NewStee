@@ -15,9 +15,9 @@ public class Tag {
     @SerializedName("id")
     @Expose
     private String id;
-    @SerializedName("name_tag")
+    @SerializedName("name")
     @Expose
-    private String nameTag;
+    private String name;
 
     /**
      *
@@ -43,7 +43,7 @@ public class Tag {
      * The nameTag
      */
     public String getNameTag() {
-        return nameTag;
+        return name;
     }
 
     /**
@@ -51,8 +51,9 @@ public class Tag {
      * @param nameTag
      * The name_tag
      */
-    public void setNameTag(String nameTag) {
-        this.nameTag = nameTag;
+    public void setNameTag(String name) {
+        this.name = name;
     }
 
 }
+

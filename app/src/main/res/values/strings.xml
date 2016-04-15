@@ -37,6 +37,10 @@
     <string name="sign_in">Вход</string>
     <string name="resume_without_registr">Продолжить без регистрации</string>
     <string name="privacy_policy">Условия|Политика конфиденциальности</string>
+    <string name="loadingAudio">Загрузка аудиозаписей...</string>
+    <string name="loadingAuthor">Загрузка изданий...</string>
+    <string name="loadingNews">Загрузка новостей...</string>
+    <string name="loadingTags">Загрузка категорий...</string>
     
 
 

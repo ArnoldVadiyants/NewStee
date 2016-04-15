@@ -1,7 +1,7 @@
 package com.newstee.model.data;
 
 /**
- * Created by Arnold on 09.04.2016.
+ * Created by Arnold on 12.04.2016.
  */
 
 import android.app.ProgressDialog;
@@ -24,10 +24,10 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class NewsLab {
+public class TagLab {
 
-    private List<News> mNews = new ArrayList<>();
-    private static NewsLab sNewsLab;
+    private List<Tag> mTags = new ArrayList<>();
+    private static TagLab sTagLab;
     private Context mAppContext;
     private Gson gson = new GsonBuilder().create();
     private Retrofit retrofit = new Retrofit.Builder()
@@ -35,58 +35,58 @@ public class NewsLab {
             .baseUrl(NewsTeeApiInterface.BASE_URL)
             .build();
     private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);
-    private NewsLab(Context appContext) {
+    private TagLab(Context appContext) {
         mAppContext = appContext;
-        loadNews();
+        loadTags();
     }
 
-    public static NewsLab getInstance(Context context){
-        if (sNewsLab == null) {
-            sNewsLab = new NewsLab(context.getApplicationContext());
+    public static TagLab getInstance(Context context){
+        if (sTagLab == null) {
+            sTagLab = new TagLab(context.getApplicationContext());
         }
-        return sNewsLab;
+        return sTagLab;
     }
-    public void loadNews()
+    public void loadTags()
     {
-        NewsAsyncTask task = new NewsAsyncTask();
-       task.execute();
+TagAsyncTask tagAsyncTask = new TagAsyncTask();
+        tagAsyncTask.execute();
     }
-    public List<News> getNews() {
-        return mNews;
+    public List<Tag> getTags() {
+        return mTags;
     }
-    public void setNews(List<News> News) {
-        this.mNews = News;
+    public void setTags(List<Tag> tags) {
+        this.mTags = tags;
     }
-    public News getNewsItem(String id) {
-        for (News n : mNews) {
-            if (n.getId().equals(id)) {
-                return n;
+    public Tag getTag(String id) {
+        for (Tag t : mTags) {
+            if (t.getId().equals(id)) {
+                return t;
             }
         }
         return null;
     }
 
-    private  class NewsAsyncTask extends AsyncTask<String,Integer, DataNews>
+    private  class TagAsyncTask extends AsyncTask<String,Integer, DataTag>
 
     {
         ProgressDialog pDialog;
 
 
         @Override
-        protected DataNews doInBackground(String... params) {
+        protected DataTag doInBackground(String... params) {
 
-            Call<DataNews> call = newsTeeApiInterface.getNews();
-            DataNews dataNews = new DataNews();
+            Call<DataTag> call = newsTeeApiInterface.getTags();
+            DataTag dataTag = new DataTag();
             try {
-                Response<DataNews> response = call.execute();
-                dataNews = response.body();
-                mNews = dataNews.getNews();
+                Response<DataTag> response = call.execute();
+                dataTag = response.body();
+                mTags = dataTag.getData();
                
             /*    if(songId.equals("3") )
                 {
                     songId = "2";
                 }
-                for(News a : News)
+                for(Tag a : Tag)
                 {
                     if(a.getId().equals(songId))
                     {
@@ -98,7 +98,7 @@ public class NewsLab {
                 e.printStackTrace();
             }
 
-            return dataNews;
+            return dataTag;
         }
 
         @Override
@@ -106,19 +106,19 @@ public class NewsLab {
             //     player.reset();
             // Showing progress dialog before sending http request
             pDialog = new ProgressDialog(mAppContext);
-            pDialog.setMessage(mAppContext.getString(R.string.loadingNews));
+            pDialog.setMessage(mAppContext.getString(R.string.loadingTags));
             pDialog.setIndeterminate(true);
             pDialog.setCancelable(false);
             pDialog.show();       }
 
         @Override
-        protected void onPostExecute( DataNews dataNews) {
-            super.onPostExecute(dataNews);
-            Toast toast = Toast.makeText(mAppContext, dataNews.getResult(), Toast.LENGTH_SHORT);
+        protected void onPostExecute( DataTag dataTag) {
+            super.onPostExecute(dataTag);
+            Toast toast = Toast.makeText(mAppContext, dataTag.getResult(), Toast.LENGTH_SHORT);
             //      pDialog.dismiss();
             //  Uri trackUri =Uri.parse(songUrl);
        /*         ContentUris.withAppendedId(
-                android.provider.MediaStore.News.Media.EXTERNAL_CONTENT_URI,
+                android.provider.MediaStore.Tag.Media.EXTERNAL_CONTENT_URI,
                 currSong);*/
             //set the data source
       /*      try{
@@ -137,3 +137,4 @@ public class NewsLab {
         }
     }
 }
+

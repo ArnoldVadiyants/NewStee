@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.newstee.model.data.News;
 import com.newstee.model.data.NewsLab;
+import com.newstee.network.interfaces.NewsTeeApiInterface;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -37,7 +38,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public abstract class NewsListFragment extends ListFragment  {
-    public  final static String AUDIO_ID = "audio_id";
+
     static ImageLoader imageLoader= ImageLoader.getInstance();
     static DisplayImageOptions loaderOptions =  new DisplayImageOptions.Builder()
             .showImageOnLoading(R.drawable.loading_animation)
@@ -55,7 +56,7 @@ public abstract class NewsListFragment extends ListFragment  {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .baseUrl(BASE_URL)
             .build();
-    private NewsTeeInterface newsTeeInterface = retrofit.create(NewsTeeInterface.class);
+    private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public abstract class NewsListFragment extends ListFragment  {
      /* threadA  = new Thread(new Runnable() {
             @Override
             public void run() {
-                Call<NewsLab> call = newsTeeInterface.newsLab();
+                Call<NewsLab> call = newsTeeApiInterface.getNews();
                 try {
                     Response<NewsLab> response = call.execute();
                     List<News> news = response.body().getNews();
@@ -119,7 +120,7 @@ public abstract class NewsListFragment extends ListFragment  {
         @Override
         protected NewsLab doInBackground(String... params) {
             final Bitmap canalIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-            Call<NewsLab> call = newsTeeInterface.newsLab();
+            Call<NewsLab> call = newsTeeApiInterface.getNews();
             NewsLab newsLab = new NewsLab();
             try {
                 Response<NewsLab> response = call.execute();
@@ -291,7 +292,7 @@ public abstract class NewsListFragment extends ListFragment  {
                     @Override
                     public void onClick(View v) {
                         Intent i = new  Intent(getContext(), MediaPlayerFragmentActivity.class);
-                        i.putExtra(AUDIO_ID, item.audioId);
+                        i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.audioId);
                         startActivity(i);
 
                         Log.d(TAG, "List_item onCLick" + " " + (v.getTag()));

@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.newstee.network.interfaces.NewsTeeApiInterface;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -56,7 +57,7 @@ private View mediaPlayer;
             .addConverterFactory(GsonConverterFactory.create(gson))
             .baseUrl(BASE_URL)
             .build();
-    private NewsTeeInterface newsTeeInterface = retrofit.create(NewsTeeInterface.class);
+    private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -119,11 +120,11 @@ private View mediaPlayer;
       /*  new Thread(new Runnable() {
             @Override
             public void run() {
-                Call<List<Author>> call = newsTeeInterface.getAuthors();
+                Call<List<AuthorLab>> call = newsTeeApiInterface.getAuthors();
                 try {
-                    Response<List<Author>> response = call.execute();
-                    List<Author> authors = response.body();
-                    for(Author author : authors)
+                    Response<List<AuthorLab>> response = call.execute();
+                    List<AuthorLab> authors = response.body();
+                    for(AuthorLab author : authors)
                     {
                         System.out.println("*************");
                         System.out.println("Id " + author.getId() + "name "+ author.getAuthorName() + "avatar " + author.getAvatar() + "subs" + author.getQuantitySubs() );
@@ -331,7 +332,7 @@ private View mediaPlayer;
         @Override
         protected void onDestroy() {
             super.onDestroy();
-            stopService(new Intent(this, MusicService.class));
+        //    stopService(new Intent(this, MusicService.class));
 
     }
 

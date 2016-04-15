@@ -1,9 +1,5 @@
 package com.newstee.model.data;
 
-/**
- * Created by Arnold on 09.04.2016.
- */
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -23,11 +19,16 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Created by Arnold on 12.04.2016.
+ */
+public class AudioLab {
 
-public class NewsLab {
 
-    private List<News> mNews = new ArrayList<>();
-    private static NewsLab sNewsLab;
+
+
+    private List<Audio> mAudio = new ArrayList<>();
+    private static AudioLab sAudioLab;
     private Context mAppContext;
     private Gson gson = new GsonBuilder().create();
     private Retrofit retrofit = new Retrofit.Builder()
@@ -35,58 +36,61 @@ public class NewsLab {
             .baseUrl(NewsTeeApiInterface.BASE_URL)
             .build();
     private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);
-    private NewsLab(Context appContext) {
+    private AudioLab(Context appContext) {
         mAppContext = appContext;
-        loadNews();
+        loadAudio();
     }
 
-    public static NewsLab getInstance(Context context){
-        if (sNewsLab == null) {
-            sNewsLab = new NewsLab(context.getApplicationContext());
+    public static AudioLab getInstance(Context context){
+        if (sAudioLab == null) {
+            sAudioLab = new AudioLab(context.getApplicationContext());
         }
-        return sNewsLab;
+        return sAudioLab;
     }
-    public void loadNews()
+    public void loadAudio()
     {
-        NewsAsyncTask task = new NewsAsyncTask();
-       task.execute();
+        AudioAsyncTask task = new AudioAsyncTask();
+        task.execute();
     }
-    public List<News> getNews() {
-        return mNews;
-    }
-    public void setNews(List<News> News) {
-        this.mNews = News;
-    }
-    public News getNewsItem(String id) {
-        for (News n : mNews) {
-            if (n.getId().equals(id)) {
-                return n;
+    public Audio getAudioItem(String id) {
+        for(Audio a : mAudio)
+        {
+            if(a.getId().equals(id))
+            {
+               return a;
             }
         }
         return null;
     }
+    public List<Audio> getAudio() {
+        return mAudio;
+    }
+    public void setAudio(List<Audio> audio) {
+        this.mAudio = audio;
+    }
 
-    private  class NewsAsyncTask extends AsyncTask<String,Integer, DataNews>
+
+    private  class AudioAsyncTask extends AsyncTask<String,Integer, DataAudio>
 
     {
         ProgressDialog pDialog;
 
 
         @Override
-        protected DataNews doInBackground(String... params) {
+        protected DataAudio doInBackground(String... params) {
 
-            Call<DataNews> call = newsTeeApiInterface.getNews();
-            DataNews dataNews = new DataNews();
+            Call<DataAudio> call = newsTeeApiInterface.getAudio();
+            DataAudio dataAudio = new DataAudio();
             try {
-                Response<DataNews> response = call.execute();
-                dataNews = response.body();
-                mNews = dataNews.getNews();
-               
+                Response<DataAudio> response = call.execute();
+               dataAudio = response.body();
+               mAudio = dataAudio.getData();
+
             /*    if(songId.equals("3") )
                 {
                     songId = "2";
                 }
-                for(News a : News)
+                for(Audio a : audio)
                 {
                     if(a.getId().equals(songId))
                     {
@@ -98,27 +102,27 @@ public class NewsLab {
                 e.printStackTrace();
             }
 
-            return dataNews;
+            return dataAudio;
         }
 
         @Override
         protected void onPreExecute() {
-            //     player.reset();
+       //     player.reset();
             // Showing progress dialog before sending http request
             pDialog = new ProgressDialog(mAppContext);
-            pDialog.setMessage(mAppContext.getString(R.string.loadingNews));
+            pDialog.setMessage(mAppContext.getString(R.string.loadingAudio));
             pDialog.setIndeterminate(true);
             pDialog.setCancelable(false);
             pDialog.show();       }
 
         @Override
-        protected void onPostExecute( DataNews dataNews) {
-            super.onPostExecute(dataNews);
-            Toast toast = Toast.makeText(mAppContext, dataNews.getResult(), Toast.LENGTH_SHORT);
+        protected void onPostExecute( DataAudio dataAudio) {
+            super.onPostExecute(dataAudio);
+            Toast toast = Toast.makeText(mAppContext, dataAudio.getResult(), Toast.LENGTH_SHORT);
             //      pDialog.dismiss();
             //  Uri trackUri =Uri.parse(songUrl);
        /*         ContentUris.withAppendedId(
-                android.provider.MediaStore.News.Media.EXTERNAL_CONTENT_URI,
+                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 currSong);*/
             //set the data source
       /*      try{
@@ -136,4 +140,6 @@ public class NewsLab {
 
         }
     }
+
+
 }

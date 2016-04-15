@@ -1,19 +1,33 @@
 package com.newstee;
+
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.app.Service;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.newstee.model.data.Audio;
+import com.newstee.model.data.AudioLab;
+import com.newstee.network.interfaces.NewsTeeApiInterface;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /*
  * This is demo code to accompany the Mobiletuts+ series:
@@ -25,6 +39,7 @@ import java.util.Random;
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener {
+
 
     private final static String TAG = "MusicService";
 
@@ -58,6 +73,8 @@ public class MusicService extends Service implements
     private ArrayList<Song> songs;
     //current position
     private int songPosn;
+    private String songId;
+    private String songUrl;
     //binder
     private final IBinder musicBind = new MusicBinder();
 
@@ -146,36 +163,89 @@ public class MusicService extends Service implements
 
     //play a song
     public void playSong(){
-        paused = true;
-        //play
-        player.reset();
-        //get song
-        Song playSong = songs.get(songPosn);
-       int a  =  songs.indexOf(playSong);
-      int   b = a;
-        //get title
-        songTitle=playSong.getTitle();
-        //get id
-        long currSong = playSong.getID();
-        //set uri
-        Uri trackUri = ContentUris.withAppendedId(
-                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                currSong);
-        //set the data source
-        try{
-
-            player.setDataSource(getApplicationContext(), trackUri);
-        }
-        catch(Exception e){
-            Log.e("MUSIC SERVICE", "Error setting data source", e);
-        }
-        player.prepareAsync();
-
+        new AudioAsyncTask().execute();
     }
 
+
+
+    class AudioAsyncTask extends AsyncTask<String,Integer, AudioLab>
+
+    {
+        ProgressDialog pDialog;
+
+
+        @Override
+        protected AudioLab doInBackground(String... params) {
+
+            Call<AudioLab> call = newsTeeApiInterface.getAudio();
+            AudioLab audioLab = new AudioLab();
+            try {
+                Response<AudioLab> response = call.execute();
+                audioLab = response.body();
+                List<Audio> audio = audioLab.getData();
+                if(songId.equals("3") )
+                {
+                    songId = "2";
+                }
+                for(Audio a : audio)
+                {
+                    if(a.getId().equals(songId))
+                    {
+                        songUrl = a.getSource();
+                        break;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return audioLab;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            player.reset();
+            // Showing progress dialog before sending http request
+      /*      pDialog = new ProgressDialog(getApplicationContext());
+            pDialog.setMessage("Please wait..");
+            pDialog.setIndeterminate(true);
+            pDialog.setCancelable(false);
+            pDialog.show(); */       }
+
+        @Override
+        protected void onPostExecute(AudioLab audioLab) {
+           super.onPostExecute(audioLab);
+      //      pDialog.dismiss();
+          //  Uri trackUri =Uri.parse(songUrl);
+       /*         ContentUris.withAppendedId(
+                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                currSong);*/
+            //set the data source
+            try{
+
+                player.setDataSource(songUrl);
+                player.prepare();
+                player.start();
+            }
+            catch(Exception e){
+                Log.e("MUSIC SERVICE", "Error setting data source", e);
+            }
+
+
+
+
+        }
+    }
+
+
+
+
+
+
+
     //set the song
-    public void setSong(int songIndex){
-        songPosn=songIndex;
+    public void setSong(String songId){
+        this.songId=songId;
     }
 
     @Override

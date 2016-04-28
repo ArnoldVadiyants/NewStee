@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -94,13 +93,15 @@ public class MyPlaylistFragment extends Fragment{
 
         @Override
         public Fragment getItem(int position) {
-
             switch (position) {
                 case 0:
-                    return new NewsPlaylistListFragment();
+                    return MyPlaylistListFragment.newInstance(Constants.ARGUMENT_NEWS_ADDED,Constants.CATEGORY_NEWS);
                 case 1:
-                    return  new NewsPlaylistListFragment();
+                    return MyPlaylistListFragment.newInstance(Constants.ARGUMENT_NEWS_ADDED,Constants.CATEGORY_ARTICLE);
+                case 2:
+                    return  MyPlaylistListFragment.newInstance(Constants.ARGUMENT_NEWS_ADDED,Constants.CATEGORY_STORY);
             }
+
 
             return PlaceholderFragment.newInstance(position);
         }
@@ -108,7 +109,7 @@ public class MyPlaylistFragment extends Fragment{
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 2;
+            return 3;
         }
 
         @Override
@@ -131,46 +132,20 @@ public class MyPlaylistFragment extends Fragment{
 
             switch (position) {
                 case 0:
-                    return getActivity().getResources().getString(R.string.subscriptions);
+                    return getActivity().getResources().getString(R.string.news);
                 case 1:
-                    return getActivity().getResources().getString(R.string.added);
+                    return getActivity().getResources().getString(R.string.articles);
+                case 2:
+                    return getActivity().getResources().getString(R.string.story);
 
             }
 
             return null;
         }
     }
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
 
-        public PlaceholderFragment() {
-        }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
 
 }
 

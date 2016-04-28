@@ -65,7 +65,7 @@ public class CanalFragment extends Fragment {
         FragmentManager fm = getChildFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.canal_news_container);
         if (fragment == null) {
-            fragment = new NewsThreadListFragment();
+            fragment = NewsThreadListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_ALL);
             fm.beginTransaction().replace(R.id.canal_news_container, fragment)
                     .commit();
         }

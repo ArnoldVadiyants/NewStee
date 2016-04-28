@@ -1,6 +1,6 @@
 package com.newstee;
 
-import android.view.View;
+import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -8,18 +8,29 @@ import android.widget.TextView;
 /**
  * Created by Arnold on 24.02.2016.
  */
-public class NewsPlaylistListFragment extends NewsListFragment {
+public class MyPlaylistListFragment extends NewsListFragment {
+    public static NewsListFragment newInstance(String argument,String category) {
+        NewsListFragment fragment = new MyPlaylistListFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_CATEGORY, category);
+        args.putString(ARG_PARAMETER,argument);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void setStatusImageButton(ImageButton statusImageButton, int newsStatus) {
-       if(newsStatus == Constants.STATUS_IS_PLAYING) {
-           statusImageButton.setVisibility(View.VISIBLE);
-           statusImageButton.setImageResource(R.drawable.news_is_playing_button);
-       }
-        else
-       {
-           statusImageButton.setVisibility(View.GONE);
-       }
-
+        switch (newsStatus) {
+            case Constants.STATUS_NOT_ADDED:
+                statusImageButton.setImageResource(R.drawable.news_to_add_button);
+                break;
+            case Constants.STATUS_WAS_ADDED:
+                statusImageButton.setImageResource(R.drawable.ic_is_added);
+                break;
+            case Constants.STATUS_IS_PLAYING:
+                statusImageButton.setImageResource(R.drawable.news_is_playing_button);
+                break;
+        }
     }
 
     @Override

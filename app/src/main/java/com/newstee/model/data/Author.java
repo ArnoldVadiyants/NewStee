@@ -14,13 +14,13 @@ public class Author {
     @SerializedName("id")
     @Expose
     private String id;
-    @SerializedName("name")
+    @SerializedName("author_name")
     @Expose
     private String name;
     @SerializedName("avatar")
     @Expose
     private String avatar;
-    @SerializedName("sub_count")
+    @SerializedName("quantity_subs")
     @Expose
     private String subCount;
 

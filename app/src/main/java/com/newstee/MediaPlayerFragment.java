@@ -312,9 +312,9 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         });
     }
 
-    public void  playSong(String audioId){
+    public void  playSong(String audioUrl){
         // Play song
-        musicSrv.setSong(audioId);
+        musicSrv.setSong(audioUrl);
         musicSrv.playSong();
             // Displaying Song title
       //      String songTitle = songList.get(songIndex).getTitle();

@@ -54,13 +54,36 @@
 
     </LinearLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="1dp"
-        android:layout_margin="@dimen/outer_margin_big"
-        android:id="@+id/car_mode_list_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    </FrameLayout>
+        <android.support.design.widget.TabLayout
+            android:id="@+id/car_mode_list_tabs"
+            style="@style/MyCustomTabLayoutDark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabBackground="@android:color/transparent"
+            app:tabIndicatorColor="@color/white"
+            app:tabIndicatorHeight="4dp"
+            />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/white">
+        </FrameLayout>
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/car_mode_list_container"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/outer_margin"
+        android:layout_marginBottom="@dimen/outer_margin"
+        android:layout_marginLeft="@dimen/outer_margin_big"
+        android:layout_marginRight="@dimen/outer_margin_big"/>
 
 </LinearLayout>

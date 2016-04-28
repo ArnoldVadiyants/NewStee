@@ -4,53 +4,38 @@ package com.newstee.model.data;
  * Created by Arnold on 12.04.2016.
  */
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.AsyncTask;
-import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.newstee.R;
-import com.newstee.network.interfaces.NewsTeeApiInterface;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 
 public class TagLab {
-
+    private IDataLoading mIDataLoading;
     private List<Tag> mTags = new ArrayList<>();
     private static TagLab sTagLab;
-    private Context mAppContext;
+   /* private Context mAppContext;
     private Gson gson = new GsonBuilder().create();
     private Retrofit retrofit = new Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(gson))
             .baseUrl(NewsTeeApiInterface.BASE_URL)
             .build();
-    private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);
-    private TagLab(Context appContext) {
-        mAppContext = appContext;
-        loadTags();
+    private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);*/
+    private TagLab(/*Context appContext, IDataLoading iDataLoading*/) {
+   /*     mAppContext = appContext;
+        mIDataLoading = iDataLoading;*/
+     //   loadTags();
     }
 
-    public static TagLab getInstance(Context context){
+    public static TagLab getInstance(/*Context context, IDataLoading iDataLoading*/){
         if (sTagLab == null) {
-            sTagLab = new TagLab(context.getApplicationContext());
+            sTagLab = new TagLab(/*context.getApplicationContext(), iDataLoading*/);
         }
         return sTagLab;
     }
-    public void loadTags()
+   /* public void loadTags()
     {
 TagAsyncTask tagAsyncTask = new TagAsyncTask();
         tagAsyncTask.execute();
-    }
+    }*/
     public List<Tag> getTags() {
         return mTags;
     }
@@ -66,7 +51,7 @@ TagAsyncTask tagAsyncTask = new TagAsyncTask();
         return null;
     }
 
-    private  class TagAsyncTask extends AsyncTask<String,Integer, DataTag>
+  /*  private  class TagAsyncTask extends AsyncTask<String,Integer, DataTag>
 
     {
         ProgressDialog pDialog;
@@ -82,7 +67,7 @@ TagAsyncTask tagAsyncTask = new TagAsyncTask();
                 dataTag = response.body();
                 mTags = dataTag.getData();
                
-            /*    if(songId.equals("3") )
+            *//*    if(songId.equals("3") )
                 {
                     songId = "2";
                 }
@@ -93,7 +78,7 @@ TagAsyncTask tagAsyncTask = new TagAsyncTask();
                         songUrl = a.getSource();
                         break;
                     }
-                }*/
+                }*//*
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -105,23 +90,27 @@ TagAsyncTask tagAsyncTask = new TagAsyncTask();
         protected void onPreExecute() {
             //     player.reset();
             // Showing progress dialog before sending http request
-            pDialog = new ProgressDialog(mAppContext);
+          *//*  pDialog = new ProgressDialog(mAppContext);
             pDialog.setMessage(mAppContext.getString(R.string.loadingTags));
             pDialog.setIndeterminate(true);
             pDialog.setCancelable(false);
-            pDialog.show();       }
+            pDialog.show();*//*
+            mIDataLoading.onPreLoad();}
 
         @Override
         protected void onPostExecute( DataTag dataTag) {
             super.onPostExecute(dataTag);
             Toast toast = Toast.makeText(mAppContext, dataTag.getResult(), Toast.LENGTH_SHORT);
+            toast.show();
+          //  pDialog.dismiss();
+            mIDataLoading.onPostLoad();
             //      pDialog.dismiss();
             //  Uri trackUri =Uri.parse(songUrl);
-       /*         ContentUris.withAppendedId(
+       *//*         ContentUris.withAppendedId(
                 android.provider.MediaStore.Tag.Media.EXTERNAL_CONTENT_URI,
-                currSong);*/
+                currSong);*//*
             //set the data source
-      /*      try{
+      *//*      try{
 
                 player.setDataSource(songUrl);
                 player.prepare();
@@ -131,10 +120,10 @@ TagAsyncTask tagAsyncTask = new TagAsyncTask();
                 Log.e("MUSIC SERVICE", "Error setting data source", e);
             }
 
-*/
+*//*
 
 
         }
-    }
+    }*/
 }
 

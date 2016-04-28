@@ -8,8 +8,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +27,7 @@ import android.widget.Toast;
  */
 public class NewsThreadFragment extends Fragment {
     private LinearLayout startButton;
+    private PlayListPager mPlayListPager;
     private ImageButton filterButton;
     private final static String TAG = "NewsThreadFragment";
     View mediaPlayer;
@@ -86,10 +90,14 @@ public class NewsThreadFragment extends Fragment {
         });
         mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_titlet_TextView);
         mediaPlayer.setVisibility(View.GONE);
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        Fragment fragment  = new NewsThreadListFragment();
-            fm.beginTransaction().add(R.id.thread_content, fragment)
-                    .commit();
+        mPlayListPager = new PlayListPager(getChildFragmentManager());
+        // Set up the ViewPager with the sections adapter.
+        ViewPager mViewPager = (ViewPager)rootView.findViewById(R.id.thread_container);
+        mViewPager.setAdapter(mPlayListPager);
+        mViewPager.setCurrentItem(0);
+
+        TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.thread_tabs);
+        tabLayout.setupWithViewPager(mViewPager);
 
         return rootView;
     }
@@ -194,6 +202,63 @@ public class NewsThreadFragment extends Fragment {
             }
         }
     }
+    public class PlayListPager extends FragmentPagerAdapter {
 
+        public PlayListPager(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+
+            switch (position) {
+                case 0:
+                    return NewsThreadListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_NEWS);
+                case 1:
+                    return NewsThreadListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_ARTICLE);
+                case 2:
+                    return  NewsThreadListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_STORY);
+            }
+
+            return PlaceholderFragment.newInstance(position);
+        }
+
+        @Override
+        public int getCount() {
+            // Show 3 total pages.
+            return 3;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            /*Drawable image = ContextCompat.getDrawable(getApplicationContext(), R.drawable.tab_image_thread);
+            image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
+            SpannableString sb = new SpannableString(" ");
+            ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
+            sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            return sb;*/
+           /* switch (position) {
+                case 0:
+                    return (getResources().getString(R.string.lenta)).toUpperCase();
+                case 1:
+                    return (getResources().getString(R.string.catalog)).toUpperCase();
+                case 2:
+                    return (getResources().getString(R.string.play_list)).toUpperCase();
+            }
+            return null;*/
+
+            switch (position) {
+                case 0:
+                    return getActivity().getResources().getString(R.string.news);
+                case 1:
+                    return getActivity().getResources().getString(R.string.articles);
+                case 2:
+                    return getActivity().getResources().getString(R.string.story);
+
+            }
+
+            return null;
+        }
+    }
 }
 

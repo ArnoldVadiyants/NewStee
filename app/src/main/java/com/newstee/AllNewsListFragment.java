@@ -1,25 +1,26 @@
 package com.newstee;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by Arnold on 24.02.2016.
  */
-public class NewsThreadListFragment extends NewsListFragment {
+public class AllNewsListFragment extends NewsListFragment {
 
-    public static NewsListFragment newInstance(String argument,String category) {
-        NewsListFragment fragment = new NewsThreadListFragment();
+    public static NewsListFragment newInstance(String category) {
+        NewsListFragment fragment = new AllNewsListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_CATEGORY, category);
-        args.putString(ARG_PARAMETER,argument);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public NewsThreadListFragment() {
+    public AllNewsListFragment() {
     }
 
     @Override
@@ -35,7 +36,25 @@ public class NewsThreadListFragment extends NewsListFragment {
                 statusImageButton.setImageResource(R.drawable.news_is_playing_button);
                 break;
         }
+        statusImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (newsStatus) {
+                    case Constants.STATUS_NOT_ADDED:
+                        Toast.makeText(getActivity(), "Constants #" + v.getTag() + " is added", Toast.LENGTH_SHORT).show();
+                        statusImageButton.setImageResource(R.drawable.ic_is_added);
+                        break;
+                    case Constants.STATUS_WAS_ADDED:
 
+                        statusImageButton.setImageResource(R.drawable.news_to_add_button);
+                        Toast.makeText(getActivity(), "Constants #" + v.getTag() + " started playing", Toast.LENGTH_SHORT).show();
+                        break;
+                    case Constants.STATUS_IS_PLAYING:
+                        Toast.makeText(getActivity(), "Constants #" + v.getTag() + " is opening", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
     }
 
     @Override

@@ -14,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.newstee.model.data.Tag;
+import com.newstee.model.data.TagLab;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,12 @@ public class ProfileListFragment extends ListFragment
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+			List<Tag> tags = TagLab.getInstance().getTags();
+			for (Tag t : tags) {
+				items.add(new Item(null, t.getNameTag(), false));
+			}
+
 	}
 
 
@@ -128,17 +137,9 @@ public class ProfileListFragment extends ListFragment
 		}
 	}
 	
-	static
-	{
-		Bitmap bm = Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8);
-		for(int i = 0; i<50; i++) {
-			items.add(new Item(bm,"Petrovich",true ));
-			items.add(new Item(bm, "Новости Болграда", false));
-			items.add(new Item(bm,"Спорт",true ));
-			items.add(new Item(bm,"Судьи",false ));
-		}
 
-	}
+
+
 	
 	@Override
 	 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

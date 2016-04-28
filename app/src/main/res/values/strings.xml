@@ -10,8 +10,11 @@
     <string name="edit_profile_avatar_background">Фото обложки</string>
     <string name="edit_profile_name">Имя</string>
     <string name="edit_profile_save">Сохранить</string>
-    <string name="tab_stream">Поток</string>
-    <string name="tab_play_list">Мой плейлист</string>
+    <string name="tab_stream">Общий поток</string>
+    <string name="news">Новости</string>
+    <string name="articles">Статьи</string>
+    <string name="story">Сюжеты</string>
+    <string name="tab_play_list">Моя лента</string>
     <string name="tab_player">Проигрыватель</string>
     <string name="tab_category">Категории</string>
     <string name="tab_publish">Издания</string>
@@ -34,25 +37,30 @@
     <string name="to_subscript">Подписаться</string>
     <string name="registration_via_email"><b>Зарегистрироваться</b> через <b>e-mail</b> </string>
     <string name="if_have_registration">Уже есть учетная запись? <b>ВХОД</b></string>
-    <string name="sign_in">Вход</string>
     <string name="resume_without_registr">Продолжить без регистрации</string>
     <string name="privacy_policy">Условия|Политика конфиденциальности</string>
     <string name="loadingAudio">Загрузка аудиозаписей...</string>
     <string name="loadingAuthor">Загрузка изданий...</string>
     <string name="loadingNews">Загрузка новостей...</string>
     <string name="loadingTags">Загрузка категорий...</string>
+    <string name="register_msg">Вы успешно зарегестрированы</string>
+    <string name="logout_msg">Вы уверены, что хотите выйти?</string>
+    <string name="btn_yes">Да</string>
+    <string name="btn_no">Нет</string>
+    <string name="btn_cancel">Отмена</string>
     
 
 
 
 
     <string name="hint_email">Email</string>
+    <string name="hint_repeat_password">Повторите пароль</string>
     <string name="hint_password">Пароль</string>
     <string name="hint_name">Полное имя</string>
-    <string name="btn_login">ВХОД</string>
+    <string name="btn_login">Войти</string>
     <string name="btn_register">РЕГИСТРАЦИЯ</string>
     <string name="btn_link_to_register">Not a member? Sign up now.</string>
-    <string name="btn_link_to_login">Already registred! Login Me.</string>
+    <string name="btn_link_to_login">Already registered! Login Me.</string>
     <string name="welcome">Welcome</string>
-    <string name="btn_logout">LOGOUT</string>
+    <string name="btn_logout">Выйти</string>
 </resources>

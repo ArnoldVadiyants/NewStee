@@ -1,8 +1,11 @@
 package com.newstee;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +22,7 @@ public class CarModeListFragment extends Fragment {
 
 ImageView icon;
     TextView title;
-
+    private PlayListPager mPlayListPager;
     public static CarModeListFragment newInstance(int sectionNumber) {
         CarModeListFragment fragment = new CarModeListFragment();
         Bundle args = new Bundle();
@@ -34,6 +37,7 @@ ImageView icon;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mPlayListPager = new PlayListPager(getChildFragmentManager());
         View rootView = inflater.inflate(R.layout.fragment_car_mode, container, false);
 
         icon =(ImageView) rootView.findViewById(R.id.car_mode_list_icon);
@@ -82,20 +86,85 @@ ImageView icon;
 
             }
         });
+        ViewPager mViewPager = (ViewPager)rootView.findViewById(R.id.car_mode_list_container);
+        mViewPager.setAdapter(mPlayListPager);
+        mViewPager.setCurrentItem(0);
 
-            FragmentManager fm = getChildFragmentManager();
+        TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.car_mode_list_tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+
+/*
+
+        FragmentManager fm = getChildFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.car_mode_list_content);
             if (fragment == null) {
                 fragment = new CarModeNewsListFragment();
                 fm.beginTransaction().add(R.id.car_mode_list_content, fragment)
                         .commit();
             }
+*/
 
 
 
         return rootView;
     }
 
+    public class PlayListPager extends FragmentPagerAdapter {
 
+        public PlayListPager(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    return CarModeNewsListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_NEWS);
+                case 1:
+                    return CarModeNewsListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_ARTICLE);
+                case 2:
+                    return  CarModeNewsListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_STORY);
+            }
+
+            return PlaceholderFragment.newInstance(position);
+        }
+
+        @Override
+        public int getCount() {
+            // Show 3 total pages.
+            return 3;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            /*Drawable image = ContextCompat.getDrawable(getApplicationContext(), R.drawable.tab_image_thread);
+            image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
+            SpannableString sb = new SpannableString(" ");
+            ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
+            sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            return sb;*/
+           /* switch (position) {
+                case 0:
+                    return (getResources().getString(R.string.lenta)).toUpperCase();
+                case 1:
+                    return (getResources().getString(R.string.catalog)).toUpperCase();
+                case 2:
+                    return (getResources().getString(R.string.play_list)).toUpperCase();
+            }
+            return null;*/
+
+            switch (position) {
+                case 0:
+                    return getActivity().getResources().getString(R.string.news);
+                case 1:
+                    return getActivity().getResources().getString(R.string.articles);
+                case 2:
+                    return getActivity().getResources().getString(R.string.story);
+
+            }
+
+            return null;
+        }
+    }
 }
 

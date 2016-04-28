@@ -1,21 +1,14 @@
 package com.newstee.model.data;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.newstee.R;
 import com.newstee.network.interfaces.NewsTeeApiInterface;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -28,6 +21,7 @@ public class AudioLab {
 
 
     private List<Audio> mAudio = new ArrayList<>();
+    private IDataLoading mIDataLoading;
     private static AudioLab sAudioLab;
     private Context mAppContext;
     private Gson gson = new GsonBuilder().create();
@@ -36,22 +30,23 @@ public class AudioLab {
             .baseUrl(NewsTeeApiInterface.BASE_URL)
             .build();
     private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);
-    private AudioLab(Context appContext) {
-        mAppContext = appContext;
-        loadAudio();
+    private AudioLab(/*Context appContext, IDataLoading iDataLoading*/) {
+    /*    mAppContext = appContext;
+        mIDataLoading = iDataLoading;
+        loadAudio();*/
     }
 
-    public static AudioLab getInstance(Context context){
+    public static AudioLab getInstance(/*Context context, IDataLoading iDataLoading*/){
         if (sAudioLab == null) {
-            sAudioLab = new AudioLab(context.getApplicationContext());
+            sAudioLab = new AudioLab(/*context.getApplicationContext(), iDataLoading*/);
         }
         return sAudioLab;
     }
-    public void loadAudio()
+    /*public void loadAudio()
     {
         AudioAsyncTask task = new AudioAsyncTask();
         task.execute();
-    }
+    }*/
     public Audio getAudioItem(String id) {
         for(Audio a : mAudio)
         {
@@ -70,7 +65,7 @@ public class AudioLab {
     }
 
 
-    private  class AudioAsyncTask extends AsyncTask<String,Integer, DataAudio>
+  /*  private  class AudioAsyncTask extends AsyncTask<String,Integer, DataAudio>
 
     {
         ProgressDialog pDialog;
@@ -86,7 +81,7 @@ public class AudioLab {
                dataAudio = response.body();
                mAudio = dataAudio.getData();
 
-            /*    if(songId.equals("3") )
+            *//*    if(songId.equals("3") )
                 {
                     songId = "2";
                 }
@@ -97,7 +92,7 @@ public class AudioLab {
                         songUrl = a.getSource();
                         break;
                     }
-                }*/
+                }*//*
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -107,25 +102,29 @@ public class AudioLab {
 
         @Override
         protected void onPreExecute() {
-       //     player.reset();
+            //     player.reset();
             // Showing progress dialog before sending http request
-            pDialog = new ProgressDialog(mAppContext);
+          *//*  pDialog = new ProgressDialog(mAppContext);
             pDialog.setMessage(mAppContext.getString(R.string.loadingAudio));
             pDialog.setIndeterminate(true);
             pDialog.setCancelable(false);
-            pDialog.show();       }
-
+            pDialog.show();*//*
+            mIDataLoading.onPreLoad();
+        }
         @Override
         protected void onPostExecute( DataAudio dataAudio) {
             super.onPostExecute(dataAudio);
             Toast toast = Toast.makeText(mAppContext, dataAudio.getResult(), Toast.LENGTH_SHORT);
+            toast.show();
+      //      pDialog.dismiss();
+            mIDataLoading.onPostLoad();
             //      pDialog.dismiss();
             //  Uri trackUri =Uri.parse(songUrl);
-       /*         ContentUris.withAppendedId(
+       *//*         ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                currSong);*/
+                currSong);*//*
             //set the data source
-      /*      try{
+      *//*      try{
 
                 player.setDataSource(songUrl);
                 player.prepare();
@@ -135,11 +134,11 @@ public class AudioLab {
                 Log.e("MUSIC SERVICE", "Error setting data source", e);
             }
 
-*/
+*//*
 
 
         }
     }
-
+*/
 
 }

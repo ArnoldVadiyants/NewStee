@@ -2,32 +2,19 @@ package com.newstee;
 
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.newstee.model.data.Audio;
 import com.newstee.model.data.AudioLab;
-import com.newstee.network.interfaces.NewsTeeApiInterface;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-
-import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /*
  * This is demo code to accompany the Mobiletuts+ series:
@@ -66,14 +53,13 @@ public class MusicService extends Service implements
     //media play
     private boolean paused = false;
 
-
-
+    private AudioLab audioLab;
     private MediaPlayer player;
     //song catalogue
     private ArrayList<Song> songs;
     //current position
     private int songPosn;
-    private String songId;
+   // private String songId;
     private String songUrl;
     //binder
     private final IBinder musicBind = new MusicBinder();
@@ -134,6 +120,8 @@ public class MusicService extends Service implements
         songs=theSongs;
     }
 
+
+
     //binder
     public class MusicBinder extends Binder {
         MusicService getService() {
@@ -162,13 +150,32 @@ public class MusicService extends Service implements
     }
 
     //play a song
-    public void playSong(){
-        new AudioAsyncTask().execute();
+    public void playSong() {
+        //     new AudioAsyncTask().execute();
+/*
+        if (songId.equals("3")) {
+            songId = "2";
+        }*/
+      //  audioLab = AudioLab.getInstance(getApplicationContext(), this);
+        try {
+      ///      songUrl = audioLab.getAudioItem(songId).getSource();
+            try {
+
+                player.setDataSource(songUrl);
+                player.prepare();
+                player.start();
+            } catch (Exception e) {
+                Log.e("MUSIC SERVICE", "Error setting data source", e);
+            }
+
+        } catch (NullPointerException np) {
+
+        }
+
     }
 
 
-
-    class AudioAsyncTask extends AsyncTask<String,Integer, AudioLab>
+   /* class AudioAsyncTask extends AsyncTask<String,Integer, AudioLab>
 
     {
         ProgressDialog pDialog;
@@ -206,20 +213,20 @@ public class MusicService extends Service implements
         protected void onPreExecute() {
             player.reset();
             // Showing progress dialog before sending http request
-      /*      pDialog = new ProgressDialog(getApplicationContext());
+      *//*      pDialog = new ProgressDialog(getApplicationContext());
             pDialog.setMessage("Please wait..");
             pDialog.setIndeterminate(true);
             pDialog.setCancelable(false);
-            pDialog.show(); */       }
+            pDialog.show(); *//*       }
 
         @Override
         protected void onPostExecute(AudioLab audioLab) {
            super.onPostExecute(audioLab);
       //      pDialog.dismiss();
           //  Uri trackUri =Uri.parse(songUrl);
-       /*         ContentUris.withAppendedId(
+       *//*         ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                currSong);*/
+                currSong);*//*
             //set the data source
             try{
 
@@ -235,7 +242,7 @@ public class MusicService extends Service implements
 
 
         }
-    }
+    }*/
 
 
 
@@ -244,8 +251,8 @@ public class MusicService extends Service implements
 
 
     //set the song
-    public void setSong(String songId){
-        this.songId=songId;
+    public void setSong(String songUrl){
+        this.songUrl=songUrl;
     }
 
     @Override
@@ -291,33 +298,59 @@ public class MusicService extends Service implements
 
     //playback methods
     public int getPosn(){
-        return player.getCurrentPosition();
+        if(player != null)
+        {
+            return player.getCurrentPosition();
+        }
+       return 0;
     }
 
     public int getDur(){
-        return player.getDuration();
+        if(player != null)
+        {
+            return player.getDuration();
+        }
+        return 0;
+
     }
     public boolean isNullPlayer(){
        return player==null;
     }
     public boolean isPlaying(){
-        return player.isPlaying();
+        if(player != null)
+        {
+            return player.isPlaying();
+        }
+        return false;
     }
 
     public void pausePlayer(){
+        if( player == null)
+        {
+            return;
+        }
         player.pause();
     }
 
     public void seek(int posn){
+        if( player == null)
+        {
+            return;
+        }
         player.seekTo(posn);
     }
 
     public void go(){
+        if( player == null)
+        {
+            return;
+        }
         player.start();
     }
 
     //skip to previous track
     public void playPrev(){
+
         songPosn--;
         if(songPosn<0) songPosn=songs.size()-1;
         playSong();

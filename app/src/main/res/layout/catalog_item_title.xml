@@ -17,7 +17,6 @@
             android:layout_height="@dimen/icon_size_medium"
             android:id="@+id/canal_icon_ImageVew"
             android:layout_gravity="left|center_vertical"
-            android:background="@drawable/bbc_news_logo_cyrcle"
             android:layout_marginRight="@dimen/icon_margin"
             android:scaleType="center"/>
 

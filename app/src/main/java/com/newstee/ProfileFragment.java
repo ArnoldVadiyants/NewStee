@@ -163,7 +163,7 @@ public class ProfilePagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new ProfileListFragment();
             case 1:
-                return new ProfileListFragment();
+                return MyPlaylistListFragment.newInstance(Constants.ARGUMENT_NEWS_LIKED,Constants.CATEGORY_ALL);
         }
 
         return null;

@@ -15,7 +15,7 @@ public class Tag {
     @SerializedName("id")
     @Expose
     private String id;
-    @SerializedName("name")
+    @SerializedName("name_tag")
     @Expose
     private String name;
 

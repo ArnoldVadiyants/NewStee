@@ -1,27 +1,20 @@
 package com.newstee.model.data;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.newstee.R;
 import com.newstee.network.interfaces.NewsTeeApiInterface;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class AuthorLab {
 
-
+    private IDataLoading mIDataLoading;
     private List<Author> mAuthors = new ArrayList<>();
     private static AuthorLab sAuthorLab;
     private Context mAppContext;
@@ -31,21 +24,22 @@ public class AuthorLab {
             .baseUrl(NewsTeeApiInterface.BASE_URL)
             .build();
     private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);
-    private AuthorLab(Context appContext) {
-        mAppContext = appContext;
+    private AuthorLab() {
+       // mAppContext = appContext;
+
         loadAuthors();
     }
 
-    public static AuthorLab getInstance(Context context){
+    public static AuthorLab getInstance(){
         if (sAuthorLab == null) {
-            sAuthorLab = new AuthorLab(context.getApplicationContext());
+            sAuthorLab = new AuthorLab();
         }
         return sAuthorLab;
     }
     public void loadAuthors()
     {
-       AuthorAsyncTask task = new AuthorAsyncTask();
-        task.execute();
+     /*  AuthorAsyncTask task = new AuthorAsyncTask();
+        task.execute();*/
     }
     public Author getAuthor(String id) {
         for (Author a : mAuthors) {
@@ -62,7 +56,7 @@ public class AuthorLab {
         this.mAuthors = authors;
     }
 
-
+/*
     private  class AuthorAsyncTask extends AsyncTask<String,Integer, DataAuthor>
 
     {
@@ -79,7 +73,7 @@ public class AuthorLab {
                 dataAuthor = response.body();
                 mAuthors = dataAuthor.getData();
                
-            /*    if(songId.equals("3") )
+            *//*    if(songId.equals("3") )
                 {
                     songId = "2";
                 }
@@ -90,7 +84,7 @@ public class AuthorLab {
                         songUrl = a.getSource();
                         break;
                     }
-                }*/
+                }*//*
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -102,23 +96,29 @@ public class AuthorLab {
         protected void onPreExecute() {
             //     player.reset();
             // Showing progress dialog before sending http request
-            pDialog = new ProgressDialog(mAppContext);
+
+       *//*     pDialog = new ProgressDialog(mAppContext);
             pDialog.setMessage(mAppContext.getString(R.string.loadingAuthor));
             pDialog.setIndeterminate(true);
             pDialog.setCancelable(false);
-            pDialog.show();       }
+            pDialog.show();*//*
+            mIDataLoading.onPreLoad();}
 
         @Override
         protected void onPostExecute( DataAuthor dataAuthor) {
             super.onPostExecute(dataAuthor);
             Toast toast = Toast.makeText(mAppContext, dataAuthor.getResult(), Toast.LENGTH_SHORT);
-            //      pDialog.dismiss();
+            toast.show();
+        //    pDialog.dismiss();
+            mIDataLoading.onPostLoad();
+
+            //
             //  Uri trackUri =Uri.parse(songUrl);
-       /*         ContentUris.withAppendedId(
+       *//*         ContentUris.withAppendedId(
                 android.provider.MediaStore.Author.Media.EXTERNAL_CONTENT_URI,
-                currSong);*/
+                currSong);*//*
             //set the data source
-      /*      try{
+      *//*      try{
 
                 player.setDataSource(songUrl);
                 player.prepare();
@@ -127,11 +127,11 @@ public class AuthorLab {
             catch(Exception e){
                 Log.e("MUSIC SERVICE", "Error setting data source", e);
             }
-
+}
+}
 */
 
 
         }
-    }
 
-}
+

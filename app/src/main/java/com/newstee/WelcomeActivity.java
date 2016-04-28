@@ -70,7 +70,7 @@ public class WelcomeActivity extends Activity {
                 Intent intent = new Intent(WelcomeActivity.this,
                         RegisterActivity.class);
                 startActivity(intent);
-          //      finish();
+                finish();
 
             }
         });
@@ -80,7 +80,7 @@ public class WelcomeActivity extends Activity {
                 Intent intent = new Intent(WelcomeActivity.this,
                         LoginActivity.class);
                 startActivity(intent);
-           //     finish();
+                finish();
             }
         });
         btnResume.setOnClickListener(new View.OnClickListener() {

@@ -2,7 +2,6 @@ package com.newstee;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -18,6 +17,11 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newstee.model.data.Author;
+import com.newstee.model.data.AuthorLab;
+import com.newstee.model.data.Tag;
+import com.newstee.model.data.TagLab;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +30,7 @@ import java.util.List;
 public class CatalogListFragment extends ListFragment
 {
 	private final static String TAG = "CatalogListFragment";
+	private  List<Item> items = new ArrayList<Item>();
 
 	private static final String ARG_IS_CANAL = "is_canal";
 	private boolean mIsCanal;
@@ -49,21 +54,39 @@ public class CatalogListFragment extends ListFragment
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mIsCanal = getArguments().getBoolean(ARG_IS_CANAL);
+
+	//		Bitmap bm = Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8);
+		if(mIsCanal)
+		{
+			List<Author>authors =AuthorLab.getInstance().getAuthors();
+			for(Author a : authors)
+			{
+				items.add(new Item(a.getAvatar(),a.getName(),false ));
+			}
+
+		}
+		else {
+			List<Tag> tags = TagLab.getInstance().getTags();
+			for (Tag t : tags) {
+				items.add(new Item(null, t.getNameTag(), true));
+			}
+		}
+
+
 	}
 
 
 
 
-	private static final List<Item> items = new ArrayList<Item>();
 
 	private static class Item
 	{
-		public final Bitmap icon;
+		public final String icon;
 		public final String title;
 		public final boolean isAdded;
 
 
-		public Item(Bitmap icon, String title, boolean isAdded) {
+		public Item(String icon, String title, boolean isAdded) {
 			this.icon = icon;
 			this.title = title;
 			this.isAdded = isAdded;
@@ -125,6 +148,7 @@ public class CatalogListFragment extends ListFragment
 				if(mIsCanal)
 				{
 				//	holder.imageView.set
+
 					holder.catalogFeed.setTag(position);
 					holder.catalogFeed.setOnClickListener(new View.OnClickListener() {
 						@Override
@@ -159,17 +183,7 @@ public class CatalogListFragment extends ListFragment
 		}
 	}
 	
-	static
-	{
-		Bitmap bm = Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8);
-		for(int i = 0; i<50; i++) {
-			items.add(new Item(bm,"Petrovich",true ));
-			items.add(new Item(bm, "Нвости Болграда", false));
-			items.add(new Item(bm,"Спорт",true ));
-			items.add(new Item(bm,"Судьи",false ));
-		}
 
-	}
 	
 	@Override
 	 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

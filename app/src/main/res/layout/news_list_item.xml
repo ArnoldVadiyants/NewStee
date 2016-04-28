@@ -28,7 +28,7 @@
                     android:layout_height="@dimen/icon_size_medium"
                     android:id="@+id/canal_icon_ImageVew"
                     android:layout_gravity="left|center_vertical"
-                    android:background="@drawable/bbc_news_logo_cyrcle"
+                    tools:src="@drawable/bbc_news_logo_cyrcle"
                     />
 
                 <TextView
@@ -97,14 +97,16 @@
                     android:id="@+id/news_picture_imageView"
                     android:layout_weight="0"
                     android:layout_gravity="left|center_vertical"
-                    tools:background="@drawable/test_picture"
-                    android:scaleType="fitCenter"/>
+                    tools:src="@drawable/test_picture"
+                    android:scaleType="centerCrop"
+                  />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxHeight="100dp"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Blablalba blabla BLalb Blablalba blabla BLalbaBlablalba blabla BLalbaBlablalba blabla BLalbaBlablalba blabla BLalbaBlablalba blabla BLalbaa"
+                    tools:text="Blablalba blabla BLalb Blablalba blabla BLalbaBlablalba blabla BLalbaBlablalba blabla BLalbaBlablalba blabla BLalbaBlablalba blabla BLalbaa"
                     android:id="@+id/news_description_textView"
                     android:layout_weight="1"
                     android:layout_gravity="top"

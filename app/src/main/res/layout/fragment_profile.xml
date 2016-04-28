@@ -185,12 +185,10 @@
                 android:layout_gravity="center_vertical"/>
 
         </LinearLayout>
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="1dp"
-        android:background="@color/colorPrimary"
-        >
+        android:orientation="vertical">
 
         <android.support.design.widget.TabLayout
             android:id="@+id/profile_tabs"
@@ -201,9 +199,14 @@
             app:tabBackground="@android:color/transparent"
             app:tabIndicatorColor="@color/colorPrimary"
             app:tabIndicatorHeight="4dp"
-            android:background="@color/colorBackground"
             />
-    </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorPrimary">
+        </FrameLayout>
+    </LinearLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/profile_container"

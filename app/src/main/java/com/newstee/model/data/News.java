@@ -11,31 +11,45 @@ import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
 public class News {
-
     @SerializedName("id")
     @Expose
     private String id;
+    @SerializedName("nameauthor")
+    @Expose
+    private Object nameauthor;
+    @SerializedName("nametags")
+    @Expose
+    private Object nametags;
+    @SerializedName("idtags")
+    @Expose
+    private String idtags;
+    @SerializedName("linksong")
+    @Expose
+    private String linksong;
+    @SerializedName("likes")
+    @Expose
+    private String likes;
+    @SerializedName("addition_time")
+    @Expose
+        private String additionTime;
+        @SerializedName("picture_news")
+    @Expose
+    private String pictureNews;
     @SerializedName("title")
     @Expose
     private String title;
+    @SerializedName("idauthor")
+    @Expose
+    private String idauthor;
+    @SerializedName("idsong")
+    @Expose
+    private String idsong;
+    @SerializedName("category")
+    @Expose
+    private String category;
     @SerializedName("content")
     @Expose
     private String content;
-    @SerializedName("tag_ids")
-    @Expose
-    private String tagIds;
-    @SerializedName("audio_ids")
-    @Expose
-    private String audioIds;
-    @SerializedName("avatar")
-    @Expose
-    private String avatar;
-    @SerializedName("like_count")
-    @Expose
-    private String likeCount;
-    @SerializedName("author_id")
-    @Expose
-    private String authorId;
 
     /**
      *
@@ -53,6 +67,132 @@ public class News {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    /**
+     *
+     * @return
+     * The nameauthor
+     */
+    public Object getNameauthor() {
+        return nameauthor;
+    }
+
+    /**
+     *
+     * @param nameauthor
+     * The nameauthor
+     */
+    public void setNameauthor(Object nameauthor) {
+        this.nameauthor = nameauthor;
+    }
+
+    /**
+     *
+     * @return
+     * The nametags
+     */
+    public Object getNametags() {
+        return nametags;
+    }
+
+    /**
+     *
+     * @param nametags
+     * The nametags
+     */
+    public void setNametags(Object nametags) {
+        this.nametags = nametags;
+    }
+
+    /**
+     *
+     * @return
+     * The idtags
+     */
+    public String getIdtags() {
+        return idtags;
+    }
+
+    /**
+     *
+     * @param idtags
+     * The idtags
+     */
+    public void setIdtags(String idtags) {
+        this.idtags = idtags;
+    }
+
+    /**
+     *
+     * @return
+     * The linksong
+     */
+    public String getLinksong() {
+        return linksong;
+    }
+
+    /**
+     *
+     * @param linksong
+     * The linksong
+     */
+    public void setLinksong(String linksong) {
+        this.linksong = linksong;
+    }
+
+    /**
+     *
+     * @return
+     * The likes
+     */
+    public String getLikes() {
+        return likes;
+    }
+
+    /**
+     *
+     * @param likes
+     * The likes
+     */
+    public void setLikes(String likes) {
+        this.likes = likes;
+    }
+
+    /**
+     *
+     * @return
+     * The additionTime
+     */
+    public String getAdditionTime() {
+        return additionTime;
+    }
+
+    /**
+     *
+     * @param additionTime
+     * The addition_time
+     */
+    public void setAdditionTime(String additionTime) {
+        this.additionTime = additionTime;
+    }
+
+    /**
+     *
+     * @return
+     * The pictureNews
+     */
+    public String getPictureNews() {
+        return pictureNews;
+    }
+
+    /**
+     *
+     * @param pictureNews
+     * The picture_news
+     */
+    public void setPictureNews(String pictureNews) {
+        this.pictureNews = pictureNews;
     }
 
     /**
@@ -76,6 +216,60 @@ public class News {
     /**
      *
      * @return
+     * The idauthor
+     */
+    public String getIdauthor() {
+        return idauthor;
+    }
+
+    /**
+     *
+     * @param idauthor
+     * The idauthor
+     */
+    public void setIdauthor(String idauthor) {
+        this.idauthor = idauthor;
+    }
+
+    /**
+     *
+     * @return
+     * The idsong
+     */
+    public String getIdsong() {
+        return idsong;
+    }
+
+    /**
+     *
+     * @param idsong
+     * The idsong
+     */
+    public void setIdsong(String idsong) {
+        this.idsong = idsong;
+    }
+
+    /**
+     *
+     * @return
+     * The category
+     */
+    public String getCategory() {
+        return category;
+    }
+
+    /**
+     *
+     * @param category
+     * The category
+     */
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    /**
+     *
+     * @return
      * The content
      */
     public String getContent() {
@@ -89,96 +283,6 @@ public class News {
      */
     public void setContent(String content) {
         this.content = content;
-    }
-
-    /**
-     *
-     * @return
-     * The tagIds
-     */
-    public String getTagIds() {
-        return tagIds;
-    }
-
-    /**
-     *
-     * @param tagIds
-     * The tag_ids
-     */
-    public void setTagIds(String tagIds) {
-        this.tagIds = tagIds;
-    }
-
-    /**
-     *
-     * @return
-     * The audioIds
-     */
-    public String getAudioIds() {
-        return audioIds;
-    }
-
-    /**
-     *
-     * @param audioIds
-     * The audio_ids
-     */
-    public void setAudioIds(String audioIds) {
-        this.audioIds = audioIds;
-    }
-
-    /**
-     *
-     * @return
-     * The avatar
-     */
-    public String getAvatar() {
-        return avatar;
-    }
-
-    /**
-     *
-     * @param avatar
-     * The avatar
-     */
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
-    /**
-     *
-     * @return
-     * The likeCount
-     */
-    public String getLikeCount() {
-        return likeCount;
-    }
-
-    /**
-     *
-     * @param likeCount
-     * The like_count
-     */
-    public void setLikeCount(String likeCount) {
-        this.likeCount = likeCount;
-    }
-
-    /**
-     *
-     * @return
-     * The authorId
-     */
-    public String getAuthorId() {
-        return authorId;
-    }
-
-    /**
-     *
-     * @param authorId
-     * The author_id
-     */
-    public void setAuthorId(String authorId) {
-        this.authorId = authorId;
     }
 
 }

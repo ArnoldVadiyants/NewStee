@@ -1,13 +1,7 @@
 package com.newstee;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Path;
-import android.graphics.Rect;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -15,103 +9,106 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.newstee.model.data.Author;
+import com.newstee.model.data.AuthorLab;
+import com.newstee.model.data.DataPost;
 import com.newstee.model.data.News;
 import com.newstee.model.data.NewsLab;
+import com.newstee.model.data.UserLab;
+import com.newstee.network.FactoryApi;
 import com.newstee.network.interfaces.NewsTeeApiInterface;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.newstee.utils.DisplayImageLoaderOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-public abstract class NewsListFragment extends ListFragment  {
+public abstract class NewsListFragment extends ListFragment {
+    private String mCategory;
+    private String mArgument;
+    protected static final String ARG_CATEGORY = "category";
+    protected static final String ARG_PARAMETER = "parameter";
 
-    static ImageLoader imageLoader= ImageLoader.getInstance();
-    static DisplayImageOptions loaderOptions =  new DisplayImageOptions.Builder()
-            .showImageOnLoading(R.drawable.loading_animation)
-            .cacheInMemory(true)
-            .cacheOnDisk(true)
-            .build();
+    static ImageLoader imageLoader = ImageLoader.getInstance();
     private final static String TAG = "NewsListFragment";
-    private  final List<Item> items = new ArrayList<Item>();
+    private List<News> mNews = new ArrayList<>();
     ItemAdapter adapter;
-     Thread threadA;
-    ProgressDialog mProgressDialog;
-    private  String BASE_URL = "http://213.231.4.68/audiotest/";
-    private Gson gson = new GsonBuilder().create();
-    private Retrofit retrofit = new Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .baseUrl(BASE_URL)
-            .build();
-    private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-   //     Bitmap canalIcon  = BitmapFactoCatalogFragmentry.decodeResource(getActivity().getResources(),
-   //             R.drawable.test_canal_icon);
-                //getRoundedShape();
-   //     Bitmap newPicture  = BitmapFactory.decodeResource(getActivity().getResources(),
-      //          R.drawable.test_picture);
-        final Bitmap canalIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-        final Bitmap newPicture = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setMessage("Loading...");
-      //  mProgressDialog.show();
-        MyAsyncTask myAsyncTask = new MyAsyncTask();
-        myAsyncTask.execute();
-     /* threadA  = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Call<NewsLab> call = newsTeeApiInterface.getNews();
-                try {
-                    Response<NewsLab> response = call.execute();
-                    List<News> news = response.body().getNews();
-                   for(int i =0; i<50; i++)
-                    {
-                        for(News n: news)
-                        {
-                            final Bitmap[] newsAvatar = new Bitmap[1];
+        mCategory = getArguments().getString(ARG_CATEGORY, Constants.CATEGORY_NEWS);
+        mArgument = getArguments().getString(ARG_PARAMETER, Constants.ARGUMENT_NONE);
+        List<News> news = new ArrayList<>();
+        if(mArgument.equals(Constants.ARGUMENT_NONE))
+        {
+            news = NewsLab.getInstance().getNews();
+        }
+        else if(mArgument.equals(Constants.ARGUMENT_NEWS_ADDED))
+        {
+            news = UserLab.getInstance().getAddedNews();
+        }
+        else if(mArgument.equals(Constants.ARGUMENT_NEWS_LIKED))
+        {
+            news = UserLab.getInstance().getLikedNews();
+        }
+        else if(mArgument.equals(Constants.ARGUMENT_NEWS_BY_CANAL))
+        {
 
-                            items.add(new Item(canalIcon,n.getAvatar() , "Vazgen.com", false, 777, 100747, n.getTitle(), Constants.STATUS_NOT_ADDED));
+        }
+        else if(mArgument.equals(Constants.ARGUMENT_NEWS_BY_STORY))
+        {
 
-                            System.out.println("*************");
-                            System.out.println("Id " + n.getId() +"avatar "+ n.getAvatar());
-                        }
-                  *//*      items.add(new Item(canalIcon, newPicture, "Vazgen.com", false, 777, 100747, "In the Democratic contest, Hillary Clinton beat Vermont Senator Bernie Sanders in a tight race in Nevada.", Constants.STATUS_NOT_ADDED));
-                        items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
-                        items.add(new Item(canalIcon, newPicture, "NightAmerica",false, 100, 351237, "Donald Trump has won the South Carolina primary in the Republican race for president.", Constants.STATUS_WAS_ADDED));
-                        items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
-                *//*    }
-              //      mProgressDialog.dismiss();
+        }
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        if(mCategory.equals(Constants.CATEGORY_ALL))
+        {
+            for (News n : news) {
+                    mNews.add(n);
 
             }
-        });
-        threadA.start();*/
-
-
+        }
+        else
+        {
+            for (News n : news) {
+                if (n.getCategory().equals(mCategory)) {
+                    mNews.add(n);
+                }
+            }
+        }
 
 
     }
-    class MyAsyncTask extends AsyncTask<String,Integer, NewsLab>
+
+
+    /**
+     * The fragment argument representing the section number for this
+     * fragment.
+     */
+
+
+    /**
+     * Returns a new instance of this fragment for the given section
+     * number.
+     */
+
+
+
+
+
+
+   /* class MyAsyncTask extends AsyncTask<String,Integer, NewsLab>
 
     {
         ProgressDialog pDialog;
@@ -145,11 +142,11 @@ public abstract class NewsListFragment extends ListFragment  {
                         System.out.println("*************");
                         System.out.println("Id " + n.getId() +"avatar "+ n.getAvatar());
                     }
-                  /*      items.add(new Item(canalIcon, newPicture, "Vazgen.com", false, 777, 100747, "In the Democratic contest, Hillary Clinton beat Vermont Senator Bernie Sanders in a tight race in Nevada.", Constants.STATUS_NOT_ADDED));
+                  *//*      items.add(new Item(canalIcon, newPicture, "Vazgen.com", false, 777, 100747, "In the Democratic contest, Hillary Clinton beat Vermont Senator Bernie Sanders in a tight race in Nevada.", Constants.STATUS_NOT_ADDED));
                         items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
                         items.add(new Item(canalIcon, newPicture, "NightAmerica",false, 100, 351237, "Donald Trump has won the South Carolina primary in the Republican race for president.", Constants.STATUS_WAS_ADDED));
                         items.add(new Item(canalIcon, newPicture, "UkraineNews", true, 123, 13257, "Will be key ahead of the  Super Tuesday round on 1 March, when a dozen more states make their choice.", Constants.STATUS_NOT_ADDED));
-                */    }
+                *//*    }
                 //      mProgressDialog.dismiss();
 
             } catch (IOException e) {
@@ -181,21 +178,21 @@ public abstract class NewsListFragment extends ListFragment  {
             }
 
         }
-    }
+    }*/
 
-    private  class Item {
-        public final Bitmap canalImage;
+   /* private  class Item {
+        public final String canalImage;
         public final String newsImage;
         public final String canalTitle;
         public final boolean isLiked;
-        public final int likeCount;
+        public final String likeCount;
         public final long millisecondsDuring;
         public final String description;
         public final int status;
         public final String audioId;
 
 
-        public Item(Bitmap canalImage, String newsImage, String canalTitle,boolean isLiked, int likeCount, long millisecondsDuring, String description, int status, String audioId) {
+        public Item(String canalImage, String newsImage, String canalTitle,boolean isLiked, String likeCount, long millisecondsDuring, String description, int status, String audioId) {
             this.canalImage = canalImage;
             this.newsImage = newsImage;
             this.canalTitle = canalTitle;
@@ -207,8 +204,9 @@ public abstract class NewsListFragment extends ListFragment  {
             this.audioId = audioId;
         }
     }
-
-    private  class ViewHolder {
+*/
+    private class ViewHolder {
+        public final LinearLayout newsHeader;
         public final RelativeLayout newsFeed;
         public final ImageView canalImage;
         public final ImageView newsImage;
@@ -220,7 +218,7 @@ public abstract class NewsListFragment extends ListFragment  {
         public final ImageButton statusButton;
 
 
-        public ViewHolder(ImageView canalImage, ImageView newsImage, TextView canalTitle, ImageView likeView, TextView likeCount, TextView time, TextView description, ImageButton statusButton, RelativeLayout newsFeed) {
+        public ViewHolder(ImageView canalImage, ImageView newsImage, TextView canalTitle, ImageView likeView, TextView likeCount, TextView time, TextView description, ImageButton statusButton, RelativeLayout newsFeed, LinearLayout newsHeader) {
             this.canalImage = canalImage;
             this.newsImage = newsImage;
             this.canalTitle = canalTitle;
@@ -230,22 +228,25 @@ public abstract class NewsListFragment extends ListFragment  {
             this.description = description;
             this.statusButton = statusButton;
             this.newsFeed = newsFeed;
+            this.newsHeader = newsHeader;
         }
     }
 
-    private class ItemAdapter extends ArrayAdapter<Item> {
+    private class ItemAdapter extends ArrayAdapter<News> {
+        LinearLayout newsHeader;
         RelativeLayout newsFeed;
-        ImageView canalImage ;
+        ImageView canalImage;
         ImageView newsImage;
-        TextView canalTitle ;
+        TextView canalTitle;
         ImageView likeView;
-        TextView likeCount ;
-        TextView time ;
-        TextView description ;
+        TextView likeCount;
+        TextView time;
+        TextView description;
         ImageButton statusButton;
 
         public ItemAdapter(Context context) {
-            super(context, R.layout.news_list_item, items);
+            super(context, R.layout.news_list_item, mNews);
+
         }
 
         @Override
@@ -254,16 +255,17 @@ public abstract class NewsListFragment extends ListFragment  {
             ViewHolder holder = null;
             if (view == null) {
                 view = LayoutInflater.from(getContext()).inflate(R.layout.news_list_item, parent, false);
-                 newsFeed = (RelativeLayout)view.findViewById(R.id.news_feed);
+                newsHeader= (LinearLayout) view.findViewById(R.id.news_header);
+                newsFeed = (RelativeLayout) view.findViewById(R.id.news_feed);
                 canalImage = (ImageView) view.findViewById(R.id.canal_icon_ImageVew);
-                 newsImage = (ImageView) view.findViewById(R.id.news_picture_imageView);
+                newsImage = (ImageView) view.findViewById(R.id.news_picture_imageView);
                 canalTitle = (TextView) view.findViewById(R.id.canal_title_TextView);
-                likeView = (ImageView)view.findViewById(R.id.like_ImageView);
-               likeCount = (TextView) view.findViewById(R.id.like_count_TextView);
+                likeView = (ImageView) view.findViewById(R.id.like_ImageView);
+                likeCount = (TextView) view.findViewById(R.id.like_count_TextView);
                 time = (TextView) view.findViewById(R.id.news_date_TextView);
-                 description = (TextView) view.findViewById(R.id.news_description_textView);
-                 statusButton = (ImageButton)view.findViewById(R.id.news_status_ImageButton);
-                view.setTag(new ViewHolder(canalImage, newsImage, canalTitle,likeView, likeCount, time, description, statusButton, newsFeed));
+                description = (TextView) view.findViewById(R.id.news_description_textView);
+                statusButton = (ImageButton) view.findViewById(R.id.news_status_ImageButton);
+                view.setTag(new ViewHolder(canalImage, newsImage, canalTitle, likeView, likeCount, time, description, statusButton, newsFeed, newsHeader));
             }
             if (holder == null && view != null) {
                 Object tag = view.getTag();
@@ -271,82 +273,133 @@ public abstract class NewsListFragment extends ListFragment  {
                     holder = (ViewHolder) tag;
                 }
             }
-            final Item item = getItem(position);
-            if (item != null && holder != null) {
-                imageLoader.displayImage(item.newsImage,holder.newsImage, loaderOptions);
-           //     Picasso.with(getActivity())
-             //           .load(item.newsImage)
-               //         .into( holder.newsImage);
-        //       holder.canalImage.setImageBitmap(item.canalImage);
-          //      holder.newsImage.setImageBitmap(item.newsImage);
-                int textColor = getTextColor();
-                holder.canalTitle.setText(item.canalTitle);
-                holder.likeCount.setText("" + item.likeCount);
-                holder.canalTitle.setTextColor(getTextColor());
-             //   holder.time.setText(""+item.millisecondsDuring);
-                holder.time.setTextColor(textColor);
-                holder.description.setText(item.description);
-                holder.description.setTextColor(textColor);
-                holder.newsFeed.setTag(position);
-                holder.newsFeed.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent i = new  Intent(getContext(), MediaPlayerFragmentActivity.class);
-                        i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.audioId);
-                        startActivity(i);
 
-                        Log.d(TAG, "List_item onCLick" + " " + (v.getTag()));
-                   }
+
+            final News item = getItem(position);
+            if (item != null && holder != null) {
+                int textColor = getTextColor();
+                if (mCategory.equals(Constants.CATEGORY_STORY)) {
+                    holder.newsHeader.setVisibility(View.GONE);
+                    holder.time.setVisibility(View.GONE);
+                    holder.description.setText(item.getTitle() + '\n' + item.getContent());
+                    holder.description.setTextColor(textColor);
+                    imageLoader.displayImage(item.getPictureNews(), holder.newsImage, DisplayImageLoaderOptions.getInstance());
+                    holder.newsFeed.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                       /*     Intent i = new Intent(getContext(), MediaPlayerFragmentActivity.class);
+                            i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.getLinksong());
+                            startActivity(i);*/
+
+                            Log.d(TAG, "List_item onCLick" + " " + (v.getTag()));
+                        }
+                    });
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) holder.newsFeed.getLayoutParams();
+                    params.setMargins(0, 0, 52, 0);
+                    holder.newsFeed.setLayoutParams(params);
+                    FrameLayout.LayoutParams paramsBtn = (FrameLayout.LayoutParams) holder.statusButton.getLayoutParams();
+                    paramsBtn.setMargins(0, 0, 0, 0);
+                    holder.statusButton.setLayoutParams(paramsBtn);
+                } else {
+                    Author author = AuthorLab.getInstance().getAuthor(item.getIdauthor());
+                    if (author == null) {
+                        author = new Author();
+                        author.setAvatar(Constants.EMPTY_LINK_IMAGE);
+                        author.setId("-1");
+                        author.setName("No canal");
+                    }
+                    String authorAvatar = author.getAvatar();
+                    String authorName = author.getName();
+                    if (authorAvatar == null) {
+                        authorAvatar = Constants.EMPTY_LINK_IMAGE;
+
+                    }
+                    if(authorName == null)
+                    {
+                        authorName = "No canal";
+                    }
+                    imageLoader.displayImage(item.getPictureNews(), holder.newsImage, DisplayImageLoaderOptions.getInstance());
+                    imageLoader.displayImage(authorAvatar, holder.canalImage, DisplayImageLoaderOptions.getRoundedInstance());
+                    //     Picasso.with(getActivity())
+                    //           .load(item.newsImage)
+                    //         .into( holder.newsImage);
+                    //       holder.canalImage.setImageBitmap(item.canalImage);
+                    //      holder.newsImage.setImageBitmap(item.newsImage);
+                    holder.canalTitle.setText(authorName);
+                    holder.likeCount.setText(item.getLikes());
+                    holder.canalTitle.setTextColor(getTextColor());
+                    //   holder.time.setText(""+item.millisecondsDuring);
+                    holder.time.setTextColor(textColor);
+                    holder.description.setText(item.getTitle() + '\n' + item.getContent());
+                    holder.description.setTextColor(textColor);
+                    holder.newsFeed.setTag(position);
+                    holder.newsFeed.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent i = new Intent(getContext(), MediaPlayerFragmentActivity.class);
+                            i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.getLinksong());
+                            startActivity(i);
+                            Log.d(TAG, "List_item onCLick" + " " + (v.getTag()));
+                        }
+                    });
+                    //holder.statusButton.setTag(position);
+                    setLikeView(holder.likeCount, holder.likeView, UserLab.getInstance().isLikedNews((item.getId()).trim()));
+
+                    //  getTime(item.millisecondsDuring)
+                }
+            //    holder.statusButton.setTag(position);
+                final String id = (item.getId()).trim();
+                holder.statusButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+                        NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
+                        Call<DataPost> call = nApi.addNews(id);
+                        call.enqueue(new Callback<DataPost>() {
+                            @Override
+                            public void onResponse(Call<DataPost> call, Response<DataPost> response) {
+                                if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
+                                    UserLab.getInstance().addNews(NewsLab.getInstance().getNewsItem(id));
+                                    int status = Constants.STATUS_NOT_ADDED;
+                                    if (UserLab.getInstance().isAddedNews(id)) {
+                                        status = Constants.STATUS_WAS_ADDED;
+                                    }
+                                    setStatusImageButton((ImageButton)v, status);
+
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<DataPost> call, Throwable t) {
+
+                            }
+                        });
+
+                    }
                 });
-                holder.statusButton.setTag(position);
-                setLikeView(holder.likeCount, holder.likeView, item.isLiked);
-               setStatusImageButton(holder.statusButton, item.status);
-              //  getTime(item.millisecondsDuring)
+
+
+                int status = Constants.STATUS_NOT_ADDED;
+                if (UserLab.getInstance().isAddedNews(id)) {
+                    status = Constants.STATUS_WAS_ADDED;
+                }
+                setStatusImageButton(holder.statusButton, status);
+
             }
             return view;
         }
+
         private View.OnClickListener mClickListenerItem = new View.OnClickListener() {
 
             public void onClick(View v) {
-                if(v.getId() ==  statusButton.getId())
-                {
+                if (v.getId() == statusButton.getId()) {
 
-                }
-                else
-                {
+                } else {
 
                 }
 
             }
         };
 
-    }
-
-
-    public Bitmap getRoundedShape(Bitmap scaleBitmapImage) {
-
-        int targetHeight= scaleBitmapImage.getHeight();
-        int targetWidth =  scaleBitmapImage.getWidth();
-        Bitmap targetBitmap = Bitmap.createBitmap(targetWidth,
-                targetHeight, Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(targetBitmap);
-        Path path = new Path();
-        path.addCircle(((float) targetWidth - 1) / 2,
-                ((float) targetHeight - 1) / 2,
-                (Math.min(((float) targetWidth),
-                        ((float) targetHeight)) / 2),
-                Path.Direction.CCW);
-
-        canvas.clipPath(path);
-        Bitmap sourceBitmap = scaleBitmapImage;
-
-
-        canvas.drawBitmap(sourceBitmap,
-                new Rect(0, 0, sourceBitmap.getWidth(),
-                        sourceBitmap.getHeight()),
-                new Rect(0, 0, targetWidth, targetHeight), null);
-        return targetBitmap;
     }
 
 
@@ -376,14 +429,14 @@ public abstract class NewsListFragment extends ListFragment  {
         return finalTimerString;
     }
 
-  abstract void setStatusImageButton(ImageButton statusImageButton,final int newsStatus);
+    abstract void setStatusImageButton(ImageButton statusImageButton, final int newsStatus);
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.news_listview, container, false);
 
-        return  view;
+        return view;
     }
 
     @Override
@@ -394,11 +447,16 @@ public abstract class NewsListFragment extends ListFragment  {
         adapter = new ItemAdapter(getActivity());
         setListAdapter(adapter);
 
-        TextView tv = (TextView)getListView().getEmptyView();
+        TextView tv = (TextView) getListView().getEmptyView();
         //    TextView tv = (TextView)view.findViewById(R.id.empty);
         tv.setText(getEmpty());
+        tv.setTextColor(getTextColor());
     }
+
     abstract String getEmpty();
-    abstract int  getTextColor();
+
+    abstract int getTextColor();
+
     abstract void setLikeView(TextView likeTextView, ImageView likeImageView, boolean isLiked);
+
 }

@@ -4,22 +4,15 @@ package com.newstee.model.data;
  * Created by Arnold on 09.04.2016.
  */
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.newstee.R;
 import com.newstee.network.interfaces.NewsTeeApiInterface;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -28,6 +21,7 @@ public class NewsLab {
 
     private List<News> mNews = new ArrayList<>();
     private static NewsLab sNewsLab;
+    private IDataLoading mIDataLoading;
     private Context mAppContext;
     private Gson gson = new GsonBuilder().create();
     private Retrofit retrofit = new Retrofit.Builder()
@@ -35,22 +29,21 @@ public class NewsLab {
             .baseUrl(NewsTeeApiInterface.BASE_URL)
             .build();
     private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);
-    private NewsLab(Context appContext) {
-        mAppContext = appContext;
-        loadNews();
+    private NewsLab() {
+
+      //  loadNews();
     }
 
-    public static NewsLab getInstance(Context context){
+    public static NewsLab getInstance(){
         if (sNewsLab == null) {
-            sNewsLab = new NewsLab(context.getApplicationContext());
+            sNewsLab = new NewsLab();
         }
         return sNewsLab;
     }
-    public void loadNews()
+   /* public void loadNews()
     {
-        NewsAsyncTask task = new NewsAsyncTask();
-       task.execute();
-    }
+
+    }*/
     public List<News> getNews() {
         return mNews;
     }
@@ -66,7 +59,7 @@ public class NewsLab {
         return null;
     }
 
-    private  class NewsAsyncTask extends AsyncTask<String,Integer, DataNews>
+ /*   private  class NewsAsyncTask extends AsyncTask<String,Integer, DataNews>
 
     {
         ProgressDialog pDialog;
@@ -74,7 +67,39 @@ public class NewsLab {
 
         @Override
         protected DataNews doInBackground(String... params) {
+            TagLab.getInstance(mAppContext, new IDataLoading() {
+                @Override
+                public void onPreLoad() {
 
+                }
+
+                @Override
+                public void onPostLoad() {
+
+                }
+            });
+            AuthorLab.getInstance(mAppContext, new IDataLoading() {
+                @Override
+                public void onPreLoad() {
+
+                }
+
+                @Override
+                public void onPostLoad() {
+
+                }
+            });
+            AudioLab.getInstance(mAppContext, new IDataLoading() {
+                @Override
+                public void onPreLoad() {
+
+                }
+
+                @Override
+                public void onPostLoad() {
+
+                }
+            });
             Call<DataNews> call = newsTeeApiInterface.getNews();
             DataNews dataNews = new DataNews();
             try {
@@ -82,7 +107,7 @@ public class NewsLab {
                 dataNews = response.body();
                 mNews = dataNews.getNews();
                
-            /*    if(songId.equals("3") )
+            *//*    if(songId.equals("3") )
                 {
                     songId = "2";
                 }
@@ -93,7 +118,7 @@ public class NewsLab {
                         songUrl = a.getSource();
                         break;
                     }
-                }*/
+                }*//*
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -109,19 +134,24 @@ public class NewsLab {
             pDialog.setMessage(mAppContext.getString(R.string.loadingNews));
             pDialog.setIndeterminate(true);
             pDialog.setCancelable(false);
-            pDialog.show();       }
-
+    //        pDialog.show();
+        mIDataLoading.onPreLoad();
+        }
         @Override
         protected void onPostExecute( DataNews dataNews) {
             super.onPostExecute(dataNews);
+        //    pDialog.dismiss();
             Toast toast = Toast.makeText(mAppContext, dataNews.getResult(), Toast.LENGTH_SHORT);
+            toast.show();
+
+            mIDataLoading.onPostLoad();
             //      pDialog.dismiss();
             //  Uri trackUri =Uri.parse(songUrl);
-       /*         ContentUris.withAppendedId(
+       *//*         ContentUris.withAppendedId(
                 android.provider.MediaStore.News.Media.EXTERNAL_CONTENT_URI,
-                currSong);*/
+                currSong);*//*
             //set the data source
-      /*      try{
+      *//*      try{
 
                 player.setDataSource(songUrl);
                 player.prepare();
@@ -131,9 +161,9 @@ public class NewsLab {
                 Log.e("MUSIC SERVICE", "Error setting data source", e);
             }
 
+        }
+    }
 */
 
 
-        }
-    }
 }

@@ -3,12 +3,12 @@
     <color name="colorPrimary">#1D2C30</color>
     <color name="colorPrimaryDark">#003333</color>
 
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#0066ff</color>
     <color name="colorBackground">#F2F2F2</color>
 
     <color name="bg_login">#26ae90</color>
     <color name="bg_register">#2e3237</color>
-    <color name="bg_main">#428bca</color>
+    <color name="bg_main">#0066ff</color>
     <color name="white">#ffffff</color>
     <color name="input_login">#222222</color>
     <color name="input_login_hint">#999999</color>
@@ -20,6 +20,6 @@
     <color name="lbl_name">#333333</color>
     <color name="btn_logut_bg">#ff6861</color>
     <color name ="car_mode_back_color">#121A1C</color>
-    <color name = "edit_profile_header">#00B2FF</color>
+    <color name = "edit_profile_header">#0066ff</color>
 
 </resources>

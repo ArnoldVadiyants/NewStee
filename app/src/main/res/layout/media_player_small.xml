@@ -3,14 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/frameLayout"
-             android:background="@color/colorPrimary">
+    >
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/outer_margin_medium"
-        android:background="@color/colorBackground"
         android:layout_marginBottom="2dp">
 
         <ImageView

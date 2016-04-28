@@ -7,10 +7,8 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,7 +45,7 @@ public class CatalogFragment extends Fragment {
     private Intent playIntent;
     //binding
     private boolean musicBound = false;
-    private CatalogPagerAdapter mCatalogPagerAdapter;
+   // private CatalogPagerAdapter mCatalogPagerAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -131,6 +129,7 @@ if(!musicSrv.isNullPlayer())
     //start and bind the service when the activity starts
     @Override
     public void onStart() {
+
         super.onStart();
         Log.d(TAG, "******onStart*****");
         connectService();
@@ -200,8 +199,11 @@ if(!musicSrv.isNullPlayer())
         });
         mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_titlet_TextView);
 mediaPlayer.setVisibility(View.GONE);
-
-        CatalogPagerAdapter mCatalogPagerAdapter = new CatalogPagerAdapter(getChildFragmentManager());
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        Fragment fragment  = CatalogListFragment.newInstance(false);
+        fm.beginTransaction().add(R.id.catalog_container, fragment)
+                .commit();
+       /* CatalogPagerAdapter mCatalogPagerAdapter = new CatalogPagerAdapter(getChildFragmentManager());
         // Set up the ViewPager with the sections adapter.
         ViewPager mViewPager = (ViewPager) rootView.findViewById(R.id.catalog_container);
         mViewPager.setAdapter(mCatalogPagerAdapter);
@@ -209,7 +211,7 @@ mediaPlayer.setVisibility(View.GONE);
 
 
         TabLayout tabLayout = (TabLayout) rootView.findViewById(R.id.catalog_tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setupWithViewPager(mViewPager);*/
        /* View article_view =  rootView.findViewById(R.id.theme_article_item);
             article_icon = (ImageView) article_view.findViewById(R.id.item_icon);
             article_titleTextView = (TextView) article_view.findViewById(R.id.item_title);
@@ -232,7 +234,7 @@ mediaPlayer.setVisibility(View.GONE);
         return rootView;
     }
 
-    public class CatalogPagerAdapter extends FragmentPagerAdapter {
+   /* public class CatalogPagerAdapter extends FragmentPagerAdapter {
 
         public CatalogPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -259,13 +261,13 @@ mediaPlayer.setVisibility(View.GONE);
 
         @Override
         public CharSequence getPageTitle(int position) {
-            /*Drawable image = ContextCompat.getDrawable(getApplicationContext(), R.drawable.tab_image_thread);
+            *//*Drawable image = ContextCompat.getDrawable(getApplicationContext(), R.drawable.tab_image_thread);
             image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
             SpannableString sb = new SpannableString(" ");
             ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
             sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            return sb;*/
-           /* switch (position) {
+            return sb;*//*
+           *//* switch (position) {
                 case 0:
                     return (getResources().getString(R.string.lenta)).toUpperCase();
                 case 1:
@@ -273,7 +275,7 @@ mediaPlayer.setVisibility(View.GONE);
                 case 2:
                     return (getResources().getString(R.string.play_list)).toUpperCase();
             }
-            return null;*/
+            return null;*//*
 
             switch (position) {
                 case 0:
@@ -287,31 +289,9 @@ mediaPlayer.setVisibility(View.GONE);
         }
 
 
-    }
-
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
+    }*/
 
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
 
-
-    }
 }
 

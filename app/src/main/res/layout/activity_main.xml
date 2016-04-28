@@ -9,6 +9,19 @@
               android:theme="@style/AppTheme.AppBarOverlay">
     <include layout="@layout/toolbar" android:id="@+id/main_toolbar"/>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/main_progress"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:layout_gravity="center"/>
+    </FrameLayout>
+
     <android.support.v4.view.ViewPager
         android:id="@+id/container"
         android:layout_width="match_parent"
@@ -16,19 +29,24 @@
         android:layout_weight="1"
         />
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary">
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimary">
+        </FrameLayout>
 
         <android.support.design.widget.TabLayout
                 android:id="@+id/tabs"
                 style="@style/MyCustomTabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                />
-    </FrameLayout>
+            />
+    </LinearLayout>
 
 </LinearLayout>
 

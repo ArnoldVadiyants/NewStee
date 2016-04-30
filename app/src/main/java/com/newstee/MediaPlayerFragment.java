@@ -38,6 +38,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     private ImageButton btnPrevious;
     private ImageButton btnPlaylist;
     private SeekBar songProgressBar;
+    private SeekBar volumeSeekBar;
     private TextView songTitleLabel;
     private TextView songCurrentDurationLabel;
     private TextView songTotalDurationLabel;
@@ -102,11 +103,34 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         Log.d("asff", btnForward.getWidth()+"  " + btnBackward.getHeight());
         btnPrevious = (ImageButton) root.findViewById(R.id.prev);
         btnPlaylist = (ImageButton) root.findViewById(R.id.play_list_imageButton);
+        volumeSeekBar = (SeekBar)root.findViewById(R.id.volume_seekBar);
         songProgressBar = (SeekBar) root.findViewById(R.id.during_seekBar);
         songTitleLabel = (TextView) root.findViewById(R.id.title_TextView);
         songCurrentDurationLabel = (TextView) root.findViewById(R.id.curent_time_TextView);
         songTotalDurationLabel = (TextView) root.findViewById(R.id.total_time_TextView);
         utils = new Utilities();
+
+        volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(musicSrv == null) {
+                    return;
+                }
+                    musicSrv.setVolume(progress);
+
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         songProgressBar.setOnSeekBarChangeListener(this);
         btnPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -221,6 +245,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
             musicSrv = binder.getService();
             //pass catalogue
             musicBound = true;
+            volumeSeekBar.setProgress(musicSrv.getVolume());
             playSong(getArguments().getString(MediaPlayerFragmentActivity.ARG_AUDIO_ID));
 
         }

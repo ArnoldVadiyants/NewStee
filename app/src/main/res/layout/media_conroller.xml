@@ -180,7 +180,9 @@
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/icon_margin"
-            android:layout_marginRight="@dimen/icon_margin"/>
+            android:layout_marginRight="@dimen/icon_margin"
+            android:max="50"
+            android:progress="50"/>
 
         <ImageButton
             android:layout_width="@dimen/icon_size_small"

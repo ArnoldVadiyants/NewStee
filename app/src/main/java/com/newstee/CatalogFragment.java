@@ -199,10 +199,16 @@ if(!musicSrv.isNullPlayer())
         });
         mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_titlet_TextView);
 mediaPlayer.setVisibility(View.GONE);
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        Fragment fragment  = CatalogListFragment.newInstance(false);
-        fm.beginTransaction().add(R.id.catalog_container, fragment)
-                .commit();
+
+        new Handler().post(new Runnable() {
+            public void run() {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                Fragment fragment  = CatalogListFragment.newInstance(false);
+                fm.beginTransaction().replace(R.id.catalog_container, fragment)
+                        .commit();
+            }
+        });
+
        /* CatalogPagerAdapter mCatalogPagerAdapter = new CatalogPagerAdapter(getChildFragmentManager());
         // Set up the ViewPager with the sections adapter.
         ViewPager mViewPager = (ViewPager) rootView.findViewById(R.id.catalog_container);

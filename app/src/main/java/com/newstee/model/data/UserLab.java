@@ -1,6 +1,7 @@
 package com.newstee.model.data;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.newstee.Constants;
 
@@ -9,13 +10,16 @@ import java.util.List;
 
 
 public class UserLab {
+    private final static String TAG = "UserLab";
     public static boolean isLogin = false;
     public List<News> getAddedNews() {
         return mAddedNews;
     }
 
     public void setAddedNews(List<News> mAddedNews) {
+
         this.mAddedNews = mAddedNews;
+        deleteNullNews(mAddedNews);
     }
 
     public List<News> getLikedNews() {
@@ -24,6 +28,7 @@ public class UserLab {
 
     public void setLikedNews(List<News> mLikedNews) {
         this.mLikedNews = mLikedNews;
+        deleteNullNews(mLikedNews);
     }
 
     public List<Tag> getAddedTags() {
@@ -160,9 +165,15 @@ public class UserLab {
 
   public boolean isAddedNews(String newsId) {
         String s = newsId.trim();
+      int i =0;
         for(News news: mAddedNews)
         {
-
+            i++;
+            if(news == null)
+            {
+                Log.d(TAG, "@@@@@@@@@@@@@ news = null " + i);
+                continue;
+            }
             if((news.getId().trim()).equals(s))
             {
                 return true;
@@ -216,6 +227,18 @@ public class UserLab {
     {
 
     }*/
+public void deleteNullNews(List<News>news)
+{
+    List<News>nullNews = new ArrayList<>();
+    for(News n : news)
+    {
+        if(n == null)
+        {
+            nullNews.add(n);
+        }
+    }
+    news.removeAll(nullNews);
+}
 
 
 }

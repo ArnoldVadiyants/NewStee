@@ -2,7 +2,6 @@ package com.newstee;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -17,19 +16,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.newstee.utils.CircleTransform;
+import com.newstee.helper.SessionManager;
+import com.newstee.model.data.UserLab;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * Created by Arnold on 17.02.2016.
  */
 public class ProfileFragment extends Fragment {
     private Button editButton;
+    private SessionManager session;
 
+ImageLoader imageLoader = ImageLoader.getInstance();
+    LinearLayout profileInfo;
     ImageView backgroundImgView;
     ImageView avatarImgView;
+    TextView name;
+    TextView likes;
+    TextView subscribes;
 
   private ProfilePagerAdapter mProfilePagerAdapter;
 
@@ -37,6 +45,7 @@ public class ProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        session = new SessionManager(getActivity());
     }
 
     /**
@@ -54,20 +63,45 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        profileInfo = (LinearLayout)rootView.findViewById(R.id.profile_info_layout);
+        likes = (TextView)rootView.findViewById(R.id.profile_like_count);
+        subscribes = (TextView)rootView.findViewById(R.id.profile_subscribes_count);
+        name = (TextView)rootView.findViewById(R.id.profile_name_TextView);
+        backgroundImgView= (ImageView)rootView.findViewById(R.id.profile_background_imageView);
         avatarImgView = (ImageView)rootView.findViewById(R.id.profile_avatar_imageView);
-        BitmapFactory.Options o=new BitmapFactory.Options();
-        o.inSampleSize = 4;
-        o.inDither=false;                     //Disable Dithering mode
-        o.inPurgeable=true;
-        avatarImgView.setImageBitmap(new CircleTransform().transform(BitmapFactory.decodeResource(getResources(),R.drawable.avatar_test,o)));
-        editButton = (Button)rootView.findViewById(R.id.profile_edit_btn);
-        editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+       /* BitmapFactory.Options o=new BitmapFactory.Options();
+                o.inSampleSize = 4;
+                o.inDither=false;                     //Disable Dithering mode
+                o.inPurgeable=true;
+                avatarImgView.setImageBitmap(new CircleTransform().transform(BitmapFactory.decodeResource(getResources(), R.drawable.avatar_test, o)));
+               */ editButton = (Button)rootView.findViewById(R.id.profile_edit_btn);
+                editButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
                 getActivity().startActivity(new Intent(getContext(), EditProfileActivity.class));
                 Toast.makeText(getActivity(), "edit profile clicked", Toast.LENGTH_SHORT).show();
             }
         });
+        if(session.isLoggedIn())
+        {name.setVisibility(View.VISIBLE);
+            profileInfo.setVisibility(View.VISIBLE);
+            name.setText(UserLab.getInstance().getUser().getUserLogin());
+            likes.setText(""+UserLab.getInstance().getLikedNews().size());
+            subscribes.setText(""+UserLab.getInstance().getAddedTags().size());
+            /*String avatar = UserLab.getInstance().getUser().getAvatar();
+            if(avatar != null)
+            {
+                imageLoader.displayImage(avatar, avatarImgView, DisplayImageLoaderOptions.getRoundedInstance());
+                imageLoader.displayImage(avatar,backgroundImgView, DisplayImageLoaderOptions.getInstance());
+
+            }*/
+        }
+        else
+        {
+            name.setVisibility(View.GONE);
+            profileInfo.setVisibility(View.GONE);
+        }
         ProfilePagerAdapter mProfilePagerAdapter = new ProfilePagerAdapter(getChildFragmentManager());
         // Set up the ViewPager with the sections adapter.
         ViewPager mViewPager = (ViewPager)rootView.findViewById(R.id.profile_container);

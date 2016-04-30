@@ -16,10 +16,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newstee.helper.SessionManager;
 import com.newstee.model.data.Author;
 import com.newstee.model.data.AuthorLab;
 import com.newstee.model.data.DataPost;
-import com.newstee.model.data.NewsLab;
 import com.newstee.model.data.Tag;
 import com.newstee.model.data.TagLab;
 import com.newstee.model.data.UserLab;
@@ -37,6 +37,7 @@ import retrofit2.Response;
 public class CatalogListFragment extends ListFragment
 {
 	private final static String TAG = "CatalogListFragment";
+	private SessionManager session;
 	private  List<Item> items = new ArrayList<Item>();
 private CatalogListAdapter adapter;
 	private static final String ARG_IS_CANAL = "is_canal";
@@ -56,7 +57,7 @@ private CatalogListAdapter adapter;
 
 	public CatalogListFragment() {
 	}
-	@Override
+	/*@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		super.setUserVisibleHint(isVisibleToUser);
 		if(isVisibleToUser)
@@ -69,11 +70,12 @@ private CatalogListAdapter adapter;
 
 
 		}
-	}
+	}*/
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mIsCanal = getArguments().getBoolean(ARG_IS_CANAL);
+		session = new SessionManager(getActivity());
 		update();
 
 
@@ -178,18 +180,24 @@ private CatalogListAdapter adapter;
 
 						@Override
 						public void onClick(final View v) {
+							if(!session.isLoggedIn())
+							{
+								Toast.makeText(getContext(),"Пожалуйста, авторизуйтесь", Toast.LENGTH_SHORT).show();
+								return;
+
+							}
 							NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
 							Call<DataPost> call = nApi.addTags(id);
 							call.enqueue(new Callback<DataPost>() {
 								@Override
 								public void onResponse(Call<DataPost> call, Response<DataPost> response) {
 									if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
-										UserLab.getInstance().addNews(NewsLab.getInstance().getNewsItem(id));
+										UserLab.getInstance().addTag(TagLab.getInstance().getTag(id));
 
 										if (UserLab.getInstance().isAddedTag(id)) {
 											((ImageButton) v).setImageResource(R.drawable.ic_is_added);
 										} else {
-											((ImageButton) v).setImageResource(R.drawable.ic_add);
+											((ImageButton) v).setImageResource(R.drawable.news_to_add_button);
 										}
 
 
@@ -200,6 +208,7 @@ private CatalogListAdapter adapter;
 
 								@Override
 								public void onFailure(Call<DataPost> call, Throwable t) {
+
 									Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
 								}
 							});

@@ -15,8 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.newstee.model.data.DataPost;
-import com.newstee.model.data.NewsLab;
 import com.newstee.model.data.Tag;
+import com.newstee.model.data.TagLab;
 import com.newstee.model.data.UserLab;
 import com.newstee.network.FactoryApi;
 import com.newstee.network.interfaces.NewsTeeApiInterface;
@@ -176,10 +176,10 @@ public class ProfileListFragment extends ListFragment
 								@Override
 								public void onResponse(Call<DataPost> call, Response<DataPost> response) {
 									if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
-										UserLab.getInstance().addNews(NewsLab.getInstance().getNewsItem(id));
+										UserLab.getInstance().addTag(TagLab.getInstance().getTag(id));
 
 										if (UserLab.getInstance().isAddedTag(id)) {
-											((ImageButton) v).setImageResource(R.drawable.ic_is_added);
+											((ImageButton) v).setImageResource(R.drawable.news_to_add_button);
 										} else {
 											((ImageButton) v).setImageResource(R.drawable.ic_add);
 										}

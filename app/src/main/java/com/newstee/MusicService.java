@@ -1,7 +1,5 @@
 package com.newstee;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -24,9 +22,9 @@ public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener {
 
-
+    private final static int MAX_VOLUME = 50;
     private final static String TAG = "MusicService";
-
+    private int currentVolume = 50;
     public boolean getNewSongValue() {
         return newSongValue;
     }
@@ -105,6 +103,7 @@ public class MusicService extends Service implements
                 PowerManager.PARTIAL_WAKE_LOCK);
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
         //set listeners
+
         player.setOnPreparedListener(this);
         player.setOnCompletionListener(this);
         player.setOnErrorListener(this);
@@ -115,6 +114,30 @@ public class MusicService extends Service implements
   //      mNews=news;
     //}
     //binder
+    public int getVolume()
+    {
+
+        return currentVolume;
+       /* AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
+
+        int volumeLevel = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        return volumeLevel*100/maxVolume;*/
+    }
+
+    public void setVolume(int value)
+    {
+        currentVolume = value;
+        if(currentVolume == MAX_VOLUME)
+        {
+            player.setVolume(1, 1);
+            return;
+        }
+        float log1 = (float)(Math.log(MAX_VOLUME-currentVolume)/Math.log(MAX_VOLUME));
+        player.setVolume(1 - log1, 1-log1);
+
+    }
+
     public class MusicBinder extends Binder {
         MusicService getService() {
             return MusicService.this;
@@ -264,7 +287,7 @@ public class MusicService extends Service implements
         //start playback
         mp.start();
         //notification
-        Intent notIntent = new Intent(this, MediaPlayerFragmentActivity.class);
+       /* Intent notIntent = new Intent(this, MediaPlayerFragmentActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -275,11 +298,10 @@ public class MusicService extends Service implements
              //   .setSmallIcon()
                 .setTicker(songTitle)
                 .setOngoing(true)
-                .setDeleteIntent(pendInt)
                 .setContentTitle("Playing")
                 .setContentText(songTitle);
         Notification not = builder.build();
-        startForeground(NOTIFY_ID, not);
+        startForeground(NOTIFY_ID, not);*/
         paused = false;
         updateNewSongValue();
     }

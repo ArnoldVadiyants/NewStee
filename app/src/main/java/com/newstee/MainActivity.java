@@ -188,39 +188,38 @@ new Thread(new Runnable() {
     }
     public void updateData()
     {
-        if(session.isLoggedIn())
-        {
-            NewsTeeApiInterface api = FactoryApi.getInstance(this);
-            HashMap<String,String> userData =  db.getUserDetails();
+        NewsTeeApiInterface api = FactoryApi.getInstance(this);
+        if(session.isLoggedIn()) {
+
+            HashMap<String, String> userData = db.getUserDetails();
             String password = userData.get("password");
             String email = userData.get("email");
             System.out.println("@@@@@@ Пароль " + password + "@@@@ mail" + email);
             Call<DataUserAuthentication> userC = api.signIn(email, password, "ru");
-            userC.enqueue(new Callback<DataUserAuthentication>() {
-                @Override
-                public void onResponse(Call<DataUserAuthentication> call, Response<DataUserAuthentication> response) {
-                    String result = response.body().getResult();
-                    final String msg = response.body().getMessage();
-                    if (result.equals(Constants.RESULT_SUCCESS)) {
-                        User u = response.body().getData().get(0);
-                        UserLab.getInstance().setUser(u);
-                    } else {
-                        db.deleteUsers();
-                        session.setLogin(false);
-                                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-                    }
+            try {
+                Response<DataUserAuthentication> userR = userC.execute();
+                String result = userR.body().getResult();
+                final String msg = userR.body().getMessage();
+                if (result.equals(Constants.RESULT_SUCCESS)) {
+                    User u = userR.body().getData().get(0);
+                    UserLab.getInstance().setUser(u);
+                } else {
+                    db.deleteUsers();
+                    session.setLogin(false);
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                 }
-
-                @Override
-                public void onFailure(Call<DataUserAuthentication> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Отсутсвует интеренет соединение", Toast.LENGTH_LONG).show();
-                }
-            });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        NewsTeeApiInterface api = FactoryApi.getInstance(this);
+            Call<DataAuthor> authorC = api.getAuthors();
 
 
-        Call<DataAuthor> authorC = api.getAuthors();
+
+
+
+
+
 
     try {
         Response<DataAuthor> authorR = authorC.execute();

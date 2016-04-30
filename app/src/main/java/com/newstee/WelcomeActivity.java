@@ -31,9 +31,18 @@ public class WelcomeActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.welcome_layout);
-        db = new SQLiteHandler(getApplicationContext());
+
         session = new SessionManager(getApplicationContext());
+        if(session.isLoggedIn())
+        {
+            Intent intent = new Intent(WelcomeActivity.this,
+                    MainActivity.class);
+            startActivity(intent);
+            finish();
+
+        }
         mProgress = (ProgressBar)findViewById(R.id.welcome_progress);
         mProgress.setVisibility(View.GONE);
         btnFacebookReg = (ImageButton) findViewById(R.id.facebook_imageButton);
@@ -104,14 +113,7 @@ public class WelcomeActivity extends Activity {
                 finish();
             }
         });
-        if(session.isLoggedIn())
-        {
-            Intent intent = new Intent(WelcomeActivity.this,
-                    MainActivity.class);
-            startActivity(intent);
-            finish();
-            hideContent();
-        }
+
 
 
     }

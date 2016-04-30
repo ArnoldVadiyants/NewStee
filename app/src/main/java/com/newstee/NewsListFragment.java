@@ -53,11 +53,12 @@ public abstract class NewsListFragment extends ListFragment {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
+            Log.d("@@@@@@ " + TAG, isVisibleToUser+ "");
             if (adapter == null) {
                 return;
             }
-            update();
-            adapter.notifyDataSetChanged();
+         /*   update();
+            adapter.notifyDataSetChanged();*/
         }
 
 
@@ -99,16 +100,34 @@ public abstract class NewsListFragment extends ListFragment {
         }
 
         if(mCategory.equals(Constants.CATEGORY_ALL))
-        {
+        {int i =0;
             for (News n : news) {
+                i++;
+                if(n == null)
+                {
+                    Log.d(TAG, "@@@@@@@@@@@@@ n = null "+i);
+                    continue;
+                }
                 mNews.add(n);
-
             }
         }
         else
         {
+            int i =0;
             for (News n : news) {
-                if (n.getCategory().equals(mCategory)) {
+                i++;
+                if(n == null)
+                {
+                    Log.d(TAG, "@@@@@@@@@@@@@ n = null "+i);
+                    continue;
+                }
+                if(n.getCategory() == null)
+                {
+                    Log.d(TAG, "@@@@@@@@@@@@@ category = null"+i);
+                    continue;
+                }
+                if (n.getCategory().equals(mCategory))
+                {
                     mNews.add(n);
                 }
             }
@@ -447,6 +466,11 @@ public abstract class NewsListFragment extends ListFragment {
                             public void onResponse(Call<DataPost> call, Response<DataPost> response) {
                                 if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
                                     UserLab.getInstance().addNews(NewsLab.getInstance().getNewsItem(newsId));
+                                    int status = Constants.STATUS_NOT_ADDED;
+                                    if (UserLab.getInstance().isAddedNews(newsId)) {
+                                        status = Constants.STATUS_WAS_ADDED;
+                                    }
+                                    setStatusImageButton((ImageButton) v, status);
                                 } else {
                                     Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                                 }
@@ -457,11 +481,7 @@ public abstract class NewsListFragment extends ListFragment {
                                 Toast.makeText(getContext(), "Отсутствует интернет соединение", Toast.LENGTH_SHORT).show();
                             }
                         });
-                        int status = Constants.STATUS_NOT_ADDED;
-                        if (UserLab.getInstance().isAddedNews(newsId)) {
-                            status = Constants.STATUS_WAS_ADDED;
-                        }
-                        setStatusImageButton((ImageButton) v, status);
+
                     }
                 });
 

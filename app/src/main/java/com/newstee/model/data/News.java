@@ -32,7 +32,7 @@ public class News {
     @SerializedName("addition_time")
     @Expose
         private String additionTime;
-        @SerializedName("picture_news")
+        @SerializedName("linkpicture")
     @Expose
     private String pictureNews;
     @SerializedName("title")

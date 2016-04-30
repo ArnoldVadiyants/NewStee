@@ -8,6 +8,7 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.newstee.Constants;
 import com.newstee.network.interfaces.NewsTeeApiInterface;
 
 import java.util.ArrayList;
@@ -57,6 +58,18 @@ public class NewsLab {
             }
         }
         return null;
+    }
+    public List<News> getNewsAndArticles()
+    {
+        List<News>news = new ArrayList<>();
+        for(News n : mNews)
+        {
+            if(!n.getCategory().equals(Constants.CATEGORY_STORY))
+            {
+                news.add(n);
+            }
+        }
+        return news;
     }
 
  /*   private  class NewsAsyncTask extends AsyncTask<String,Integer, DataNews>

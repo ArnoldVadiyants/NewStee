@@ -143,12 +143,13 @@ public class RegisterActivity extends Activity {
                         public void onResponse(Call<DataUserAuthentication> call, Response<DataUserAuthentication> response) {
                             String result = response.body().getResult();
 
-                            if (result.equals(Constants.RESULT_SUCCESS)) {
-                                User msg = response.body().getData().get(0);
-                                db.addUser(msg.getUserLogin(), msg.getUserEmail(), msg.getUserPassword());
-                                UserLab.getInstance().setUser(msg);
-                                hideDialog();
-                                session.setLogin(true);
+                                if (result.equals(Constants.RESULT_SUCCESS)) {
+                                    User data = response.body().getData().get(0);
+                                    db.addUser(data.getUserLogin(), email, password);
+                                    UserLab.getInstance().setUser(data);
+                                    UserLab.isLogin = true;
+                                    hideDialog();
+                                    session.setLogin(true);
                                 Intent intent = new Intent(
                                         RegisterActivity.this,
                                         MainActivity.class);

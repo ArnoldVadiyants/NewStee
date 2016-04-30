@@ -15,7 +15,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.newstee.helper.SessionManager;
 import com.newstee.model.data.Author;
 import com.newstee.model.data.AuthorLab;
 import com.newstee.model.data.DataPost;
@@ -37,6 +39,7 @@ import retrofit2.Response;
 public abstract class NewsListFragment extends ListFragment {
     private String mCategory;
     private String mArgument;
+    private SessionManager session;
     protected static final String ARG_CATEGORY = "category";
     protected static final String ARG_PARAMETER = "parameter";
 
@@ -46,10 +49,33 @@ public abstract class NewsListFragment extends ListFragment {
     ItemAdapter adapter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mCategory = getArguments().getString(ARG_CATEGORY, Constants.CATEGORY_NEWS);
-        mArgument = getArguments().getString(ARG_PARAMETER, Constants.ARGUMENT_NONE);
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if (isVisibleToUser) {
+            if (adapter == null) {
+                return;
+            }
+            update();
+            adapter.notifyDataSetChanged();
+        }
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adapter == null) {
+            return;
+        }
+        update();
+        adapter.notifyDataSetChanged();
+    }
+
+    private void update()
+    {
+        mNews = new ArrayList<>();
         List<News> news = new ArrayList<>();
         if(mArgument.equals(Constants.ARGUMENT_NONE))
         {
@@ -75,7 +101,7 @@ public abstract class NewsListFragment extends ListFragment {
         if(mCategory.equals(Constants.CATEGORY_ALL))
         {
             for (News n : news) {
-                    mNews.add(n);
+                mNews.add(n);
 
             }
         }
@@ -87,6 +113,16 @@ public abstract class NewsListFragment extends ListFragment {
                 }
             }
         }
+    }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        session   = new SessionManager(getActivity());
+        mCategory = getArguments().getString(ARG_CATEGORY, Constants.CATEGORY_NEWS);
+        mArgument = getArguments().getString(ARG_PARAMETER, Constants.ARGUMENT_NONE);
+       update();
 
 
     }
@@ -333,13 +369,59 @@ public abstract class NewsListFragment extends ListFragment {
                     holder.description.setText(item.getTitle() + '\n' + item.getContent());
                     holder.description.setTextColor(textColor);
                     holder.newsFeed.setTag(position);
+                    final String newsId = (item.getId()).trim();
                     holder.newsFeed.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent i = new Intent(getContext(), MediaPlayerFragmentActivity.class);
-                            i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.getLinksong());
-                            startActivity(i);
-                            Log.d(TAG, "List_item onCLick" + " " + (v.getTag()));
+                            if(session.isLoggedIn())
+                            {
+                                if(!UserLab.getInstance().isAddedNews(newsId))
+                                {
+                                    NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
+                                    Call<DataPost> call = nApi.addNews(newsId);
+                                    call.enqueue(new Callback<DataPost>() {
+                                        @Override
+                                        public void onResponse(Call<DataPost> call, Response<DataPost> response) {
+                                            if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
+                                                UserLab.getInstance().addNews(NewsLab.getInstance().getNewsItem(newsId));
+                                            } else {
+                                                Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                            PlayList.getInstance().setNewsList(UserLab.getInstance().getAddedNewsAndArticles());
+                                            Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
+                                            i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.getLinksong());
+                                            startActivity(i);
+
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<DataPost> call, Throwable t) {
+                                            Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                    int status = Constants.STATUS_NOT_ADDED;
+                                    if (UserLab.getInstance().isAddedNews(newsId)) {
+                                        status = Constants.STATUS_WAS_ADDED;
+                                    }
+                                    setStatusImageButton(statusButton, status);
+                                }
+                                else
+                                {
+                                    PlayList.getInstance().setNewsList(UserLab.getInstance().getAddedNewsAndArticles());
+                                    Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
+                                    i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.getLinksong());
+                                    startActivity(i);
+                                }
+                            }
+                            else
+                            {
+                                PlayList.getInstance().setNewsList(NewsLab.getInstance().getNewsAndArticles());
+                                Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
+                                i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.getLinksong());
+                                startActivity(i);
+                            }
+
+
                         }
                     });
                     //holder.statusButton.setTag(position);
@@ -348,38 +430,44 @@ public abstract class NewsListFragment extends ListFragment {
                     //  getTime(item.millisecondsDuring)
                 }
             //    holder.statusButton.setTag(position);
-                final String id = (item.getId()).trim();
+                final String newsId = (item.getId()).trim();
                 holder.statusButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(final View v) {
+                        if(!session.isLoggedIn())
+                        {
+                            Toast.makeText(getContext(),"Пожалуйста, авторизуйтесь", Toast.LENGTH_SHORT).show();
+                            return;
+
+                        }
                         NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
-                        Call<DataPost> call = nApi.addNews(id);
+                        Call<DataPost> call = nApi.addNews(newsId);
                         call.enqueue(new Callback<DataPost>() {
                             @Override
                             public void onResponse(Call<DataPost> call, Response<DataPost> response) {
                                 if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
-                                    UserLab.getInstance().addNews(NewsLab.getInstance().getNewsItem(id));
-                                    int status = Constants.STATUS_NOT_ADDED;
-                                    if (UserLab.getInstance().isAddedNews(id)) {
-                                        status = Constants.STATUS_WAS_ADDED;
-                                    }
-                                    setStatusImageButton((ImageButton)v, status);
-
+                                    UserLab.getInstance().addNews(NewsLab.getInstance().getNewsItem(newsId));
+                                } else {
+                                    Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<DataPost> call, Throwable t) {
-
+                                Toast.makeText(getContext(), "Отсутствует интернет соединение", Toast.LENGTH_SHORT).show();
                             }
                         });
-
+                        int status = Constants.STATUS_NOT_ADDED;
+                        if (UserLab.getInstance().isAddedNews(newsId)) {
+                            status = Constants.STATUS_WAS_ADDED;
+                        }
+                        setStatusImageButton((ImageButton) v, status);
                     }
                 });
 
 
                 int status = Constants.STATUS_NOT_ADDED;
-                if (UserLab.getInstance().isAddedNews(id)) {
+                if (UserLab.getInstance().isAddedNews(newsId)) {
                     status = Constants.STATUS_WAS_ADDED;
                 }
                 setStatusImageButton(holder.statusButton, status);
@@ -401,6 +489,7 @@ public abstract class NewsListFragment extends ListFragment {
         };
 
     }
+
 
 
     public String getTime(long milliseconds) {

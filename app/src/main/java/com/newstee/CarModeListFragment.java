@@ -19,7 +19,8 @@ import android.widget.TextView;
  */
 public class CarModeListFragment extends Fragment {
     private final static String TAG = "CarModeListFragment";
-
+private int mSection = 0;
+    private String mArgument = Constants.ARGUMENT_NONE;
 ImageView icon;
     TextView title;
     private PlayListPager mPlayListPager;
@@ -43,9 +44,9 @@ ImageView icon;
         icon =(ImageView) rootView.findViewById(R.id.car_mode_list_icon);
         title =(TextView) rootView.findViewById(R.id.car_mode_list_title);
 
-        int sectionNumber = getArguments().getInt(CarModeListActivity.ARG_SECTION_NUMBER);
+        mSection= getArguments().getInt(CarModeListActivity.ARG_SECTION_NUMBER);
 
-        switch (sectionNumber)
+        switch (mSection)
         {
             case CarModeListActivity.TAB_STREAM:
             {
@@ -55,6 +56,7 @@ ImageView icon;
             }
             case CarModeListActivity.TAB_MY_PLAYLIST:
             {
+                mArgument = Constants.ARGUMENT_NEWS_ADDED;
                 icon.setImageResource(R.drawable.play_clicked);
                 title.setText(getResources().getText(R.string.tab_play_list));
                 break;
@@ -117,13 +119,14 @@ ImageView icon;
 
         @Override
         public Fragment getItem(int position) {
+
             switch (position) {
                 case 0:
-                    return CarModeNewsListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_NEWS);
+                    return CarModeNewsListFragment.newInstance(mArgument,Constants.CATEGORY_NEWS);
                 case 1:
-                    return CarModeNewsListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_ARTICLE);
+                    return CarModeNewsListFragment.newInstance(mArgument,Constants.CATEGORY_ARTICLE);
                 case 2:
-                    return  CarModeNewsListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_STORY);
+                    return  CarModeNewsListFragment.newInstance(mArgument,Constants.CATEGORY_STORY);
             }
 
             return PlaceholderFragment.newInstance(position);

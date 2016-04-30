@@ -2,11 +2,14 @@ package com.newstee.model.data;
 
 import android.support.annotation.Nullable;
 
+import com.newstee.Constants;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class UserLab {
+    public static boolean isLogin = false;
     public List<News> getAddedNews() {
         return mAddedNews;
     }
@@ -141,6 +144,19 @@ public class UserLab {
             mAddedTags.remove(n);
         }
     }
+    public List<News> getAddedNewsAndArticles()
+    {
+        List<News>news = new ArrayList<>();
+        for(News n : mAddedNews)
+        {
+            if(!n.getCategory().equals(Constants.CATEGORY_STORY))
+            {
+                news.add(n);
+            }
+        }
+        return news;
+    }
+
 
   public boolean isAddedNews(String newsId) {
         String s = newsId.trim();
@@ -179,6 +195,13 @@ public class UserLab {
             }
         }
         return false;
+    }
+    public void resetData()
+    {
+        mUser = new User();
+        mAddedNews = new ArrayList<>();
+        mLikedNews = new ArrayList<>();
+        mAddedTags = new ArrayList<>();
     }
 
   /* public void signIn(Context c)

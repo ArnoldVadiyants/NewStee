@@ -11,9 +11,6 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 
-import com.newstee.model.data.AudioLab;
-
-import java.util.ArrayList;
 import java.util.Random;
 
 /*
@@ -52,15 +49,13 @@ public class MusicService extends Service implements
 
     //media play
     private boolean paused = false;
-
-    private AudioLab audioLab;
     private MediaPlayer player;
     //song catalogue
-    private ArrayList<Song> songs;
+   // private List<News> mNews;
     //current position
-    private int songPosn;
+    private int songPosition;
    // private String songId;
-    private String songUrl;
+  //  private String songUrl;
     //binder
     private final IBinder musicBind = new MusicBinder();
 
@@ -80,19 +75,19 @@ public class MusicService extends Service implements
         //create the service
         super.onCreate();
         //initialize position
-        songPosn=0;
+        songPosition =0;
         //random
         rand=new Random();
         //create play
         player = new MediaPlayer();
         //initialize
         initMusicPlayer();
-        new Thread(new Runnable() {
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 while(true)
                 {
-                    Log.d(TAG ,""+ songPosn );
+                    Log.d(TAG ,""+ songPosition );
 
                     try {
                         Thread.sleep(500);
@@ -101,7 +96,7 @@ public class MusicService extends Service implements
                     }
                 }
             }
-        }).start();
+        }).start();*/
     }
 
     public void initMusicPlayer(){
@@ -116,12 +111,9 @@ public class MusicService extends Service implements
     }
 
     //pass song catalogue
-    public void setList(ArrayList<Song> theSongs){
-        songs=theSongs;
-    }
-
-
-
+  //  public void setList(List<News> news){
+  //      mNews=news;
+    //}
     //binder
     public class MusicBinder extends Binder {
         MusicService getService() {
@@ -136,7 +128,7 @@ public class MusicService extends Service implements
     }
 
     //release resources when unbind
-    @Override
+  /*  @Override
     public boolean onUnbind(Intent intent){
         if(player != null) {
             if (player.isPlaying()) {
@@ -147,31 +139,27 @@ public class MusicService extends Service implements
         }
 
         return false;
-    }
+    }*/
 
     //play a song
-    public void playSong() {
+    public boolean playSong() {
         //     new AudioAsyncTask().execute();
 /*
         if (songId.equals("3")) {
             songId = "2";
         }*/
       //  audioLab = AudioLab.getInstance(getApplicationContext(), this);
-        try {
-      ///      songUrl = audioLab.getAudioItem(songId).getSource();
             try {
-
-                player.setDataSource(songUrl);
+                player.stop();
+                player.reset();
+                player.setDataSource(PlayList.getInstance().getNewsList().get(songPosition).getLinksong());
                 player.prepare();
                 player.start();
             } catch (Exception e) {
                 Log.e("MUSIC SERVICE", "Error setting data source", e);
+                return false;
             }
-
-        } catch (NullPointerException np) {
-
-        }
-
+        return true;
     }
 
 
@@ -251,8 +239,8 @@ public class MusicService extends Service implements
 
 
     //set the song
-    public void setSong(String songUrl){
-        this.songUrl=songUrl;
+    public void setSong(int songPosition){
+        this.songPosition=songPosition;
     }
 
     @Override
@@ -276,17 +264,18 @@ public class MusicService extends Service implements
         //start playback
         mp.start();
         //notification
-        Intent notIntent = new Intent(this, MainActivity.class);
+        Intent notIntent = new Intent(this, MediaPlayerFragmentActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification.Builder builder = new Notification.Builder(this);
-
+       // Icon i = Icon.createWithContentUri()
         builder.setContentIntent(pendInt)
-                .setSmallIcon(R.drawable.play)
+             //   .setSmallIcon()
                 .setTicker(songTitle)
                 .setOngoing(true)
+                .setDeleteIntent(pendInt)
                 .setContentTitle("Playing")
                 .setContentText(songTitle);
         Notification not = builder.build();
@@ -298,34 +287,33 @@ public class MusicService extends Service implements
 
     //playback methods
     public int getPosn(){
-        if(player != null)
+        if(player == null)
         {
-            return player.getCurrentPosition();
+            return 0;
         }
-       return 0;
+        return player.getCurrentPosition();
     }
 
     public int getDur(){
-        if(player != null)
+        if(player == null)
         {
-            return player.getDuration();
+            return 0;
         }
-        return 0;
-
+            return player.getDuration();
     }
     public boolean isNullPlayer(){
        return player==null;
     }
     public boolean isPlaying(){
-        if(player != null)
+        if(player == null)
         {
-            return player.isPlaying();
+          return false;
         }
-        return false;
+        return player.isPlaying();
     }
 
     public void pausePlayer(){
-        if( player == null)
+        if(player == null)
         {
             return;
         }
@@ -350,24 +338,23 @@ public class MusicService extends Service implements
 
     //skip to previous track
     public void playPrev(){
-
-        songPosn--;
-        if(songPosn<0) songPosn=songs.size()-1;
+        songPosition--;
+        if(songPosition <0) songPosition =PlayList.getInstance().getNewsList().size()-1;
         playSong();
     }
 
     //skip to next
     public void playNext(){
         if(shuffle){
-            int newSong = songPosn;
-            while(newSong==songPosn){
-                newSong=rand.nextInt(songs.size());
+            int newSong = songPosition;
+            while(newSong== songPosition){
+                newSong=rand.nextInt(PlayList.getInstance().getNewsList().size());
             }
-            songPosn=newSong;
+            songPosition =newSong;
         }
         else{
-            songPosn++;
-            if(songPosn>=songs.size()) songPosn=0;
+            songPosition++;
+            if(songPosition >=PlayList.getInstance().getNewsList().size()) songPosition =0;
         }
         playSong();
     }

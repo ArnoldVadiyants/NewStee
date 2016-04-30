@@ -7,11 +7,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+
+import com.newstee.helper.SQLiteHandler;
+import com.newstee.helper.SessionManager;
 
 /**
  * Created by Arnold on 03.03.2016.
  */
 public class WelcomeActivity extends Activity {
+    private SQLiteHandler db;
+    private SessionManager session;
+    private ProgressBar mProgress;
     private ImageButton btnFacebookReg;
     private ImageButton btnTwitterReg;
     private ImageButton btnGoogleReg;
@@ -22,8 +29,13 @@ public class WelcomeActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome_layout);
+        db = new SQLiteHandler(getApplicationContext());
+        session = new SessionManager(getApplicationContext());
+        mProgress = (ProgressBar)findViewById(R.id.welcome_progress);
+        mProgress.setVisibility(View.GONE);
         btnFacebookReg = (ImageButton) findViewById(R.id.facebook_imageButton);
         btnTwitterReg = (ImageButton) findViewById(R.id.twitter_imageButton);
         btnVkReg = (ImageButton) findViewById(R.id.vk_imageButton);
@@ -92,13 +104,43 @@ public class WelcomeActivity extends Activity {
                 finish();
             }
         });
+        if(session.isLoggedIn())
+        {
+            Intent intent = new Intent(WelcomeActivity.this,
+                    MainActivity.class);
+            startActivity(intent);
+            finish();
+            hideContent();
+        }
+
+
     }
+private  void showContent()
+{
+    btnFacebookReg.setVisibility(View.GONE);
+    btnTwitterReg.setVisibility(View.GONE);
+    btnVkReg.setVisibility(View.GONE);
+    btnGoogleReg.setVisibility(View.GONE);
+    btnRegistration.setVisibility(View.GONE);
+    layoutSignIn.setVisibility(View.GONE);
+    btnResume.setVisibility(View.GONE);
+    mProgress.setVisibility(View.VISIBLE);
+}
+    private  void hideContent()
+    {
+        btnFacebookReg.setVisibility(View.GONE);
+        btnTwitterReg.setVisibility(View.GONE);
+        btnVkReg.setVisibility(View.GONE);
+        btnGoogleReg.setVisibility(View.GONE);
+        btnRegistration.setVisibility(View.GONE);
+        layoutSignIn.setVisibility(View.GONE);
+        btnResume.setVisibility(View.GONE);
+        mProgress.setVisibility(View.GONE);
+    }
+
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(WelcomeActivity.this,
-                MainActivity.class);
-        startActivity(intent);
-        finish();
+        super.onBackPressed();
     }
 }

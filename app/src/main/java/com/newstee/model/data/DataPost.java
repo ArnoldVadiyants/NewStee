@@ -11,11 +11,12 @@ import javax.annotation.Generated;
 @Generated("org.jsonschema2pojo")
 public class DataPost {
 
-    @SerializedName("result")
+        @SerializedName("result")
     @Expose
     private String result;
-
-    private String data;
+    @SerializedName("data")
+    @Expose
+    private Object data;
     @SerializedName("message")
     @Expose
     private String message;
@@ -43,7 +44,7 @@ public class DataPost {
      * @return
      * The data
      */
-    public String getData() {
+    public Object getData() {
         return data;
     }
 
@@ -52,7 +53,7 @@ public class DataPost {
      * @param data
      * The data
      */
-    public void setData(String data) {
+    public void setData(Object data) {
         this.data = data;
     }
 

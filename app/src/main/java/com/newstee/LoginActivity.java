@@ -86,7 +86,7 @@ public class LoginActivity extends Activity {
                 } else {
                     // Prompt user to enter credentials
                     Toast.makeText(getApplicationContext(),
-                            "Please enter the credentials!", Toast.LENGTH_LONG)
+                            "Не все поля заполенены!", Toast.LENGTH_LONG)
                             .show();
                 }
             }
@@ -113,7 +113,7 @@ public class LoginActivity extends Activity {
         // Tag used to cancel the request
         String tag_string_req = "req_login";
 
-        pDialog.setMessage("Logging in ...");
+        pDialog.setMessage("Авторизация...");
         showDialog();
 
         Call<DataUserAuthentication> call = FactoryApi.getInstance(this).signIn(email, password, "ru");
@@ -123,11 +123,12 @@ public class LoginActivity extends Activity {
                 String result = response.body().getResult();
 
                 if (result.equals(Constants.RESULT_SUCCESS)) {
-                    User msg = response.body().getData().get(0);
-                    db.addUser(msg.getUserLogin(), msg.getUserEmail(), msg.getUserPassword());
-                    UserLab.getInstance().setUser(msg);
+                    User data = response.body().getData().get(0);
+                    db.addUser(data.getUserLogin(), email, password);
+                    UserLab.getInstance().setUser(data);
                     hideDialog();
                     session.setLogin(true);
+                    UserLab.isLogin = true;
                     Intent intent = new Intent(
                             LoginActivity.this,
                             MainActivity.class);

@@ -22,11 +22,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newstee.model.data.News;
+import com.newstee.model.data.NewsLab;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Arnold on 20.02.2016.
  */
 public class NewsThreadFragment extends Fragment {
+
+
     private LinearLayout startButton;
+    private ViewPager mViewPager;
     private PlayListPager mPlayListPager;
     private ImageButton filterButton;
     private final static String TAG = "NewsThreadFragment";
@@ -56,7 +65,34 @@ public class NewsThreadFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "add all news to playlist",Toast.LENGTH_SHORT ).show();
-            }
+                String category = null;
+                if(mViewPager.getCurrentItem() == 0)
+                {
+                    category = Constants.CATEGORY_NEWS;
+                }
+                else if(mViewPager.getCurrentItem() == 1) {
+                category = Constants.CATEGORY_ARTICLE;
+                }
+                if(category==null)
+                {
+                 return;
+                }
+                    List<News>news = NewsLab.getInstance().getNews();
+                    List<News>newsList= new ArrayList<News>();
+                    for(News n:news)
+                    {
+                        if(n.getCategory().equals(category))
+                        {
+                            newsList.add(n);
+                        }
+                    }
+                    PlayList.getInstance().setNewsList(newsList);
+                Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
+                i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, newsList.get(0).getLinksong());
+                startActivity(i);
+
+                }
+
         });
         filterButton= (ImageButton)rootView.findViewById(R.id.filter_imageButton);
         filterButton.setOnClickListener(new View.OnClickListener() {
@@ -92,10 +128,9 @@ public class NewsThreadFragment extends Fragment {
         mediaPlayer.setVisibility(View.GONE);
         mPlayListPager = new PlayListPager(getChildFragmentManager());
         // Set up the ViewPager with the sections adapter.
-        ViewPager mViewPager = (ViewPager)rootView.findViewById(R.id.thread_container);
+        mViewPager = (ViewPager)rootView.findViewById(R.id.thread_container);
         mViewPager.setAdapter(mPlayListPager);
         mViewPager.setCurrentItem(0);
-
         TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.thread_tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
@@ -201,9 +236,11 @@ public class NewsThreadFragment extends Fragment {
                 mpTitle.setText(musicSrv.getSongTitle());
             }
         }
-    }
-    public class PlayListPager extends FragmentPagerAdapter {
 
+    }
+
+    public class PlayListPager extends FragmentPagerAdapter {
+        public int current_position = 0;
         public PlayListPager(FragmentManager fm) {
             super(fm);
         }

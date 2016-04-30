@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 public class MediaPlayerFragmentActivity extends AppCompatActivity {
 
 	public  final static String ARG_AUDIO_ID = "audio_id";
+	public  final static String ARG_AUDIO_PLAY = "audio_play";
 	
 
 	@Override
@@ -15,11 +16,8 @@ public class MediaPlayerFragmentActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_fragment);
 		FragmentManager fm = getSupportFragmentManager();
-		Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
-		if (fragment == null) {
-			fragment = MediaPlayerFragment.newInstance(getIntent().getStringExtra(ARG_AUDIO_ID));
+		Fragment  fragment = MediaPlayerFragment.newInstance(getIntent().getStringExtra(ARG_AUDIO_ID));
 			fm.beginTransaction().add(R.id.fragmentContainer, fragment)
 					.commit();
-		}
 	}
 }

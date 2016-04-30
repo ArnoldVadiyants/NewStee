@@ -1,12 +1,9 @@
 package com.newstee;
 
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -21,10 +18,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.newstee.MusicService.MusicBinder;
+import com.newstee.model.data.News;
+import com.newstee.model.data.NewsLab;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by Arnold on 17.02.2016.
@@ -48,7 +46,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     private int seekForwardTime = 5000; // 5000 milliseconds
     private int seekBackwardTime = 5000; // 5000 milliseconds
     //song catalogue variables
-    private ArrayList<Song> songList;
+    private List<News> mNewsList;
     //service
     private MusicService musicSrv;
     private Intent playIntent;
@@ -64,7 +62,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        songList = new ArrayList<Song>();
+        mNewsList = new ArrayList<News>();
         getSongList();
 
         Log.d(TAG, "******onCreate*****");
@@ -222,7 +220,6 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
             //get service
             musicSrv = binder.getService();
             //pass catalogue
-            musicSrv.setList(songList);
             musicBound = true;
             playSong(getArguments().getString(MediaPlayerFragmentActivity.ARG_AUDIO_ID));
 
@@ -284,7 +281,8 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     //method to retrieve song info from device
     public void getSongList(){
         //query external audio
-        ContentResolver musicResolver = getActivity().getContentResolver();
+        mNewsList = NewsLab.getInstance().getNews();
+      /*  ContentResolver musicResolver = getActivity().getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
         //iterate over results if valid
@@ -309,22 +307,27 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
             public int compare(Song a, Song b) {
                 return a.getTitle().compareTo(b.getTitle());
             }
-        });
+        });*/
     }
 
-    public void  playSong(String audioUrl){
+    public void  playSong(@Nullable String audioUrl){
         // Play song
-        musicSrv.setSong(audioUrl);
-        musicSrv.playSong();
-            // Displaying Song title
-      //      String songTitle = songList.get(songIndex).getTitle();
-    //        songTitleLabel.setText(songTitle);
-        btnPlay.setImageResource(android.R.drawable.ic_media_pause);
-            // Changing Button Image to pause image
+        if(audioUrl !=null)
+        {
 
-            // set Progress bar values
-            songProgressBar.setProgress(0);
-            songProgressBar.setMax(100);
+            musicSrv.setSong(PlayList.getInstance().getPosition(audioUrl));
+            if(musicSrv.playSong())
+            {
+                btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+                songProgressBar.setProgress(0);
+                songProgressBar.setMax(100);
+            }
+            // Displaying Song title
+            //      String songTitle = songList.get(songIndex).getTitle();
+            //        songTitleLabel.setText(songTitle);
+
+
+        }
 
 
             // Updating progress bar

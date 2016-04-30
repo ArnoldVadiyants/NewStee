@@ -23,8 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.newstee.helper.SQLiteHandler;
 import com.newstee.helper.SessionManager;
 import com.newstee.model.data.AuthorLab;
@@ -40,13 +38,7 @@ import com.newstee.model.data.User;
 import com.newstee.model.data.UserLab;
 import com.newstee.network.FactoryApi;
 import com.newstee.network.interfaces.NewsTeeApiInterface;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
-import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.utils.StorageUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -54,8 +46,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private SessionManager session;
@@ -77,15 +67,8 @@ private View mediaPlayer;
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private FragmentPagerAdapter mSectionsPagerAdapter;
-    private String BASE_URL = "http://213.231.4.68/music-web/app/php/android/";
-    private Gson gson = new GsonBuilder().create();
-    private Retrofit retrofit = new Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .baseUrl(BASE_URL)
-            .build();
-    private NewsTeeApiInterface newsTeeApiInterface = retrofit.create(NewsTeeApiInterface.class);
-    /**
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private FrameLayout mProgress;
@@ -96,8 +79,6 @@ private View mediaPlayer;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         db = new SQLiteHandler(getApplicationContext());
-
-        // Session manager
         session = new SessionManager(getApplicationContext());
         View view =  findViewById(R.id.main_toolbar);
 
@@ -169,18 +150,7 @@ private View mediaPlayer;
             }
         }).start();
 */
-        ImageLoader imageLoader = ImageLoader.getInstance();
-        File cacheDir = StorageUtils.getCacheDirectory(getApplicationContext());
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
-                .diskCacheExtraOptions(480, 800, null)
-                .denyCacheImageMultipleSizesInMemory()
-                .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
-                .memoryCacheSize(2 * 1024 * 1024)
-                .diskCache(new UnlimitedDiskCache(cacheDir))
-                .diskCacheSize(100 * 1024 * 1024)
-                .writeDebugLogs()
-                .build();
-        imageLoader.init(config);
+
         new LoadAsyncTask().execute();
 /*
 new Thread(new Runnable() {
@@ -218,26 +188,37 @@ new Thread(new Runnable() {
     }
     public void updateData()
     {
-        NewsTeeApiInterface api = FactoryApi.getInstance(this);
-if(session.isLoggedIn())
-{
+        if(session.isLoggedIn())
+        {
+            NewsTeeApiInterface api = FactoryApi.getInstance(this);
+            HashMap<String,String> userData =  db.getUserDetails();
+            String password = userData.get("password");
+            String email = userData.get("email");
+            System.out.println("@@@@@@ Пароль " + password + "@@@@ mail" + email);
+            Call<DataUserAuthentication> userC = api.signIn(email, password, "ru");
+            userC.enqueue(new Callback<DataUserAuthentication>() {
+                @Override
+                public void onResponse(Call<DataUserAuthentication> call, Response<DataUserAuthentication> response) {
+                    String result = response.body().getResult();
+                    final String msg = response.body().getMessage();
+                    if (result.equals(Constants.RESULT_SUCCESS)) {
+                        User u = response.body().getData().get(0);
+                        UserLab.getInstance().setUser(u);
+                    } else {
+                        db.deleteUsers();
+                        session.setLogin(false);
+                                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                    }
+                }
 
-   HashMap<String,String>userData =  db.getUserDetails();
-    String password = userData.get("password");
-    String email = userData.get("email");
-    Call<DataUserAuthentication> userC = api.signIn(email, password, "ru");
-    Response<DataUserAuthentication> userR = null;
-    try {
-        userR = userC.execute();
-        String result = userR.body().getResult();
-        if (result.equals(Constants.RESULT_SUCCESS)) {
-            User u = userR.body().getData().get(0);
-            UserLab.getInstance().setUser(u);
+                @Override
+                public void onFailure(Call<DataUserAuthentication> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Отсутсвует интеренет соединение", Toast.LENGTH_LONG).show();
+                }
+            });
         }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
+        NewsTeeApiInterface api = FactoryApi.getInstance(this);
+
 
         Call<DataAuthor> authorC = api.getAuthors();
 
@@ -270,10 +251,6 @@ if(session.isLoggedIn())
                 e.printStackTrace();
             }
         }
-
-
-
-
 
     Call<DataNews> newsC = api.getNews();
 
@@ -408,6 +385,7 @@ if(session.isLoggedIn())
 
         @Override
         protected Boolean doInBackground(String... params) {
+
             updateData();
             return true;
         }
@@ -466,19 +444,20 @@ if(session.isLoggedIn())
                                 {
                                     db.deleteUsers();
                                     session.setLogin(false);
+                                    UserLab.getInstance().resetData();
                                     FactoryApi.reset();
                                     startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
                                     finish();
                                 }
                                 else
                                 {
-                                    Toast.makeText(getApplicationContext(),msg, Toast.LENGTH_SHORT);
+                                    Toast.makeText(getApplicationContext(),"Fail"+ msg, Toast.LENGTH_SHORT).show();
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<DataPost> call, Throwable t) {
-
+Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         });
 

@@ -25,17 +25,22 @@ public interface NewsTeeApiInterface {
     Call<DataAuthor> getAuthors();
     @GET("dispatcher.php?command=get_news")
     Call<DataNews> getNews();
-    @GET("dispatcher.php?command=get_news")
+    @FormUrlEncoded
+    @POST("dispatcher.php?command=get_news")
     Call<DataNews> getNewsByIds(@Field("ids") String ids);
-    @GET("dispatcher.php?command=get_news")
+    @FormUrlEncoded
+    @POST("dispatcher.php?command=get_news")
     Call<DataNews> getNewsByAuthor(@Field("id_author") String id);
 //   @GET("dispatcher.php?command=get_audio")
  //   Call<DataAudio> getAudio();
+@FormUrlEncoded
+@POST("dispatcher.php?command=adding_tags_to_user")
+Call<DataPost> addTags(@Field("idtag")String idNews);
     @FormUrlEncoded
     @POST("dispatcher.php?command=like_news")
     Call<DataPost> likeNews(@Field("idnews")String idNews);
  @FormUrlEncoded
- @POST("dispatcher.php?command=add_news")
+     @POST("dispatcher.php?command=add_to_playlist")
  Call<DataPost> addNews(@Field("idnews")String idNews);
     @FormUrlEncoded
     @POST("dispatcher.php?command=user_registration")
@@ -43,7 +48,7 @@ public interface NewsTeeApiInterface {
     @FormUrlEncoded
     @POST("dispatcher.php?command=authentication")
     Call<DataUserAuthentication> signIn(@Field("user_email") String email, @Field("user_password") String password, @Field("language") String language);
-    @POST("dispatcher.php?command=logout")
+    @GET("dispatcher.php?command=logout")
     Call<DataPost> logOut();
 
 

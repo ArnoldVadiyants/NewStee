@@ -6,7 +6,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@color/car_mode_back_color">
-
+    <include layout="@layout/media_player_small_car_mode" android:id="@+id/car_mode_list_media_player"/>
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"

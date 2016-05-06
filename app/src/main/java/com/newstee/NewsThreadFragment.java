@@ -39,8 +39,8 @@ public class NewsThreadFragment extends Fragment {
     private PlayListPager mPlayListPager;
     private ImageButton filterButton;
     private final static String TAG = "NewsThreadFragment";
-    View mediaPlayer;
-    private boolean newSongValue = false;
+   // View mediaPlayer;
+    private int newSongValue = 0;
     private boolean playingValue = false;
     private Handler mHandler = new Handler();
     ImageButton mpBtnPlay;
@@ -101,9 +101,9 @@ public class NewsThreadFragment extends Fragment {
                 Toast.makeText(getActivity(), "filter clicked",Toast.LENGTH_SHORT).show();
             }
         });
-        mediaPlayer = rootView.findViewById(R.id.thread_media_player);
-        mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
-        mpBtnPlay.setOnClickListener(new View.OnClickListener() {
+     //   mediaPlayer = rootView.findViewById(R.id.thread_media_player);
+     //   mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
+      /*  mpBtnPlay.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
@@ -118,14 +118,14 @@ public class NewsThreadFragment extends Fragment {
                     if (musicBound) {
                         musicSrv.go();
                         // Changing button image to pause button
-                        mpBtnPlay.setImageResource(R.drawable.pause);
+                        mpBtnPlay.setImageResource(R.drawable.ic_media_pause);
                     }
                 }
 
             }
-        });
-        mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_titlet_TextView);
-        mediaPlayer.setVisibility(View.GONE);
+        });*/
+    //    mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_titlet_TextView);
+     //   mediaPlayer.setVisibility(View.GONE);
         mPlayListPager = new PlayListPager(getChildFragmentManager());
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager)rootView.findViewById(R.id.thread_container);
@@ -149,7 +149,7 @@ public class NewsThreadFragment extends Fragment {
             musicBound = true;
 
 
-            updateMPNews();
+         //   updateMPNews();
         }
 
         @Override
@@ -184,13 +184,13 @@ public class NewsThreadFragment extends Fragment {
                     if (!musicSrv.isPaused()) {
                         if (newSongValue != musicSrv.getNewSongValue()) {
                             mpTitle.setText(musicSrv.getSongTitle());
-                            newSongValue = !newSongValue;
+                            newSongValue = musicSrv.getNewSongValue();
                         }
                         if (playingValue != musicSrv.isPlaying()) {
                             if (playingValue) {
-                                mpBtnPlay.setImageResource(R.drawable.play);
+                                mpBtnPlay.setImageResource(R.drawable.ic_media_play);
                             } else {
-                                mpBtnPlay.setImageResource(R.drawable.pause);
+                                mpBtnPlay.setImageResource(R.drawable.ic_media_pause);
 
                             }
                             playingValue = !playingValue;
@@ -216,7 +216,7 @@ public class NewsThreadFragment extends Fragment {
     public void onResume(){
         super.onResume();
         Log.d(TAG, "******onResume*****");
-
+/*
         if(musicBound)
         {
             if(musicSrv!=null)
@@ -224,18 +224,18 @@ public class NewsThreadFragment extends Fragment {
 
                 if(musicSrv.isPlaying())
                 {
-                    mpBtnPlay.setImageResource(R.drawable.pause);
+                    mpBtnPlay.setImageResource(R.drawable.ic_media_pause);
                     mediaPlayer.setVisibility(View.VISIBLE);
 
                 }
                 else
                 {
                     mediaPlayer.setVisibility(View.GONE);
-                    mpBtnPlay.setImageResource(R.drawable.play);
+                    mpBtnPlay.setImageResource(R.drawable.ic_media_play);
                 }
                 mpTitle.setText(musicSrv.getSongTitle());
             }
-        }
+        }*/
 
     }
 

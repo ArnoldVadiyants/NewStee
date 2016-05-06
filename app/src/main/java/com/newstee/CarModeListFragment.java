@@ -1,25 +1,55 @@
 package com.newstee;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.newstee.utils.DisplayImageLoaderOptions;
+import com.newstee.utils.MPUtilities;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * Created by Arnold on 17.02.2016.
  */
-public class CarModeListFragment extends Fragment {
+public class CarModeListFragment extends Fragment implements  SeekBar.OnSeekBarChangeListener {
     private final static String TAG = "CarModeListFragment";
-private int mSection = 0;
+    private View mediaPlayer;
+    private int newSongValue = -1;
+    private ImageButton mpBtnPlay;
+    private TextView mpTitle;
+    private ImageView mpPicture;
+    private SeekBar mpDuring;
+    private boolean mpPlayingValue = false;
+    private MPUtilities utils;
+
+    private ImageLoader imageLoader = ImageLoader.getInstance();
+
+    private Handler mHandler = new Handler();
+    private MusicService musicSrv;
+    private Intent playIntent;
+    private boolean musicBound = false;
+
+    private int mSection = 0;
     private String mArgument = Constants.ARGUMENT_NONE;
 ImageView icon;
     TextView title;
@@ -37,13 +67,65 @@ ImageView icon;
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        utils = new MPUtilities();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mPlayListPager = new PlayListPager(getChildFragmentManager());
         View rootView = inflater.inflate(R.layout.fragment_car_mode, container, false);
+        mediaPlayer = rootView.findViewById(R.id.car_mode_list_media_player);
+        mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
+        mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_title_TextView);
+        mpPicture =  (ImageView) mediaPlayer.findViewById(R.id.media_player_small_picture_ImageView);
+        mpDuring = (SeekBar)mediaPlayer.findViewById(R.id.media_player_small_during_seekBar);
+        mpBtnPlay.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                // check for already playing
+                if (musicBound) {
+                    if (musicSrv != null) {
+                        if (musicSrv.isPlaying()) {
+
+                            musicSrv.pausePlayer();
+                            mpBtnPlay.setImageResource(R.drawable.ic_media_play_car_mode);
+                        } else {
+                            // Resume song
+                            musicSrv.go();
+                            // Changing button image to pause button
+                            mpBtnPlay.setImageResource(R.drawable.ic_media_pause_car_mode);
+
+                        }
+                    }
+                }
+
+
+            }
+        });
 
         icon =(ImageView) rootView.findViewById(R.id.car_mode_list_icon);
         title =(TextView) rootView.findViewById(R.id.car_mode_list_title);
+        int color;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            color = getResources().getColor(android.R.color.white, null);
+        }
+        else {
+            color = getResources().getColor(android.R.color.white);
+        }
+        mpDuring.getProgressDrawable().setColorFilter(
+                color, PorterDuff.Mode.SRC_IN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mpDuring.getThumb().mutate().setAlpha(0);
+        }
+       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mpDuring.getThumb().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        } */
 
+        mpDuring.setOnSeekBarChangeListener(this);
+        mediaPlayer.setVisibility(View.GONE);
         mSection= getArguments().getInt(CarModeListActivity.ARG_SECTION_NUMBER);
 
         switch (mSection)
@@ -110,6 +192,139 @@ ImageView icon;
 
         return rootView;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        connectService();
+    }
+
+
+    private ServiceConnection musicConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "******onServiceConnected*****");
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            //get service
+            musicSrv = binder.getService();
+            //pass catalogue
+            musicBound = true;
+            if(musicSrv == null)
+            {
+                return;
+            }
+            if(musicSrv.isPlaying())
+            {
+                mediaPlayer.setVisibility(View.VISIBLE);
+            }
+            //   updateMPNews();
+        }
+
+        /*
+            @Override
+            protected void onStart() {
+                super.onSt
+                connectService();
+            }*/
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            musicBound = false;
+        }
+    };
+    public void connectService() {
+        if (playIntent == null) {
+            playIntent = new Intent(getActivity(), MusicService.class);
+            getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            getActivity().startService(playIntent);
+        }
+
+    }
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        mHandler.removeCallbacks(mUpdateTimeTask);
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        mHandler.removeCallbacks(mUpdateTimeTask);
+        int totalDuration = musicSrv.getDur();
+        int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
+
+        // forward or backward to certain seconds
+        musicSrv.seek(currentPosition);
+
+        // update timer progress again
+        updateMediaPlayer();
+    }
+    public void updateMediaPlayer() {
+        mHandler.postDelayed(mUpdateTimeTask, 100);
+    }
+    private Runnable mUpdateTimeTask = new Runnable() {
+        public void run() {
+            if(musicSrv != null) {
+                if (!musicSrv.isNullPlayer()) {
+                    if (!musicSrv.isPaused()) {
+
+                        long totalDuration = musicSrv.getDur();
+                        long currentDuration = musicSrv.getPosn();
+                        if (newSongValue != musicSrv.getNewSongValue()) {
+                            mpTitle.setText(musicSrv.getSongTitle());
+                            imageLoader.displayImage(musicSrv.getNewsPictureUrl(),mpPicture, DisplayImageLoaderOptions.getInstance());
+                            newSongValue = musicSrv.getNewSongValue();
+                        }
+                        if (mpPlayingValue != musicSrv.isPlaying()) {
+                            if (mpPlayingValue) {
+                                mpBtnPlay.setImageResource(R.drawable.ic_media_play_car_mode);
+                            } else {
+                                mpBtnPlay.setImageResource(R.drawable.ic_media_pause_car_mode);
+
+                            }
+                            mpPlayingValue = !mpPlayingValue;
+                        }
+
+                        // Updating progress bar
+                        int progress = (utils.getProgressPercentage(currentDuration, totalDuration));
+                        //Log.d("Progress", ""+progress);
+                        Log.d(TAG, "Progress " + progress + " bufferedProgress "+musicSrv.getBufferPosition());
+                        mpDuring.setProgress(progress);
+                        mpDuring.setSecondaryProgress(musicSrv.getBufferPosition());
+
+                    }
+                }
+            }
+
+            mHandler.postDelayed(this, 100);
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(musicBound)
+        {
+            if(musicSrv != null)
+            {
+                if(musicSrv.isPlaying())
+                {
+                    mediaPlayer.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+        updateMediaPlayer();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mHandler.removeCallbacks(mUpdateTimeTask);
+    }
+
 
     public class PlayListPager extends FragmentPagerAdapter {
 

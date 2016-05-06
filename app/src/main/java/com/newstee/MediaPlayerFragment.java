@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -14,12 +16,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.newstee.MusicService.MusicBinder;
 import com.newstee.model.data.News;
-import com.newstee.model.data.NewsLab;
+import com.newstee.utils.DisplayImageLoaderOptions;
+import com.newstee.utils.MPUtilities;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,20 +34,25 @@ import java.util.List;
  */
 public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarChangeListener {
     private final static String TAG = "MediaPlayerFragment";
-    private boolean newSongValue = false;
+    private int newSongValue = -1;
     private boolean playingValue = false;
     private ImageButton btnPlay;
-    private ImageButton btnForward;
-    private ImageButton btnBackward;
+    private MediaConsumer mediaConsumer;
+  //  private ImageButton btnForward;
+  //  private ImageButton btnBackward;
+    private ImageLoader imageLoader = ImageLoader.getInstance();
     private ImageButton btnNext;
     private ImageButton btnPrevious;
     private ImageButton btnPlaylist;
+    private ImageView songImageView;
     private SeekBar songProgressBar;
     private SeekBar volumeSeekBar;
+    private TextView newsDate;
     private TextView songTitleLabel;
+    private TextView songContent;
     private TextView songCurrentDurationLabel;
     private TextView songTotalDurationLabel;
-    private Utilities utils;
+    private MPUtilities utils;
     private Handler mHandler = new Handler();
     private int seekForwardTime = 5000; // 5000 milliseconds
     private int seekBackwardTime = 5000; // 5000 milliseconds
@@ -74,21 +84,21 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     public void onResume() {
         super.onResume();
         Log.d(TAG, "******onResume*****");
-        if (musicBound) {
-            updateMPNews();
-        }
+        updateMediaPlayer();
     }
 
-    public void updateMPNews() {
+    /*public void updateMPNews() {
         if (musicSrv != null) {
             if (musicSrv.isPlaying()) {
-                btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+                btnPlay.setImageResource(R.drawable.ic_media_pause);
             } else {
-                btnPlay.setImageResource(android.R.drawable.ic_media_play);
+                btnPlay.setImageResource(R.drawable.ic_media_play);
             }
             songTitleLabel.setText(musicSrv.getSongTitle());
+            songContent.setText(musicSrv.getSongContent());
+            imageLoader.displayImage(musicSrv.getNewsPictureUrl(),songImageView, DisplayImageLoaderOptions.getInstance());
         }
-    }
+    }*/
 
     @Nullable
     @Override
@@ -97,26 +107,29 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         //retrieve catalogue view
         View root = inflater.inflate(R.layout.media_conroller,container, false );
         btnPlay = (ImageButton) root.findViewById(R.id.pause);
-        btnForward = (ImageButton) root.findViewById(R.id.ffwd);
-        btnBackward = (ImageButton) root.findViewById(R.id.rew);
+    //    btnForward = (ImageButton) root.findViewById(R.id.ffwd);
+    //    btnBackward = (ImageButton) root.findViewById(R.id.rew);
         btnNext = (ImageButton) root.findViewById(R.id.next);
-        Log.d("asff", btnForward.getWidth()+"  " + btnBackward.getHeight());
+     //   Log.d("asff", btnForward.getWidth()+"  " + btnBackward.getHeight());
         btnPrevious = (ImageButton) root.findViewById(R.id.prev);
         btnPlaylist = (ImageButton) root.findViewById(R.id.play_list_imageButton);
         volumeSeekBar = (SeekBar)root.findViewById(R.id.volume_seekBar);
         songProgressBar = (SeekBar) root.findViewById(R.id.during_seekBar);
+        songImageView = (ImageView)root.findViewById(R.id.canal_imageView);
+        songContent = (TextView) root.findViewById(R.id.media_controler_new_content_textView);
         songTitleLabel = (TextView) root.findViewById(R.id.title_TextView);
         songCurrentDurationLabel = (TextView) root.findViewById(R.id.curent_time_TextView);
         songTotalDurationLabel = (TextView) root.findViewById(R.id.total_time_TextView);
-        utils = new Utilities();
+        newsDate = (TextView)root.findViewById(R.id.date_TextView);
+        utils = new MPUtilities();
 
         volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(musicSrv == null) {
+                if (musicSrv == null) {
                     return;
                 }
-                    musicSrv.setVolume(progress);
+                musicSrv.setVolume(progress);
 
 
             }
@@ -131,14 +144,31 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
 
             }
         });
-        songProgressBar.setOnSeekBarChangeListener(this);
+
+                songProgressBar.setOnSeekBarChangeListener(this);
+        int color;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            color = getResources().getColor(R.color.colorPrimary, null);
+        }
+        else {
+            color = getResources().getColor(R.color.colorPrimary);
+        }
+        songProgressBar.getProgressDrawable().setColorFilter(
+               color, PorterDuff.Mode.SRC_IN);
+        volumeSeekBar.getProgressDrawable().setColorFilter(
+                color, PorterDuff.Mode.SRC_IN);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            songProgressBar.getThumb().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            volumeSeekBar.getThumb().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        }
         btnPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getActivity().finish();
             }
         });
-        btnForward.setOnClickListener(new View.OnClickListener() {
+       /* btnForward.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
@@ -154,30 +184,34 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
                     musicSrv.seek(totalPos);
                 }
             }
-        });
+        });*/
 
-        btnBackward.setOnClickListener(new View.OnClickListener() {
+          /*  btnBackward.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View arg0) {
-                // get current song position
-                int currentPosition = musicSrv.getPosn();
-                // check if seekBackward time is greater than 0 sec
-                if(currentPosition - seekBackwardTime >= 0){
-                    // forward song
-                    musicSrv.seek(currentPosition - seekBackwardTime);
-                }else{
-                    // backward to starting position
-                    musicSrv.seek(0);
+                        @Override
+                        public void onClick(View arg0) {
+                            // get current song position
+                            int currentPosition = musicSrv.getPosn();
+                            // check if seekBackward time is greater than 0 sec
+                            if(currentPosition - seekBackwardTime >= 0){
+                                // forward song
+                                musicSrv.seek(currentPosition - seekBackwardTime);
+                            }else{
+                                // backward to starting position
+                                musicSrv.seek(0);
+                            }
+
                 }
-
-            }
-        });
+            });*/
         btnNext.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
                 // check if next song is there or not
+                if(musicSrv == null)
+                {
+                 return;
+                }
                 musicSrv.playNext();
 
             }
@@ -187,6 +221,10 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
             @Override
             public void onClick(View arg0) {
                 // check if next song is there or not
+                if(musicSrv == null)
+                {
+                    return;
+                }
                 musicSrv.playPrev();
 
             }
@@ -196,19 +234,24 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
             @Override
             public void onClick(View arg0) {
                 // check for already playing
-                if(musicSrv.isPlaying()){
-                    if(musicBound){
-                        musicSrv.pausePlayer();
-                        btnPlay.setImageResource(android.R.drawable.ic_media_play);
-                    }
-                }else{
-                    // Resume song
-                    if(musicBound){
-                        musicSrv.go();
-                        // Changing button image to pause button
-                        btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+                if(musicBound){
+                    if(musicSrv != null)
+                    {
+                        if(musicSrv.isPlaying()){
+
+                            musicSrv.pausePlayer();
+                            btnPlay.setImageResource(R.drawable.ic_media_play);
+                        }
+                        else{
+                            // Resume song
+                            musicSrv.go();
+                            // Changing button image to pause button
+                            btnPlay.setImageResource(R.drawable.ic_media_pause);
+
+                        }
                     }
                 }
+
 
             }
         });
@@ -233,6 +276,8 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
 
         return root;
     }
+
+
 
     //connect to the service
     private ServiceConnection musicConnection = new ServiceConnection(){
@@ -306,7 +351,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     //method to retrieve song info from device
     public void getSongList(){
         //query external audio
-        mNewsList = NewsLab.getInstance().getNews();
+  /*      mNewsList = NewsLab.getInstance().getNews();*/
       /*  ContentResolver musicResolver = getActivity().getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
@@ -337,30 +382,47 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
 
     public void  playSong(@Nullable String audioUrl){
         // Play song
+        String url = "";
+        Log.d(TAG,"@@@@@@@ url "+ audioUrl);
         if(audioUrl !=null)
         {
-
-            musicSrv.setSong(PlayList.getInstance().getPosition(audioUrl));
-            if(musicSrv.playSong())
+            try
             {
-                btnPlay.setImageResource(android.R.drawable.ic_media_pause);
-                songProgressBar.setProgress(0);
-                songProgressBar.setMax(100);
+                url = PlayList.getInstance().getNewsList().get(musicSrv.getSongPosition()).getLinksong();
             }
-            // Displaying Song title
-            //      String songTitle = songList.get(songIndex).getTitle();
-            //        songTitleLabel.setText(songTitle);
+            catch (IndexOutOfBoundsException e)
+            {
+                e.printStackTrace();
+            }
+
+
+         int location =    PlayList.getInstance().getPosition(audioUrl);
+            if(!(url.equals(audioUrl) && location == musicSrv.getSongPosition()))
+            {
+                Log.d(TAG,"@@@@@@@ playsong "+ audioUrl);
+                musicSrv.setSong(location);
+                if(musicSrv.playSong())
+                {
+                    btnPlay.setImageResource(R.drawable.ic_media_pause);
+                    songProgressBar.setProgress(0);
+                    songProgressBar.setMax(100);
+                }
+                // Displaying Song title
+                //      String songTitle = songList.get(songIndex).getTitle();
+                //        songTitleLabel.setText(songTitle);
+            }
+
 
 
         }
 
 
             // Updating progress bar
-            updateProgressBar();
+        //    updateMediaPlayer();
 
 
     }
-    public void updateProgressBar() {
+    public void updateMediaPlayer() {
         mHandler.postDelayed(mUpdateTimeTask, 100);
     }
 
@@ -369,22 +431,24 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
      * */
     private Runnable mUpdateTimeTask = new Runnable() {
         public void run() {
+            Log.d(TAG, "update mediaTask");
             if(musicSrv != null) {
                 if (!musicSrv.isNullPlayer()) {
-
                     if (!musicSrv.isPaused()) {
                         long totalDuration = musicSrv.getDur();
                         long currentDuration = musicSrv.getPosn();
                         if (newSongValue != musicSrv.getNewSongValue()) {
                             songTitleLabel.setText(musicSrv.getSongTitle());
-
-                            newSongValue = !newSongValue;
+                            songContent.setText(musicSrv.getSongContent());
+                            imageLoader.displayImage(musicSrv.getNewsPictureUrl(), songImageView, DisplayImageLoaderOptions.getInstance());
+                            newsDate.setText(utils.getDateTimeFormat(musicSrv.getNewsDate()));
+                            newSongValue = musicSrv.getNewSongValue();
                         }
                         if (playingValue != musicSrv.isPlaying()) {
                             if (playingValue) {
-                                btnPlay.setImageResource(android.R.drawable.ic_media_play);
+                                btnPlay.setImageResource(R.drawable.ic_media_play);
                             } else {
-                                btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+                                btnPlay.setImageResource(R.drawable.ic_media_pause);
 
                             }
                             playingValue = !playingValue;
@@ -396,7 +460,9 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
                         // Updating progress bar
                         int progress = (utils.getProgressPercentage(currentDuration, totalDuration));
                         //Log.d("Progress", ""+progress);
+                        Log.d(TAG, "Progress " + progress + " bufferedProgress "+musicSrv.getBufferPosition());
                         songProgressBar.setProgress(progress);
+                        songProgressBar.setSecondaryProgress(musicSrv.getBufferPosition());
 
                     }
                 }
@@ -432,78 +498,15 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         musicSrv.seek(currentPosition);
 
         // update timer progress again
-        updateProgressBar();
+     updateMediaPlayer();
     }
-    public class Utilities {
 
-        /**
-         * Function to convert milliseconds time to
-         * Timer Format
-         * Hours:Minutes:Seconds
-         * */
-        public String milliSecondsToTimer(long milliseconds){
-            String finalTimerString = "";
-            String secondsString = "";
-
-            // Convert total duration into time
-            int hours = (int)( milliseconds / (1000*60*60));
-            int minutes = (int)(milliseconds % (1000*60*60)) / (1000*60);
-            int seconds = (int) ((milliseconds % (1000*60*60)) % (1000*60) / 1000);
-            // Add hours if there
-            if(hours > 0){
-                finalTimerString = hours + ":";
-            }
-
-            // Prepending 0 to seconds if it is one digit
-            if(seconds < 10){
-                secondsString = "0" + seconds;
-            }else{
-                secondsString = "" + seconds;}
-
-            finalTimerString = finalTimerString + minutes + ":" + secondsString;
-
-            // return timer string
-            return finalTimerString;
-        }
-
-        /**
-         * Function to get Progress percentage
-         * @param currentDuration
-         * @param totalDuration
-         * */
-        public int getProgressPercentage(long currentDuration, long totalDuration){
-            Double percentage = (double) 0;
-
-            long currentSeconds = (int) (currentDuration / 1000);
-            long totalSeconds = (int) (totalDuration / 1000);
-
-            // calculating percentage
-            percentage =(((double)currentSeconds)/totalSeconds)*100;
-
-            // return percentage
-            return percentage.intValue();
-        }
-
-        /**
-         * Function to change progress to timer
-         * @param progress -
-         * @param totalDuration
-         * returns current duration in milliseconds
-         * */
-        public int progressToTimer(int progress, int totalDuration) {
-            int currentDuration = 0;
-            totalDuration = (int) (totalDuration / 1000);
-            currentDuration = (int) ((((double)progress) / 100) * totalDuration);
-
-            // return current duration in milliseconds
-            return currentDuration * 1000;
-        }
-    }
 
 
     @Override
     public void onPause(){
         super.onPause();
+        mHandler.removeCallbacks(mUpdateTimeTask);
         Log.d(TAG, "******onPause*****");
     }
 

@@ -1,9 +1,16 @@
 package com.newstee;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,14 +19,17 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +48,9 @@ import com.newstee.model.data.User;
 import com.newstee.model.data.UserLab;
 import com.newstee.network.FactoryApi;
 import com.newstee.network.interfaces.NewsTeeApiInterface;
+import com.newstee.utils.DisplayImageLoaderOptions;
+import com.newstee.utils.MPUtilities;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -47,8 +60,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  implements  SeekBar.OnSeekBarChangeListener{
     private SessionManager session;
+    private static String TAG = "MainActivity";
+    private MusicService musicSrv;
     private SQLiteHandler db;
     private final  int[] tabIcons = {
             R.drawable.tab_image_thread,
@@ -71,18 +86,54 @@ private View mediaPlayer;
      /**
      * The {@link ViewPager} that will host the section contents.
      */
+     private MPUtilities utils;
+
+    private ImageLoader imageLoader = ImageLoader.getInstance();
     private FrameLayout mProgress;
     private ViewPager mViewPager;
+    private ImageButton mpBtnPlay;
+    private Handler mHandler = new Handler();
+    private int newSongValue = -1;
+    private TextView mpTitle;
+    private ImageView mpPicture;
+    private SeekBar mpDuring;
+    private boolean mpPlayingValue = false;
+    private Intent playIntent;
+    //binding
+    private boolean musicBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         db = new SQLiteHandler(getApplicationContext());
         session = new SessionManager(getApplicationContext());
+        utils = new MPUtilities();
         View view =  findViewById(R.id.main_toolbar);
 
         mediaPlayer = view.findViewById(R.id.main_media_player);
+        mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
+        mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_title_TextView);
+        mpPicture =  (ImageView) mediaPlayer.findViewById(R.id.media_player_small_picture_ImageView);
+        mpDuring = (SeekBar)mediaPlayer.findViewById(R.id.media_player_small_during_seekBar);
+        int color;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            color = getResources().getColor(R.color.colorPrimary, null);
+        }
+        else {
+            color = getResources().getColor(R.color.colorPrimary);
+        }
+        mpDuring.getProgressDrawable().setColorFilter(
+                color, PorterDuff.Mode.SRC_IN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mpDuring.getThumb().mutate().setAlpha(0);
+        }
+       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mpDuring.getThumb().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        } */
+
+        mpDuring.setOnSeekBarChangeListener(this);
         mediaPlayer.setVisibility(View.GONE);
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -91,6 +142,30 @@ private View mediaPlayer;
         mViewPager = (ViewPager) findViewById(R.id.container);
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mpBtnPlay.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                // check for already playing
+                if (musicBound) {
+                    if (musicSrv != null) {
+                        if (musicSrv.isPlaying()) {
+
+                            musicSrv.pausePlayer();
+                            mpBtnPlay.setImageResource(R.drawable.ic_media_play);
+                        } else {
+                            // Resume song
+                            musicSrv.go();
+                            // Changing button image to pause button
+                            mpBtnPlay.setImageResource(R.drawable.ic_media_pause);
+
+                        }
+                    }
+                }
+
+
+            }
+        });
 
       /*  // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -182,9 +257,56 @@ new Thread(new Runnable() {
         });
 
       //  mSectionsPagerAdapter.notifyDataSetChanged();
-
+D
     }
 }).start();*/
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        connectService();
+    }
+
+    private ServiceConnection musicConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "******onServiceConnected*****");
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            //get service
+            musicSrv = binder.getService();
+            //pass catalogue
+            musicBound = true;
+            if(musicSrv == null)
+            {
+                return;
+            }
+            if(musicSrv.isPlaying())
+            {
+                mediaPlayer.setVisibility(View.VISIBLE);
+            }
+         //   updateMPNews();
+        }
+
+/*
+    @Override
+    protected void onStart() {
+        super.onSt
+        connectService();
+    }*/
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        musicBound = false;
+    }
+};
+    public void connectService() {
+        if (playIntent == null) {
+            playIntent = new Intent(this, MusicService.class);
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(playIntent);
+        }
+
     }
     public void updateData()
     {
@@ -366,6 +488,91 @@ new Thread(new Runnable() {
             mTabLayout.getTabAt(i).setIcon(tabIcons[i]);
         }
         mViewPager.setCurrentItem(2);*/
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        mHandler.removeCallbacks(mUpdateTimeTask);
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        mHandler.removeCallbacks(mUpdateTimeTask);
+        int totalDuration = musicSrv.getDur();
+        int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
+
+        // forward or backward to certain seconds
+        musicSrv.seek(currentPosition);
+
+        // update timer progress again
+        updateMediaPlayer();
+    }
+    public void updateMediaPlayer() {
+        mHandler.postDelayed(mUpdateTimeTask, 100);
+    }
+    private Runnable mUpdateTimeTask = new Runnable() {
+        public void run() {
+            if(musicSrv != null) {
+                if (!musicSrv.isNullPlayer()) {
+                    if (!musicSrv.isPaused()) {
+
+                        long totalDuration = musicSrv.getDur();
+                        long currentDuration = musicSrv.getPosn();
+                        if (newSongValue != musicSrv.getNewSongValue()) {
+                            mpTitle.setText(musicSrv.getSongTitle());
+                            imageLoader.displayImage(musicSrv.getNewsPictureUrl(),mpPicture, DisplayImageLoaderOptions.getInstance());
+                            newSongValue = musicSrv.getNewSongValue();
+                        }
+                        if (mpPlayingValue != musicSrv.isPlaying()) {
+                            if (mpPlayingValue) {
+                                mpBtnPlay.setImageResource(R.drawable.ic_media_play);
+                            } else {
+                                mpBtnPlay.setImageResource(R.drawable.ic_media_pause);
+
+                            }
+                            mpPlayingValue = !mpPlayingValue;
+                        }
+
+                        // Updating progress bar
+                        int progress = (utils.getProgressPercentage(currentDuration, totalDuration));
+                        //Log.d("Progress", ""+progress);
+                        Log.d(TAG, "Progress " + progress + " bufferedProgress "+musicSrv.getBufferPosition());
+                        mpDuring.setProgress(progress);
+                        mpDuring.setSecondaryProgress(musicSrv.getBufferPosition());
+
+                    }
+                }
+            }
+
+            mHandler.postDelayed(this, 100);
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(musicBound)
+        {
+            if(musicSrv != null)
+            {
+                if(musicSrv.isPlaying())
+                {
+                    mediaPlayer.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+        updateMediaPlayer();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mHandler.removeCallbacks(mUpdateTimeTask);
     }
 
     private  class LoadAsyncTask extends AsyncTask<String, String, Boolean>

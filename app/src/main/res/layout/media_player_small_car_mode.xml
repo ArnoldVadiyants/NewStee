@@ -16,7 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="@dimen/outer_margin_medium"
-            android:layout_marginBottom="2dp">
+            android:layout_marginBottom="2dp"
+            android:background="@color/car_mode_back_color">
 
             <ImageView
                 android:layout_width="@dimen/thread_media_player_picture_width"
@@ -34,7 +35,7 @@
                 android:id="@+id/media_player_small_title_TextView"
                 android:textStyle="bold"
                 android:layout_marginLeft="@dimen/icon_margin"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@android:color/background_light"
                 android:layout_weight="1"/>
 
             <ImageButton
@@ -44,7 +45,7 @@
                 android:layout_gravity="center_vertical|right"
                 android:background="@android:color/transparent"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_media_pause"
+                android:src="@drawable/ic_media_pause_car_mode"
                 android:padding="8dp"/>
 
         </LinearLayout>
@@ -54,7 +55,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/media_player_small_during_seekBar"
             android:thumb="@drawable/scrubber_control"
-            android:progressTint="@color/colorPrimary"
+            android:progressTint="@android:color/white"
             android:layout_weight="1"
             android:layout_gravity="bottom"
             android:indeterminate="false"

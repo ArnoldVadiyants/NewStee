@@ -9,6 +9,10 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 
+import com.newstee.model.data.AuthorLab;
+import com.newstee.model.data.News;
+
+import java.io.IOException;
 import java.util.Random;
 
 /*
@@ -20,65 +24,69 @@ import java.util.Random;
 
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
-        MediaPlayer.OnCompletionListener {
+        MediaPlayer.OnCompletionListener,  MediaPlayer.OnBufferingUpdateListener {
 
     private final static int MAX_VOLUME = 50;
     private final static String TAG = "MusicService";
+    private boolean paused = true;
+    private MediaPlayer player;
+    private int mBufferPosition;
+    private String songTitle="";
+    private String songContent="";
+    private String canalTitle;
+    private String newsPictureUrl="";
+
+
+
+    private String newsDate = "";
+    private static final int NOTIFY_ID=1;
+    //shuffle flag and random
+    private boolean shuffle=false;
+    private Random rand;
+
+    public int getSongPosition() {
+        return songPosition;
+    }
+
+    private int songPosition;
+    private final IBinder musicBind = new MusicBinder();
+    private int newSongValue = 1;
     private int currentVolume = 50;
-    public boolean getNewSongValue() {
+    public int getNewSongValue() {
         return newSongValue;
     }
     private void updateNewSongValue()
     {
-        if(newSongValue)
-        {
-            newSongValue = false;
-        }
-        else
-        {
-            newSongValue = true;
-        }
+       newSongValue++;
     }
-    private boolean newSongValue = false;
+
 
     public boolean isPaused() {
         return paused;
     }
 
     //media play
-    private boolean paused = false;
-    private MediaPlayer player;
+
     //song catalogue
    // private List<News> mNews;
     //current position
-    private int songPosition;
-   // private String songId;
-  //  private String songUrl;
-    //binder
-    private final IBinder musicBind = new MusicBinder();
+
 
     public String getSongTitle() {
         return songTitle;
     }
 
     //title of current song
-    private String songTitle="";
+
     //notification id
-    private static final int NOTIFY_ID=1;
-    //shuffle flag and random
-    private boolean shuffle=false;
-    private Random rand;
+
 
     public void onCreate(){
         //create the service
         super.onCreate();
-        //initialize position
-        songPosition =0;
-        //random
+        songPosition =-1;
         rand=new Random();
-        //create play
         player = new MediaPlayer();
-        //initialize
         initMusicPlayer();
         /*new Thread(new Runnable() {
             @Override
@@ -103,7 +111,7 @@ public class MusicService extends Service implements
                 PowerManager.PARTIAL_WAKE_LOCK);
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
         //set listeners
-
+        player.setOnBufferingUpdateListener(this);
         player.setOnPreparedListener(this);
         player.setOnCompletionListener(this);
         player.setOnErrorListener(this);
@@ -138,6 +146,28 @@ public class MusicService extends Service implements
 
     }
 
+    @Override
+    public void onBufferingUpdate(MediaPlayer mp, int percent) {
+        //setBufferPosition(percent * player.getDuration() / 100);
+        setBufferPosition(percent);
+    }
+
+    public int getBufferPosition() {
+        return mBufferPosition;
+    }
+
+    public void setBufferPosition(int bufferPosition) {
+        this.mBufferPosition = bufferPosition;
+    }
+
+    public String getNewsPictureUrl() {
+        return newsPictureUrl;
+    }
+
+    public String getSongContent() {
+        return songContent;
+    }
+
     public class MusicBinder extends Binder {
         MusicService getService() {
             return MusicService.this;
@@ -147,6 +177,7 @@ public class MusicService extends Service implements
     //activity will bind to service
     @Override
     public IBinder onBind(Intent intent) {
+
         return musicBind;
     }
 
@@ -166,23 +197,37 @@ public class MusicService extends Service implements
 
     //play a song
     public boolean playSong() {
-        //     new AudioAsyncTask().execute();
-/*
-        if (songId.equals("3")) {
-            songId = "2";
-        }*/
-      //  audioLab = AudioLab.getInstance(getApplicationContext(), this);
-            try {
-                player.stop();
-                player.reset();
-                player.setDataSource(PlayList.getInstance().getNewsList().get(songPosition).getLinksong());
-                player.prepare();
-                player.start();
-            } catch (Exception e) {
-                Log.e("MUSIC SERVICE", "Error setting data source", e);
-                return false;
-            }
+        paused = true;
+        try {
+            player.stop();
+            player.reset();
+            player.setDataSource(PlayList.getInstance().getNewsList().get(songPosition).getLinksong());
+            player.prepareAsync();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            paused = false;
+            return false;
+        } catch (IOException e) {
+            paused = false;
+            e.printStackTrace();
+            return false;
+        } catch (IllegalArgumentException e) {
+            paused = false;
+            e.printStackTrace();
+            return false;
+        }
+        catch (SecurityException e) {
+            e.printStackTrace();
+            paused = false;
+            return false;
+        }
+        catch(IndexOutOfBoundsException e)
+        {      e.printStackTrace();
+            paused = false;
+            return false;
+        }
         return true;
+
     }
 
 
@@ -259,7 +304,13 @@ public class MusicService extends Service implements
 
 
 
+    public String getNewsDate() {
+        return newsDate;
+    }
 
+    public void setNewsDate(String newsDate) {
+        this.newsDate = newsDate;
+    }
 
     //set the song
     public void setSong(int songPosition){
@@ -272,6 +323,7 @@ public class MusicService extends Service implements
         if(player.getCurrentPosition()>0){
             mp.reset();
             playNext();
+
         }
     }
 
@@ -280,6 +332,14 @@ public class MusicService extends Service implements
         Log.v("MUSIC PLAYER", "Playback Error");
         mp.reset();
         return false;
+    }
+
+    public String getCanalTitle() {
+        return canalTitle;
+    }
+
+    public void setCanalTitle(String canalTitle) {
+        this.canalTitle = canalTitle;
     }
 
     @Override
@@ -302,6 +362,13 @@ public class MusicService extends Service implements
                 .setContentText(songTitle);
         Notification not = builder.build();
         startForeground(NOTIFY_ID, not);*/
+        News n = PlayList.getInstance().getNewsList().get(songPosition);
+        songTitle = n.getTitle();
+        canalTitle = AuthorLab.getInstance().getAuthor( n.getIdauthor()).getName();
+        songContent = n.getContent();
+        newsPictureUrl = n.getPictureNews();
+        newsDate = n.getAdditionTime();
+
         paused = false;
         updateNewSongValue();
     }
@@ -319,19 +386,27 @@ public class MusicService extends Service implements
     public int getDur(){
         if(player == null)
         {
-            return 0;
+            return -1;
         }
             return player.getDuration();
     }
     public boolean isNullPlayer(){
-       return player==null;
+       return player == null;
     }
     public boolean isPlaying(){
         if(player == null)
         {
           return false;
         }
-        return player.isPlaying();
+        try {
+            return player.isPlaying();
+        }
+        catch (IllegalStateException e)
+        {
+            return false;
+        }
+
+
     }
 
     public void pausePlayer(){
@@ -339,7 +414,13 @@ public class MusicService extends Service implements
         {
             return;
         }
-        player.pause();
+        try {
+            player.pause();
+        }
+        catch (IllegalStateException e)
+        {
+        }
+
     }
 
     public void seek(int posn){
@@ -347,7 +428,15 @@ public class MusicService extends Service implements
         {
             return;
         }
-        player.seekTo(posn);
+        if(posn >=player.getDuration())
+        {
+            playNext();
+        }
+        else
+        {
+            player.seekTo(posn);
+        }
+
     }
 
     public void go(){

@@ -11,7 +11,7 @@
         android:src="@drawable/logo_title"
         android:layout_gravity="center"
         android:layout_weight="0"
-        android:visibility="invisible"/>
+        android:visibility="gone"/>
 
     <LinearLayout
         android:orientation="vertical"
@@ -19,7 +19,8 @@
         android:layout_height="match_parent"
         android:visibility="visible"
         android:layout_margin="@dimen/outer_margin_medium"
-        android:id="@+id/car_mode_header_player">
+        android:id="@+id/car_mode_header_player"
+        android:layout_gravity="center_horizontal|bottom">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -48,6 +49,15 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/white"/>
 
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/car_mode_header_during_seekBar"
+            android:layout_marginTop="@dimen/outer_margin_big"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:progressTint="@android:color/white"
+            android:thumb="@drawable/scrubber_control"/>
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -61,12 +71,9 @@
             android:id="@+id/car_mode_header_play"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/button_shape_car_mode_light"
-            android:src="@drawable/ic_start_car_mode_white"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:paddingRight="8dp"
-            android:paddingLeft="8dp"
-            android:scaleType="fitXY"/>
+            android:src="@drawable/ic_media_play_car_mode"
+            android:scaleType="centerInside"
+            android:padding="10dp"/>
 
         <FrameLayout
             android:layout_width="match_parent"

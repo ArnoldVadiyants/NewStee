@@ -27,6 +27,7 @@ import com.newstee.model.data.UserLab;
 import com.newstee.network.FactoryApi;
 import com.newstee.network.interfaces.NewsTeeApiInterface;
 import com.newstee.utils.DisplayImageLoaderOptions;
+import com.newstee.utils.MPUtilities;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -335,7 +336,6 @@ public abstract class NewsListFragment extends ListFragment {
                 int textColor = getTextColor();
                 if (mCategory.equals(Constants.CATEGORY_STORY)) {
                     holder.newsHeader.setVisibility(View.GONE);
-                    holder.time.setVisibility(View.GONE);
                     holder.description.setText(item.getTitle() + '\n' + item.getContent());
                     holder.description.setTextColor(textColor);
                     imageLoader.displayImage(item.getPictureNews(), holder.newsImage, DisplayImageLoaderOptions.getInstance());
@@ -383,7 +383,7 @@ public abstract class NewsListFragment extends ListFragment {
                     holder.canalTitle.setText(authorName);
                     holder.likeCount.setText(item.getLikes());
                     holder.canalTitle.setTextColor(getTextColor());
-                    //   holder.time.setText(""+item.millisecondsDuring);
+                    holder.time.setText(new MPUtilities().getDateOrTimeFormat(item.getAdditionTime()));
                     holder.time.setTextColor(textColor);
                     holder.description.setText(item.getTitle() + '\n' + item.getContent());
                     holder.description.setTextColor(textColor);
@@ -407,6 +407,11 @@ public abstract class NewsListFragment extends ListFragment {
                                                 Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                                             }
                                             PlayList.getInstance().setNewsList(UserLab.getInstance().getAddedNewsAndArticles());
+                                            int status = Constants.STATUS_NOT_ADDED;
+                                            if (UserLab.getInstance().isAddedNews(newsId)) {
+                                                status = Constants.STATUS_WAS_ADDED;
+                                            }
+                                            setStatusImageButton(statusButton, status);
                                             Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
                                             i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.getLinksong());
                                             startActivity(i);
@@ -418,11 +423,7 @@ public abstract class NewsListFragment extends ListFragment {
                                             Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
                                     });
-                                    int status = Constants.STATUS_NOT_ADDED;
-                                    if (UserLab.getInstance().isAddedNews(newsId)) {
-                                        status = Constants.STATUS_WAS_ADDED;
-                                    }
-                                    setStatusImageButton(statusButton, status);
+
                                 }
                                 else
                                 {

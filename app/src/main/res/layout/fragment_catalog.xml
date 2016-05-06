@@ -4,10 +4,11 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-    <include layout="@layout/media_player_small" android:id="@+id/catalog_media_player"
+    <!-- include layout="@layout/media_player_small" android:id="@+id/catalog_media_player"
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
-             android:layout_alignParentTop="true"/>
+             android:layout_alignParentTop="true"
+             andr/!-->
 
     <LinearLayout
         android:orientation="horizontal"

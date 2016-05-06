@@ -25,7 +25,7 @@ import android.widget.TextView;
 public class CatalogFragment extends Fragment {
     private final static String TAG = "CatalogFragment";
 
-    View mediaPlayer;
+   // View mediaPlayer;
     TextView publish_titleTextView;
     TextView article_titleTextView;
     TextView mixes_titleTextView;
@@ -36,11 +36,11 @@ public class CatalogFragment extends Fragment {
     ImageView article_icon;
     ImageView mixes_icon;
     ImageButton filter_button;
-    private boolean newSongValue = false;
+    private int newSongValue = 0;
     private boolean playingValue = false;
     private Handler mHandler = new Handler();
     ImageButton mpBtnPlay;
-    TextView mpTitle;
+  //  TextView mpTitle;
     private MusicService musicSrv;
     private Intent playIntent;
     //binding
@@ -70,7 +70,7 @@ public class CatalogFragment extends Fragment {
             musicBound = true;
 
 
-                updateMPNews();
+            //    updateMPNews();
         }
 
         @Override
@@ -104,14 +104,14 @@ if(!musicSrv.isNullPlayer())
 
                 if (!musicSrv.isPaused()) {
                     if (newSongValue != musicSrv.getNewSongValue()) {
-                        mpTitle.setText(musicSrv.getSongTitle());
-                        newSongValue = !newSongValue;
+                     //   mpTitle.setText(musicSrv.getSongTitle());
+                        newSongValue = musicSrv.getNewSongValue();
                     }
                     if (playingValue != musicSrv.isPlaying()) {
                         if (playingValue) {
-                            mpBtnPlay.setImageResource(R.drawable.play);
+                            mpBtnPlay.setImageResource(R.drawable.ic_media_play);
                         } else {
-                            mpBtnPlay.setImageResource(R.drawable.pause);
+                            mpBtnPlay.setImageResource(R.drawable.ic_media_pause);
 
                         }
                         playingValue = !playingValue;
@@ -139,31 +139,36 @@ if(!musicSrv.isNullPlayer())
         super.onResume();
         Log.d(TAG, "******onResume*****");
 
-        if(musicBound)
+      /*  if(musicBound)
         {
             if(musicSrv!=null)
             {
 
                 if(musicSrv.isPlaying())
                 {
-                    mpBtnPlay.setImageResource(R.drawable.pause);
+                    mpBtnPlay.setImageResource(R.drawable.ic_media_pause);
                     mediaPlayer.setVisibility(View.VISIBLE);
 
                 }
                 else
                 {
                     mediaPlayer.setVisibility(View.GONE);
-                    mpBtnPlay.setImageResource(R.drawable.play);
+                    mpBtnPlay.setImageResource(R.drawable.ic_media_play);
                 }
                 mpTitle.setText(musicSrv.getSongTitle());
             }
-        }
+        }*/
     }
 
     @Override
     public void onStop() {
         super.onStop();
   //      getActivity().unbindService(musicConnection);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
     }
 
     @Override
@@ -174,9 +179,9 @@ if(!musicSrv.isNullPlayer())
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_catalog, container, false);
-        mediaPlayer = rootView.findViewById(R.id.catalog_media_player);
-        mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
-        mpBtnPlay.setOnClickListener(new View.OnClickListener() {
+      //  mediaPlayer = rootView.findViewById(R.id.catalog_media_player);
+       // mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
+        /*mpBtnPlay.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
@@ -191,19 +196,19 @@ if(!musicSrv.isNullPlayer())
                     if (musicBound) {
                         musicSrv.go();
                         // Changing button image to pause button
-                        mpBtnPlay.setImageResource(R.drawable.pause);
+                        mpBtnPlay.setImageResource(R.drawable.ic_media_pause);
                     }
                 }
 
             }
-        });
-        mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_titlet_TextView);
+        });*/
+       /* mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_titlet_TextView);
 mediaPlayer.setVisibility(View.GONE);
-
+*/
         new Handler().post(new Runnable() {
             public void run() {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
-                Fragment fragment  = CatalogListFragment.newInstance(false);
+                Fragment fragment = CatalogListFragment.newInstance(false);
                 fm.beginTransaction().replace(R.id.catalog_container, fragment)
                         .commit();
             }

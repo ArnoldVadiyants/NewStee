@@ -172,7 +172,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:layout_marginTop="@dimen/outer_margin_big">
+        >
 
         <ImageView
             android:layout_width="@dimen/icon_size_small"
@@ -187,29 +187,32 @@
             android:id="@+id/volume_seekBar"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
-            android:layout_marginRight="@dimen/icon_margin"
             android:max="50"
             android:progress="50"
             android:thumbTint="@color/colorPrimary"
-            android:progressTint="@color/colorPrimary"/>
+            android:progressTint="@color/colorPrimary"
+            android:layout_marginRight="@dimen/outer_margin_medium"/>
 
         <ImageButton
-            android:layout_width="@dimen/icon_size_small"
-            android:layout_height="@dimen/icon_size_small"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
             android:id="@+id/like_imageButton"
-            android:layout_gravity="center_vertical|right"
-            android:layout_marginLeft="@dimen/icon_margin"
-            android:background="@drawable/ic_like"
-            android:layout_marginRight="@dimen/icon_margin"/>
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_like"
+            android:scaleType="centerInside"
+            android:padding="6dp"/>
 
         <ImageButton
-            android:layout_width="@dimen/icon_size_small"
-            android:layout_height="@dimen/icon_size_small"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
             android:id="@+id/share_imageButton"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/icon_margin"
-            android:background="@drawable/ic_share"
-            />
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_share"
+            android:scaleType="centerInside"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingLeft="12dp"/>
 
     </LinearLayout>
 

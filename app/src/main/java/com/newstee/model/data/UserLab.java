@@ -12,13 +12,18 @@ import java.util.List;
 public class UserLab {
     private final static String TAG = "UserLab";
     public static boolean isLogin = false;
+    private List<News> mAddedNews = new ArrayList<News>();
+    private List<News> mLikedNews = new ArrayList<News>();
+    private List<Tag> mAddedTags = new ArrayList<>();
+
     public List<News> getAddedNews() {
         return mAddedNews;
     }
 
-    public void setAddedNews(List<News> mAddedNews) {
+    public void setAddedNews(List<News> addedNews) {
 
-        this.mAddedNews = mAddedNews;
+        mAddedNews.clear();
+        mAddedNews.addAll(addedNews);
         deleteNullNews(mAddedNews);
     }
 
@@ -26,22 +31,24 @@ public class UserLab {
         return mLikedNews;
     }
 
-    public void setLikedNews(List<News> mLikedNews) {
-        this.mLikedNews = mLikedNews;
+    public void setLikedNews(List<News> likedNews) {
+        mLikedNews.clear();
+        mLikedNews.addAll(likedNews);
         deleteNullNews(mLikedNews);
+
     }
 
     public List<Tag> getAddedTags() {
         return mAddedTags;
     }
 
-    public void setAddedTags(List<Tag> mAddedTags) {
-        this.mAddedTags = mAddedTags;
+    public void setAddedTags(List<Tag> addedTags) {
+        mAddedTags.clear();
+        mAddedTags.addAll(addedTags);
+
     }
 
-    private List<News> mAddedNews = new ArrayList<News>();
-    private List<News> mLikedNews = new ArrayList<News>();
-    private List<Tag> mAddedTags = new ArrayList<Tag>();
+
    /* private List<Long> mAddedNewsIds = new ArrayList<Long>();
     private List<Long> mLikedNewsIds = new ArrayList<Long>();
     private List<Long> mAddedTagsIds = new ArrayList<Long>();*/
@@ -52,7 +59,7 @@ public class UserLab {
 
     public void setUser(User user) {
         this.mUser = user;
-      //  initializeData();
+        //  initializeData();
     }
 
     /*private void initializeData() {
@@ -63,9 +70,8 @@ public class UserLab {
 */
     private void parseData(List<Long> values, @Nullable String stringValue) {
 
-        if(stringValue == null)
-        {
-           return;
+        if (stringValue == null) {
+            return;
         }
         String addedNewsString = stringValue;
         String mas[] = addedNewsString.split(",");
@@ -94,14 +100,13 @@ public class UserLab {
         return sUserLab;
     }
 
-    public void addNews(News news)
-    {
+    public void addNews(News news) {
         String id = news.getId().trim();
 
         News n = null;
         for (News n2 : mAddedNews) {
             if (n2.getId().trim().equals(id)) {
-                n=n2;
+                n = n2;
                 break;
             }
         }
@@ -131,14 +136,14 @@ public class UserLab {
         }
 
     }
-    public void likeNews(News news)
-    {
+
+    public void likeNews(News news) {
         String id = news.getId().trim();
 
         News n = null;
         for (News n2 : mLikedNews) {
             if (n2.getId().trim().equals(id)) {
-              n=n2;
+                n = n2;
                 break;
             }
         }
@@ -146,16 +151,14 @@ public class UserLab {
 
             mLikedNews.add(news);
         } else {
-            mAddedTags.remove(n);
+            mLikedNews.remove(n);
         }
     }
-    public List<News> getAddedNewsAndArticles()
-    {
-        List<News>news = new ArrayList<>();
-        for(News n : mAddedNews)
-        {
-            if(!n.getCategory().equals(Constants.CATEGORY_STORY))
-            {
+
+    public List<News> getAddedNewsAndArticles() {
+        List<News> news = new ArrayList<>();
+        for (News n : mAddedNews) {
+            if (!n.getCategory().equals(Constants.CATEGORY_STORY)) {
                 news.add(n);
             }
         }
@@ -163,82 +166,72 @@ public class UserLab {
     }
 
 
-  public boolean isAddedNews(String newsId) {
+    public boolean isAddedNews(String newsId) {
         String s = newsId.trim();
-      int i =0;
-        for(News news: mAddedNews)
-        {
+        int i = 0;
+        for (News news : mAddedNews) {
             i++;
-            if(news == null)
-            {
+            if (news == null) {
                 Log.d(TAG, "@@@@@@@@@@@@@ news = null " + i);
                 continue;
             }
-            if((news.getId().trim()).equals(s))
-            {
+            if ((news.getId().trim()).equals(s)) {
                 return true;
             }
         }
-       return false;
+        return false;
     }
 
     public boolean isAddedTag(String tagId) {
         String s = tagId.trim();
-        for(Tag tag: mAddedTags)
-        {
+        for (Tag tag : mAddedTags) {
 
-            if((tag.getId().trim()).equals(s))
-            {
+            if ((tag.getId().trim()).equals(s)) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean isLikedNews(String   newsId) {
+    public boolean isLikedNews(String newsId) {
         String s = newsId.trim();
-        for(News news: mLikedNews)
-        {
+        for (News news : mLikedNews) {
 
-            if((news.getId().trim()).equals(s))
-            {
+            if ((news.getId().trim()).equals(s)) {
                 return true;
             }
         }
         return false;
     }
-    public void resetData()
-    {
+
+    public void deleteData() {
         mUser = new User();
-        mAddedNews = new ArrayList<>();
-        mLikedNews = new ArrayList<>();
-        mAddedTags = new ArrayList<>();
+        mAddedNews.clear();
+        mLikedNews.clear();
+        mAddedTags.clear();
     }
 
-  /* public void signIn(Context c)
-    {
+    /* public void signIn(Context c)
+      {
 
-    }
-    public void signOff(Context c)
-    {
+      }
+      public void signOff(Context c)
+      {
 
-    }
-    public void logIn(Context c)
-    {
+      }
+      public void logIn(Context c)
+      {
 
-    }*/
-public void deleteNullNews(List<News>news)
-{
-    List<News>nullNews = new ArrayList<>();
-    for(News n : news)
-    {
-        if(n == null)
-        {
-            nullNews.add(n);
+      }*/
+    public void deleteNullNews(List<News> news) {
+        List<News> nullNews = new ArrayList<>();
+        for (News n : news) {
+            if (n == null) {
+                nullNews.add(n);
+            }
         }
+        news.removeAll(nullNews);
     }
-    news.removeAll(nullNews);
-}
 
 
 }

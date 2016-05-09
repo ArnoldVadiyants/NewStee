@@ -1,7 +1,9 @@
 package com.newstee;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 import com.newstee.helper.SessionManager;
 import com.newstee.model.data.Author;
 import com.newstee.model.data.AuthorLab;
+import com.newstee.model.data.DataNews;
 import com.newstee.model.data.DataPost;
 import com.newstee.model.data.News;
 import com.newstee.model.data.NewsLab;
@@ -30,6 +33,7 @@ import com.newstee.utils.DisplayImageLoaderOptions;
 import com.newstee.utils.MPUtilities;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,15 +42,22 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public abstract class NewsListFragment extends ListFragment {
+
+
+    private ArrayList<String> mFilterTagIds;
     private String mCategory;
     private String mArgument;
+    private String mIdStory;
     private SessionManager session;
+    private boolean update = false;
+    protected static final String ARG_STORY= "story";
     protected static final String ARG_CATEGORY = "category";
     protected static final String ARG_PARAMETER = "parameter";
 
     static ImageLoader imageLoader = ImageLoader.getInstance();
     private final static String TAG = "NewsListFragment";
     private List<News> mNews = new ArrayList<>();
+    private List<News>mNewsFiltered = new ArrayList<>();
     ItemAdapter adapter;
 
     @Override
@@ -54,12 +65,17 @@ public abstract class NewsListFragment extends ListFragment {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isVisibleToUser) {
-            Log.d("@@@@@@ " + TAG, isVisibleToUser+ "");
-            if (adapter == null) {
+            Log.d("@@@@@@ " + TAG, isVisibleToUser + "" + " category " + mCategory + " argument " + mArgument);
+            if(update)
+            {
+                update = false;
                 return;
             }
-         /*   update();
-            adapter.notifyDataSetChanged();*/
+            if (adapter == null) {
+                Log.d("@@@@@@ " + TAG," adapter = null");
+                return;
+            }
+            update();
         }
 
 
@@ -68,18 +84,53 @@ public abstract class NewsListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (adapter == null) {
+      if (adapter == null) {
             return;
         }
         update();
-        adapter.notifyDataSetChanged();
+        update=true;
+    }
+    public ArrayList<String> getFilterTagIds() {
+        return mFilterTagIds;
     }
 
-    private void update()
+    public void setFilterTagIds(ArrayList<String> filterTagIds) {
+        this.mFilterTagIds = filterTagIds;
+    }
+    public void applyFilter()
     {
-        mNews = new ArrayList<>();
+
+        mNewsFiltered.clear();
+        if(mFilterTagIds == null ){
+            mNewsFiltered.addAll(mNews);
+
+    }
+        else
+        {
+            for(News n: mNews)
+            {
+                List<String> tags = n.getIdTags();
+                for(String s : tags)
+                {
+                    if(mFilterTagIds.contains(s))
+                    {
+                        mNewsFiltered.add(n);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+
+    }
+
+    public void update() {
+        mNews.clear();
         List<News> news = new ArrayList<>();
-        if(mArgument.equals(Constants.ARGUMENT_NONE))
+        if (mArgument.equals(Constants.ARGUMENT_NONE))
         {
             news = NewsLab.getInstance().getNews();
         }
@@ -97,7 +148,8 @@ public abstract class NewsListFragment extends ListFragment {
         }
         else if(mArgument.equals(Constants.ARGUMENT_NEWS_BY_STORY))
         {
-
+            new LoadNewsByStoryTask().execute();
+            return;
         }
 
         if(mCategory.equals(Constants.CATEGORY_ALL))
@@ -133,6 +185,7 @@ public abstract class NewsListFragment extends ListFragment {
                 }
             }
         }
+        applyFilter();
     }
 
 
@@ -142,7 +195,8 @@ public abstract class NewsListFragment extends ListFragment {
         session   = new SessionManager(getActivity());
         mCategory = getArguments().getString(ARG_CATEGORY, Constants.CATEGORY_NEWS);
         mArgument = getArguments().getString(ARG_PARAMETER, Constants.ARGUMENT_NONE);
-       update();
+        mIdStory = getArguments().getString(ARG_STORY);
+
 
 
     }
@@ -301,7 +355,7 @@ public abstract class NewsListFragment extends ListFragment {
         ImageButton statusButton;
 
         public ItemAdapter(Context context) {
-            super(context, R.layout.news_list_item, mNews);
+            super(context, R.layout.news_list_item,mNewsFiltered);
 
         }
 
@@ -342,9 +396,10 @@ public abstract class NewsListFragment extends ListFragment {
                     holder.newsFeed.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                       /*     Intent i = new Intent(getContext(), MediaPlayerFragmentActivity.class);
-                            i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.getLinksong());
-                            startActivity(i);*/
+                           Intent i = new Intent(getContext(), StoryNewsActivity.class);
+                            i.putExtra(StoryNewsActivity.ARG_STORY_ID, item.getId());
+                            i.putExtra(StoryNewsActivity.ARG_STORY_TITLE, item.getTitle());
+                            startActivity(i);
 
                             Log.d(TAG, "List_item onCLick" + " " + (v.getTag()));
                         }
@@ -472,6 +527,7 @@ public abstract class NewsListFragment extends ListFragment {
                                         status = Constants.STATUS_WAS_ADDED;
                                     }
                                     setStatusImageButton((ImageButton) v, status);
+
                                 } else {
                                     Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                                 }
@@ -510,6 +566,27 @@ public abstract class NewsListFragment extends ListFragment {
         };
 
     }
+private List<News> loadNewsByStory()
+{
+    if(mIdStory == null)
+    {
+        Log.d(TAG,"@@@@@ idStory = "+ null);
+        return new ArrayList<>();
+    }
+    NewsTeeApiInterface api = FactoryApi.getInstance(getActivity());
+    Call<DataNews> newsC = api.getNewsByStory(mIdStory);
+    Log.d(TAG,"@@@@@ idStory = "+ mIdStory);
+    try {
+        Response<DataNews>  newsR = newsC.execute();
+
+    return   newsR.body().getNews();
+
+
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    return new ArrayList<>();
+}
 
 
 
@@ -557,10 +634,11 @@ public abstract class NewsListFragment extends ListFragment {
         adapter = new ItemAdapter(getActivity());
         setListAdapter(adapter);
 
-        TextView tv = (TextView) getListView().getEmptyView();
+
+    TextView     eptyTextView = (TextView) getListView().getEmptyView();
         //    TextView tv = (TextView)view.findViewById(R.id.empty);
-        tv.setText(getEmpty());
-        tv.setTextColor(getTextColor());
+        eptyTextView.setText(getEmpty());
+        eptyTextView.setTextColor(getTextColor());
     }
 
     abstract String getEmpty();
@@ -568,5 +646,39 @@ public abstract class NewsListFragment extends ListFragment {
     abstract int getTextColor();
 
     abstract void setLikeView(TextView likeTextView, ImageView likeImageView, boolean isLiked);
+private class LoadNewsByStoryTask extends AsyncTask<Boolean,Integer, List<News> >
+{
+    ProgressDialog dialog;
+    LoadNewsByStoryTask()
+    {
+        dialog  = new ProgressDialog(getActivity());
+        dialog.setMessage("");
+    }
+
+    @Override
+    protected List<News> doInBackground(Boolean... params) {
+
+        return  loadNewsByStory();
+    }
+
+
+
+    @Override
+    protected void onPostExecute(List<News> newses) {
+        super.onPostExecute(newses);
+        mNews.clear();
+        mNews.addAll(newses);
+        applyFilter();
+        dialog.dismiss();
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        dialog.show();
+    }
+
+
+}
 
 }

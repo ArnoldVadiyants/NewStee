@@ -1,7 +1,9 @@
 package com.newstee;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -24,6 +26,8 @@ import android.widget.Toast;
 
 import com.newstee.model.data.News;
 import com.newstee.model.data.NewsLab;
+import com.newstee.model.data.Tag;
+import com.newstee.model.data.TagLab;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +37,12 @@ import java.util.List;
  */
 public class NewsThreadFragment extends Fragment {
 
-
+private NewsThreadListFragment newsFragment;
+    private NewsThreadListFragment articleFragment;
+    private NewsThreadListFragment storyFragment;
     private LinearLayout startButton;
+    private ArrayList<String> mFilterTagIds = new ArrayList<>();
+
     private ViewPager mViewPager;
     private PlayListPager mPlayListPager;
     private ImageButton filterButton;
@@ -54,6 +62,15 @@ public class NewsThreadFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        newsFragment =  (NewsThreadListFragment)NewsThreadListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_NEWS);
+        articleFragment =  (NewsThreadListFragment) NewsThreadListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_ARTICLE);
+        storyFragment = (NewsThreadListFragment) NewsThreadListFragment.newInstance(Constants.ARGUMENT_NONE, Constants.CATEGORY_STORY);
+
+       List<Tag>tags = TagLab.getInstance().getTags();
+       for(Tag t: tags) {
+           mFilterTagIds.add(t.getId());
+       }
+
     }
 
     @Nullable
@@ -61,10 +78,11 @@ public class NewsThreadFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView  = inflater.inflate(R.layout.fragment_thread, container, false);
         startButton = (LinearLayout)rootView.findViewById(R.id.thread_start_button);
+        mViewPager = (ViewPager)rootView.findViewById(R.id.thread_container);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "add all news to playlist",Toast.LENGTH_SHORT ).show();
+
                 String category = null;
                 if(mViewPager.getCurrentItem() == 0)
                 {
@@ -97,10 +115,94 @@ public class NewsThreadFragment extends Fragment {
         filterButton= (ImageButton)rootView.findViewById(R.id.filter_imageButton);
         filterButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
+                final ArrayList<String>ids = new ArrayList<String>();
+                ids.addAll(mFilterTagIds);
+                final List<Tag>tags = TagLab.getInstance().getTags();
+                boolean[]checkedCategories = new boolean[tags.size()];
+                List<CharSequence>titles = new ArrayList<>();
+                for(int i =0; i<tags.size(); i++) {
+                    titles.add(tags.get(i).getNameTag());
+                    for(int j = 0; j< mFilterTagIds.size(); j++)
+                    {
+                        if(tags.get(i).getId().equals(mFilterTagIds.get(j))) {
+                            checkedCategories[i] = true;
+                            break;
+                        }
+                    }
+
+                }
+                AlertDialog.Builder choicesBuilder = new AlertDialog.Builder(getActivity());
+                choicesBuilder.setTitle(R.string.filter);
+                choicesBuilder.setMultiChoiceItems(titles.toArray(new CharSequence[titles.size()]), checkedCategories, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+
+                        String item = tags.get(which).getId();
+                        if (isChecked) {
+                            // If the user checked the item, add it to the selected items
+                            ids.add(item);
+                        } else if (ids.contains(item)) {
+                            // Else, if the item is already in the array, remove it
+                            ids.remove(item);
+                        }
+                    }
+                });
+                choicesBuilder.setPositiveButton(R.string.btn_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+                        mFilterTagIds.clear();
+                        mFilterTagIds.addAll(ids);
+                        newsFragment.setFilterTagIds(mFilterTagIds);
+                        newsFragment.applyFilter();
+                        articleFragment.setFilterTagIds(mFilterTagIds);
+                        articleFragment.applyFilter();
+                        storyFragment.setFilterTagIds(mFilterTagIds);
+                        storyFragment.applyFilter();
+                        setFilterButton((ImageButton)v);
+
+
+                    }
+                });
+                choicesBuilder.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+
+              /*  choicesBuilder.setItems(R.array.flags_list,new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int item) {
+                        if(item == 7)
+                        {
+                            //	FragmentManager fm = getActivity().getSupportFragmentManager();
+                            //	DatePickerFragment dialog = DatePickerFragment
+
+                            //	dialog.setTargetFragment(ReminderFragment.this, 0);
+                            //	dialog.show(fm,DIALOG_DATE);
+                            FragmentManager fm = getActivity().getSupportFragmentManager();
+                            ChoiceReplyFragment choiceDialog =ChoiceReplyFragment.newInstance(mReminder.getReplyTime());
+                            choiceDialog.setTargetFragment(ReminderFragment.this, REQUEST_DATE);
+                            choiceDialog.show(fm, DIALOG_REPLY);
+                        }
+                        mReminder.setFlag(item);
+                        updateFlag();
+
+                    }// onClick
+                }// choicesBuilder.setItems*/
+
+                AlertDialog choicesDialog = choicesBuilder.create();
+                choicesDialog.show();
+
+
                 Toast.makeText(getActivity(), "filter clicked",Toast.LENGTH_SHORT).show();
-            }
-        });
+
+        }});
      //   mediaPlayer = rootView.findViewById(R.id.thread_media_player);
      //   mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
       /*  mpBtnPlay.setOnClickListener(new View.OnClickListener() {
@@ -128,12 +230,32 @@ public class NewsThreadFragment extends Fragment {
      //   mediaPlayer.setVisibility(View.GONE);
         mPlayListPager = new PlayListPager(getChildFragmentManager());
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager)rootView.findViewById(R.id.thread_container);
+
         mViewPager.setAdapter(mPlayListPager);
         mViewPager.setCurrentItem(0);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 2) {
+                    startButton.setEnabled(false);
+                } else {
+                    startButton.setEnabled(true);
+
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.thread_tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
         return rootView;
     }
 
@@ -204,7 +326,6 @@ public class NewsThreadFragment extends Fragment {
         }
     };
 
-
     //start and bind the service when the activity starts
     @Override
     public void onStart() {
@@ -212,10 +333,53 @@ public class NewsThreadFragment extends Fragment {
         Log.d(TAG, "******onStart*****");
         connectService();
     }
+    private boolean isFiltered()
+    {
+        if(mFilterTagIds.size() == TagLab.getInstance().getTags().size())
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    private void setFilterButton(ImageButton filterButton)
+    {
+        if(filterButton == null)
+        {
+            return;
+        }
+        if(isFiltered())
+        {
+            filterButton.setImageResource(R.drawable.filter_button_is_active_back);
+        }
+        else
+        {
+            filterButton.setImageResource(R.drawable.filter_button_back);
+        }
+    }
+    private void setFilterButton()
+    {
+        if(filterButton == null)
+        {
+            return;
+        }
+       if(isFiltered())
+        {
+            filterButton.setImageResource(R.drawable.filter_button_is_active_back);
+        }
+        else
+        {
+            filterButton.setImageResource(R.drawable.filter_button_back);
+        }
+    }
+
     @Override
     public void onResume(){
         super.onResume();
         Log.d(TAG, "******onResume*****");
+        setFilterButton();
 /*
         if(musicBound)
         {
@@ -239,6 +403,18 @@ public class NewsThreadFragment extends Fragment {
 
     }
 
+   /* @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser)
+        {
+            Log.d("@@@@ " + TAG, isVisibleToUser+ "");
+            newsFragment.setUserVisibleHint(true);
+            newsFragment.setUserVisibleHint(true);
+            newsFragment.setUserVisibleHint(true);
+        }
+    }*/
+
     public class PlayListPager extends FragmentPagerAdapter {
         public int current_position = 0;
         public PlayListPager(FragmentManager fm) {
@@ -250,11 +426,11 @@ public class NewsThreadFragment extends Fragment {
 
             switch (position) {
                 case 0:
-                    return NewsThreadListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_NEWS);
+                    return newsFragment;
                 case 1:
-                    return NewsThreadListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_ARTICLE);
+                    return articleFragment;
                 case 2:
-                    return  NewsThreadListFragment.newInstance(Constants.ARGUMENT_NONE,Constants.CATEGORY_STORY);
+                    return storyFragment;
             }
 
             return PlaceholderFragment.newInstance(position);

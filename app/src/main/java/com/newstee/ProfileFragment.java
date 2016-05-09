@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,40 +21,102 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newstee.helper.SQLiteHandler;
 import com.newstee.helper.SessionManager;
+import com.newstee.model.data.User;
 import com.newstee.model.data.UserLab;
+import com.newstee.utils.DisplayImageLoaderOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+
+import java.util.HashMap;
 
 /**
  * Created by Arnold on 17.02.2016.
  */
 public class ProfileFragment extends Fragment {
+    private static final String TAG = "ProfileFragment";
     private Button editButton;
     private SessionManager session;
+    private SQLiteHandler db;
+    private boolean update = false;
 
 ImageLoader imageLoader = ImageLoader.getInstance();
     LinearLayout profileInfo;
     ImageView backgroundImgView;
     ImageView avatarImgView;
+    TextView usernameTitle;
     TextView name;
     TextView likes;
     TextView subscribes;
 
   private ProfilePagerAdapter mProfilePagerAdapter;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         session = new SessionManager(getActivity());
+        db = new SQLiteHandler(getActivity());
     }
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     // private ViewPager mViewPager;
+public void update()
+{
+    if(session.isLoggedIn())
+    {profileInfo.setVisibility(View.VISIBLE);
+        //    name.setText(UserLab.getInstance().getUser().getUserLogin());
+        User u = UserLab.getInstance().getUser();
+        String name = u.getUserLogin();
+        if(name == null){
+            HashMap<String, String> userData = db.getUserDetails();
+            String username = userData.get(SQLiteHandler.KEY_NAME);
+            if(username !=null)
+            {
+                name = username;
+            }
+            else
+            {
+                name = getString(R.string.tab_profile);
+            }
+        }
+        usernameTitle.setText(name);
+        likes.setText(""+UserLab.getInstance().getLikedNews().size());
+        subscribes.setText(""+UserLab.getInstance().getAddedTags().size());
+        String avatar = UserLab.getInstance().getUser().getAvatar();
+        if(avatar != null)
+        {
+            imageLoader.displayImage(avatar, avatarImgView, DisplayImageLoaderOptions.getRoundedInstance());
+            imageLoader.displayImage(avatar,backgroundImgView, DisplayImageLoaderOptions.getInstance());
+        }
+        Log.d(TAG, "@@@@@@ avatar "+ avatar);
+    }
+    else
+    {
+        usernameTitle.setText(R.string.tab_profile);
+        name.setVisibility(View.GONE);
+        profileInfo.setVisibility(View.GONE);
+    }
+}
 
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+
+            update();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        update();
+    }
 
     @Override
     public View getView() {
@@ -66,6 +129,7 @@ ImageLoader imageLoader = ImageLoader.getInstance();
         profileInfo = (LinearLayout)rootView.findViewById(R.id.profile_info_layout);
         likes = (TextView)rootView.findViewById(R.id.profile_like_count);
         subscribes = (TextView)rootView.findViewById(R.id.profile_subscribes_count);
+        usernameTitle = (TextView)rootView.findViewById(R.id.profile_username_title);
         name = (TextView)rootView.findViewById(R.id.profile_name_TextView);
         backgroundImgView= (ImageView)rootView.findViewById(R.id.profile_background_imageView);
         avatarImgView = (ImageView)rootView.findViewById(R.id.profile_avatar_imageView);
@@ -79,35 +143,16 @@ ImageLoader imageLoader = ImageLoader.getInstance();
                 editButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                getActivity().startActivity(new Intent(getContext(), EditProfileActivity.class));
-                Toast.makeText(getActivity(), "edit profile clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
-        if(session.isLoggedIn())
-        {name.setVisibility(View.VISIBLE);
-            profileInfo.setVisibility(View.VISIBLE);
-            name.setText(UserLab.getInstance().getUser().getUserLogin());
-            likes.setText(""+UserLab.getInstance().getLikedNews().size());
-            subscribes.setText(""+UserLab.getInstance().getAddedTags().size());
-            /*String avatar = UserLab.getInstance().getUser().getAvatar();
-            if(avatar != null)
-            {
-                imageLoader.displayImage(avatar, avatarImgView, DisplayImageLoaderOptions.getRoundedInstance());
-                imageLoader.displayImage(avatar,backgroundImgView, DisplayImageLoaderOptions.getInstance());
-
-            }*/
-        }
-        else
-        {
-            name.setVisibility(View.GONE);
-            profileInfo.setVisibility(View.GONE);
-        }
-        ProfilePagerAdapter mProfilePagerAdapter = new ProfilePagerAdapter(getChildFragmentManager());
+                        getActivity().startActivity(new Intent(getContext(), EditProfileActivity.class));
+                        Toast.makeText(getActivity(), "edit profile clicked", Toast.LENGTH_SHORT).show();
+                    }
+                });
+       update();
+         mProfilePagerAdapter = new ProfilePagerAdapter(getChildFragmentManager());
         // Set up the ViewPager with the sections adapter.
         ViewPager mViewPager = (ViewPager)rootView.findViewById(R.id.profile_container);
         mViewPager.setAdapter(mProfilePagerAdapter);
         mViewPager.setCurrentItem(0);
-
 
         TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.profile_tabs);
         tabLayout.setupWithViewPager(mViewPager);

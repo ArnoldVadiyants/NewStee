@@ -36,7 +36,14 @@ public class PlayList {
         }
         return  -1;
     }
-
+    public News getNewsItem(String id) {
+        for (News n : mNewsList) {
+            if (n.getId().equals(id)) {
+                return n;
+            }
+        }
+        return null;
+    }
     public void setNewsList(List<News> mNewsList) {
         this.mNewsList = mNewsList;
     }

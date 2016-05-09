@@ -7,6 +7,8 @@ package com.newstee.model.data;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
@@ -284,5 +286,16 @@ public class News {
     public void setContent(String content) {
         this.content = content;
     }
+public ArrayList<String> getIdTags()
+{
+    ArrayList<String>idTags = new ArrayList<>();
+    String addedNewsString = getIdtags();
+    String mas[] = addedNewsString.split(",");
+    for (int i = 0; i < mas.length; i++) {
+     idTags.add(mas[i].trim());
+    }
+    return  idTags;
+}
+
 
 }

@@ -79,7 +79,9 @@ ImageView icon;
         mediaPlayer = rootView.findViewById(R.id.car_mode_list_media_player);
         mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
         mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_title_TextView);
+        mpTitle.setOnClickListener(mediaPlayerClickListener);
         mpPicture =  (ImageView) mediaPlayer.findViewById(R.id.media_player_small_picture_ImageView);
+        mpPicture.setOnClickListener(mediaPlayerClickListener);
         mpDuring = (SeekBar)mediaPlayer.findViewById(R.id.media_player_small_during_seekBar);
         mpBtnPlay.setOnClickListener(new View.OnClickListener() {
 
@@ -192,7 +194,13 @@ ImageView icon;
 
         return rootView;
     }
-
+    private View.OnClickListener mediaPlayerClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
+            startActivity(i);
+        }
+    };
     @Override
     public void onStart() {
         super.onStart();

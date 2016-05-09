@@ -33,6 +33,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newstee.helper.InternetHelper;
 import com.newstee.helper.SQLiteHandler;
 import com.newstee.helper.SessionManager;
 import com.newstee.model.data.AuthorLab;
@@ -53,6 +54,7 @@ import com.newstee.utils.MPUtilities;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -116,6 +118,8 @@ private View mediaPlayer;
         mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
         mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_title_TextView);
         mpPicture =  (ImageView) mediaPlayer.findViewById(R.id.media_player_small_picture_ImageView);
+        mpPicture.setOnClickListener(mediaPlayerClickListener);
+        mpTitle.setOnClickListener(mediaPlayerClickListener);
         mpDuring = (SeekBar)mediaPlayer.findViewById(R.id.media_player_small_during_seekBar);
         int color;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -261,7 +265,13 @@ D
     }
 }).start();*/
     }
-
+    private View.OnClickListener mediaPlayerClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(MainActivity.this, MediaPlayerFragmentActivity.class);
+            startActivity(i);
+        }
+    };
     @Override
     protected void onStart() {
         super.onStart();
@@ -310,12 +320,23 @@ D
     }
     public void updateData()
     {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(!InternetHelper.getInstance(getApplicationContext()).isOnline())
+                {
+                    Toast.makeText(getApplicationContext(),getResources().getString(R.string.check_internet_con), Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+        });
+
         NewsTeeApiInterface api = FactoryApi.getInstance(this);
         if(session.isLoggedIn()) {
 
             HashMap<String, String> userData = db.getUserDetails();
-            String password = userData.get("password");
-            String email = userData.get("email");
+            String password = userData.get(SQLiteHandler.KEY_PASSWORD);
+            String email = userData.get(SQLiteHandler.KEY_EMAIL);
             System.out.println("@@@@@@ Пароль " + password + "@@@@ mail" + email);
             Call<DataUserAuthentication> userC = api.signIn(email, password, "ru");
             try {
@@ -335,13 +356,6 @@ D
             }
         }
             Call<DataAuthor> authorC = api.getAuthors();
-
-
-
-
-
-
-
 
     try {
         Response<DataAuthor> authorR = authorC.execute();
@@ -397,15 +411,17 @@ D
                 mas[i] = mas[i].trim();
             }
             List<Tag>tags = TagLab.getInstance().getTags();
+            List<Tag>addedTags = new ArrayList<>();
             for(Tag t : tags)
             {
                 for (int i = 0; i < mas.length; i++) {
                     if(t.getId().equals(mas[i]))
                     {
-                        UserLab.getInstance().addTag(t);
+                       addedTags.add(t);
                     }
                 }
             }
+            UserLab.getInstance().setAddedTags(addedTags);
             }
         }
 
@@ -556,6 +572,7 @@ D
     @Override
     protected void onResume() {
         super.onResume();
+        super.onResume();
         if(musicBound)
         {
             if(musicSrv != null)
@@ -650,7 +667,7 @@ D
                                 {
                                     db.deleteUsers();
                                     session.setLogin(false);
-                                    UserLab.getInstance().resetData();
+                                    UserLab.getInstance().deleteData();
                                     FactoryApi.reset();
                                     startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
                                     finish();
@@ -819,6 +836,7 @@ public class ProgressPagerAdapter extends FragmentPagerAdapter
         @Override
         protected void onDestroy() {
             super.onDestroy();
+            unbindService(musicConnection);
         //    stopService(new Intent(this, MusicService.class));
 
     }

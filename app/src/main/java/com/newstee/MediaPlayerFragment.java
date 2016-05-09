@@ -19,15 +19,24 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.newstee.MusicService.MusicBinder;
+import com.newstee.model.data.DataPost;
 import com.newstee.model.data.News;
+import com.newstee.model.data.UserLab;
+import com.newstee.network.FactoryApi;
+import com.newstee.network.interfaces.NewsTeeApiInterface;
 import com.newstee.utils.DisplayImageLoaderOptions;
 import com.newstee.utils.MPUtilities;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Arnold on 17.02.2016.
@@ -44,6 +53,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     private ImageButton btnNext;
     private ImageButton btnPrevious;
     private ImageButton btnPlaylist;
+    private ImageButton btnLike;
     private ImageView songImageView;
     private SeekBar songProgressBar;
     private SeekBar volumeSeekBar;
@@ -107,6 +117,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         //retrieve catalogue view
         View root = inflater.inflate(R.layout.media_conroller,container, false );
         btnPlay = (ImageButton) root.findViewById(R.id.pause);
+        btnLike = (ImageButton)root.findViewById(R.id.like_imageButton);
     //    btnForward = (ImageButton) root.findViewById(R.id.ffwd);
     //    btnBackward = (ImageButton) root.findViewById(R.id.rew);
         btnNext = (ImageButton) root.findViewById(R.id.next);
@@ -123,6 +134,51 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         newsDate = (TextView)root.findViewById(R.id.date_TextView);
         utils = new MPUtilities();
 
+
+btnLike.setOnClickListener(new View.OnClickListener() {
+
+    @Override
+    public void onClick(final View v) {
+        if(musicSrv == null)
+        {
+         return;
+        }
+        final String id = musicSrv.getIdNews();
+        if(id == null)
+        {
+            return;
+        }
+        NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
+
+        Call<DataPost> call = nApi.likeNews(id);
+        call.enqueue(new Callback<DataPost>() {
+            @Override
+            public void onResponse(Call<DataPost> call, Response<DataPost> response) {
+                if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
+                    UserLab.getInstance().likeNews(PlayList.getInstance().getNewsItem(id));
+
+                    if (UserLab.getInstance().isLikedNews(id)) {
+                        Log.d(TAG, "@@@@@@ liked");
+                                ((ImageButton) v).setImageResource(R.drawable.ic_is_liked);
+                    } else {
+                        Log.d(TAG, "@@@@@@ removed");
+                        ((ImageButton) v).setImageResource(R.drawable.ic_like);
+                    }
+
+
+                } else {
+                    Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataPost> call, Throwable t) {
+
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+});
         volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -290,6 +346,17 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
             musicSrv = binder.getService();
             //pass catalogue
             musicBound = true;
+            String id = musicSrv.getIdNews();
+            if(id != null)
+            {
+                if (UserLab.getInstance().isLikedNews(id)) {
+                    Log.d(TAG, "@@@@@@ liked");
+                    btnLike.setImageResource(R.drawable.ic_is_liked);
+                } else {
+                    Log.d(TAG, "@@@@@@ removed");
+                    btnLike.setImageResource(R.drawable.ic_like);
+                }
+            }
             volumeSeekBar.setProgress(musicSrv.getVolume());
             playSong(getArguments().getString(MediaPlayerFragmentActivity.ARG_AUDIO_ID));
 
@@ -438,6 +505,17 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
                         long totalDuration = musicSrv.getDur();
                         long currentDuration = musicSrv.getPosn();
                         if (newSongValue != musicSrv.getNewSongValue()) {
+                            String id = musicSrv.getIdNews();
+                            if(id != null)
+                            {
+                                if (UserLab.getInstance().isLikedNews(id)) {
+                                    Log.d(TAG, "@@@@@@ liked");
+                                    btnLike.setImageResource(R.drawable.ic_is_liked);
+                                } else {
+                                    Log.d(TAG, "@@@@@@ removed");
+                                    btnLike.setImageResource(R.drawable.ic_like);
+                                }
+                            }
                             songTitleLabel.setText(musicSrv.getSongTitle());
                             songContent.setText(musicSrv.getSongContent());
                             imageLoader.displayImage(musicSrv.getNewsPictureUrl(), songImageView, DisplayImageLoaderOptions.getInstance());

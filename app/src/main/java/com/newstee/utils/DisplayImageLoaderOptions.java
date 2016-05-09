@@ -26,7 +26,7 @@ public class DisplayImageLoaderOptions {
     public static   DisplayImageOptions getRoundedInstance(){
         if (sRoundedInstance == null) {
             sRoundedInstance = new DisplayImageOptions.Builder()
-                    .displayer(new RoundedBitmapDisplayer(50))
+                    .displayer(new RoundedBitmapDisplayer(100))
                     .showImageOnLoading(R.drawable.loading_animation)
                     .cacheInMemory(true)
                     .cacheOnDisk(true)

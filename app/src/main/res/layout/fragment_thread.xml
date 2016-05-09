@@ -16,8 +16,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:layout_marginLeft="@dimen/outer_margin_big"
-        android:layout_marginTop="@dimen/outer_margin_big"
-        android:layout_marginRight="@dimen/outer_margin_big">
+        android:layout_marginRight="@dimen/outer_margin_medium"
+        android:layout_marginTop="@dimen/outer_margin_medium">
 
         <ImageView
             android:layout_width="@dimen/icon_size_medium"
@@ -44,17 +44,19 @@
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"
                  android:layout_gravity="center_vertical"
-                 android:layout_marginRight="@dimen/icon_margin"></include>
+                 android:layout_marginRight="@dimen/outer_margin_big"></include>
 
         <ImageButton
-            android:layout_width="@dimen/icon_size_medium"
+            android:layout_width="@dimen/icon_size_big"
             android:layout_height="@dimen/icon_size_medium"
             android:id="@+id/filter_imageButton"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/icon_margin"
 
-            android:background="@drawable/filter_button_back"
-            />
+            android:background="@android:color/transparent"
+            android:src="@drawable/filter_button_back"
+            android:scaleType="centerInside"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:layout_gravity="center_vertical"/>
     </LinearLayout>
 
     <LinearLayout

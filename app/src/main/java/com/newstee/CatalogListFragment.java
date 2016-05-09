@@ -233,7 +233,7 @@ private CatalogListAdapter adapter;
 	}
 private void update()
 {
-	items = new ArrayList<>();
+	items.clear();
 	if(mIsCanal)
 	{
 		List<Author>authors =AuthorLab.getInstance().getAuthors();

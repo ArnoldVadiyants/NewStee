@@ -1,12 +1,7 @@
 package com.newstee;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -14,10 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 /**
  * Created by Arnold on 17.02.2016.
@@ -25,27 +16,6 @@ import android.widget.TextView;
 public class CatalogFragment extends Fragment {
     private final static String TAG = "CatalogFragment";
 
-   // View mediaPlayer;
-    TextView publish_titleTextView;
-    TextView article_titleTextView;
-    TextView mixes_titleTextView;
-    RelativeLayout publish_relative;
-    RelativeLayout article_relative;
-    RelativeLayout mixes_relative;
-    ImageView publish_icon;
-    ImageView article_icon;
-    ImageView mixes_icon;
-    ImageButton filter_button;
-    private int newSongValue = 0;
-    private boolean playingValue = false;
-    private Handler mHandler = new Handler();
-    ImageButton mpBtnPlay;
-  //  TextView mpTitle;
-    private MusicService musicSrv;
-    private Intent playIntent;
-    //binding
-    private boolean musicBound = false;
-   // private CatalogPagerAdapter mCatalogPagerAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,82 +28,7 @@ public class CatalogFragment extends Fragment {
      */
     // private ViewPager mViewPager;
 
-    private ServiceConnection musicConnection = new ServiceConnection() {
 
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(TAG, "******onServiceConnected*****");
-            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
-            //get service
-            musicSrv = binder.getService();
-            //pass catalogue
-            musicBound = true;
-
-
-            //    updateMPNews();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            musicBound = false;
-        }
-    };
-
-    public void connectService() {
-        if (playIntent == null) {
-            playIntent = new Intent(getActivity(), MusicService.class);
-            getActivity().bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-            getActivity().startService(playIntent);
-        }
-    }
-
-    public void  updateMPNews()
-    {
-
-        mHandler.postDelayed(mUpdateTimeTask, 100);
-    }
-
-    /**
-     * Background Runnable stream
-     * */
-    private Runnable mUpdateTimeTask = new Runnable() {
-        public void run() {
-            if(musicSrv != null) {
-if(!musicSrv.isNullPlayer())
-{
-
-                if (!musicSrv.isPaused()) {
-                    if (newSongValue != musicSrv.getNewSongValue()) {
-                     //   mpTitle.setText(musicSrv.getSongTitle());
-                        newSongValue = musicSrv.getNewSongValue();
-                    }
-                    if (playingValue != musicSrv.isPlaying()) {
-                        if (playingValue) {
-                            mpBtnPlay.setImageResource(R.drawable.ic_media_play);
-                        } else {
-                            mpBtnPlay.setImageResource(R.drawable.ic_media_pause);
-
-                        }
-                        playingValue = !playingValue;
-                    }
-
-                }
-            }
-            }
-            // Running this stream after 100 milliseconds
-            mHandler.postDelayed(this, 100);
-        }
-    };
-
-
-    //start and bind the service when the activity starts
-    @Override
-    public void onStart() {
-
-        super.onStart();
-        Log.d(TAG, "******onStart*****");
-        connectService();
-    }
     @Override
     public void onResume(){
         super.onResume();

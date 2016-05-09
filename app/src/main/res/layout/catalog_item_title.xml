@@ -10,7 +10,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:id="@+id/catalog_feed">
+        android:id="@+id/catalog_feed"
+        android:layout_gravity="center_vertical">
 
         <ImageView
             android:layout_width="@dimen/icon_size_medium"
@@ -35,14 +36,14 @@
 
 
     <ImageButton
-        android:layout_width="@dimen/icon_size_small_2"
-        android:layout_height="@dimen/icon_size_small_2"
+        android:layout_width="@dimen/icon_size_big"
+        android:layout_height="@dimen/icon_size_big"
         android:id="@+id/catalog_item_add_ImageButton"
         android:layout_marginLeft="@dimen/icon_margin"
         android:layout_gravity="center_vertical"
         android:scaleType="fitXY"
         android:src="@drawable/news_to_add_button"
         android:background="@android:color/transparent"
-        android:padding="2dp"
+        android:padding="10dp"
         android:focusableInTouchMode="false"/>
 </LinearLayout>

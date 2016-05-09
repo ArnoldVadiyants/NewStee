@@ -42,7 +42,7 @@ public class ProfileListFragment extends ListFragment
 	 */
 	private void update()
 	{
-		items = new ArrayList<>();
+		items.clear();
 		List<Tag> tags = UserLab.getInstance().getAddedTags();
 		for (Tag t : tags) {
 			items.add(new Item(t.getId(),null, t.getNameTag(), false));
@@ -179,9 +179,9 @@ public class ProfileListFragment extends ListFragment
 										UserLab.getInstance().addTag(TagLab.getInstance().getTag(id));
 
 										if (UserLab.getInstance().isAddedTag(id)) {
-											((ImageButton) v).setImageResource(R.drawable.news_to_add_button);
+											((ImageButton) v).setImageResource(R.drawable.ic_is_added);
 										} else {
-											((ImageButton) v).setImageResource(R.drawable.ic_add);
+											((ImageButton) v).setImageResource(R.drawable.news_to_add_button);
 										}
 
 
@@ -232,5 +232,8 @@ public class ProfileListFragment extends ListFragment
 		super.onActivityCreated(savedInstanceState);
 		adapter = new ProfileListAdapter(getActivity());
 		setListAdapter(adapter);
+
+		TextView emptyTextView = (TextView) getListView().getEmptyView();
+		emptyTextView.setText(getString(R.string.empty_my_catalog));
 	}
 }

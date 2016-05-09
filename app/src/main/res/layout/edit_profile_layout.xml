@@ -46,7 +46,8 @@
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:scaleType="fitXY"/>
+            android:scaleType="fitXY"
+            android:src="@drawable/profile_image"/>
     </RelativeLayout>
 
     <FrameLayout
@@ -59,7 +60,7 @@
         android:layout_height="50dp"
         android:paddingLeft="@dimen/outer_margin_big"
         android:paddingRight="@dimen/outer_margin_big"
-        >
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
@@ -84,7 +85,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#FFDDDDDD"/>
+        android:background="#FFDDDDDD"
+        android:visibility="gone"/>
 
 
 

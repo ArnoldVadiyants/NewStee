@@ -1,5 +1,6 @@
 package com.newstee;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+
+import com.newstee.model.data.News;
+import com.newstee.model.data.UserLab;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Arnold on 23.02.2016.
@@ -29,7 +35,7 @@ public class MyPlaylistFragment extends Fragment{
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    // private ViewPager mViewPager;
+    private ViewPager mViewPager;
 
 
     @Override
@@ -49,21 +55,69 @@ public class MyPlaylistFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_playlist, container, false);
+        mPlayListPager = new PlayListPager(getChildFragmentManager());
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager)rootView.findViewById(R.id.my_playlist_container);
+        mViewPager.setAdapter(mPlayListPager);
+        mViewPager.setCurrentItem(0);
+        TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.my_playlist_tabs);
+        tabLayout.setupWithViewPager(mViewPager);
         startButton = (LinearLayout)rootView.findViewById(R.id.my_playlist_start_button);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 2)
+                {
+                    startButton.setEnabled(false);
+                }
+                else
+                {
+                    startButton.setEnabled(true);
+
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "add all news to playlist", Toast.LENGTH_SHORT).show();
-            }
-        });
-         mPlayListPager = new PlayListPager(getChildFragmentManager());
-        // Set up the ViewPager with the sections adapter.
-        ViewPager mViewPager = (ViewPager)rootView.findViewById(R.id.my_playlist_container);
-        mViewPager.setAdapter(mPlayListPager);
-        mViewPager.setCurrentItem(0);
 
-        TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.my_playlist_tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+                String category = null;
+                if (mViewPager.getCurrentItem() == 0) {
+                    category = Constants.CATEGORY_NEWS;
+                } else if (mViewPager.getCurrentItem() == 1) {
+                    category = Constants.CATEGORY_ARTICLE;
+                }
+                if (category == null) {
+                    return;
+                }
+                List<News> news = UserLab.getInstance().getAddedNewsAndArticles();
+                List<News> newsList = new ArrayList<News>();
+                for (News n : news) {
+                    if (n.getCategory().equals(category)) {
+                        newsList.add(n);
+                    }
+                }
+                PlayList.getInstance().setNewsList(newsList);
+                Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
+                i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, newsList.get(0).getLinksong());
+                startActivity(i);
+
+            }
+
+        });
+
+
+
        /* View article_view =  rootView.findViewById(R.id.theme_article_item);
             article_icon = (ImageView) article_view.findViewById(R.id.item_icon);
             article_titleTextView = (TextView) article_view.findViewById(R.id.item_title);

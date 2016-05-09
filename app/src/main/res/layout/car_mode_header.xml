@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/car_mode_back_color">
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:background="@color/car_mode_back_color">
 
     <ImageView
         android:layout_width="@dimen/logo_title_width"
@@ -11,13 +12,13 @@
         android:src="@drawable/logo_title"
         android:layout_gravity="center"
         android:layout_weight="0"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_margin="@dimen/outer_margin_medium"
         android:id="@+id/car_mode_header_player"
         android:layout_gravity="center_horizontal|bottom">
@@ -31,7 +32,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Text"
+            tools:text="New Text"
             android:id="@+id/car_mode_header_title_canal"
             android:layout_gravity="center_horizontal"
             android:textAllCaps="true"
@@ -41,7 +42,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Text"
+            tools:text="New Text"
             android:id="@+id/car_mode_header_title_news"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/outer_margin_medium"

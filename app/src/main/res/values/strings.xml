@@ -3,6 +3,7 @@
     <string name="action_settings">Настройки</string>
     <string name="tab_profile">Мой профиль</string>
     <string name="catalog">Каталог</string>
+    <string name="filter">Выберите категории</string>
     <string name="likes">Нравится</string>
     <string name="edit_profile">Редактировать профиль</string>
     <string name="edit_profile_common">Общее</string>
@@ -25,7 +26,8 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="description">Descr</string>
     <string name="check_internet_con">Невозможно подключиться. Пожалуйста,проверьте параметры подключения к интернету</string>
-    <string name="empty_my_play_list">Ваш плейлист пуст. Чтобы заполнить его подпишитесь на интересующие вас категории и издания в каталоге или добавьте новости из потока. </string>
+    <string name="empty_my_catalog">Вы не подписаны ни на одну категорию.</string>
+    <string name="empty_my_play_list">Ваш плейлист пуст. Чтобы заполнить его подпишитесь на интересующие вас категории или добавьте новости из потока. </string>
     <string name="subscriptions">Подписки</string>
     <string name="subscribers">Подписчики</string>
     <string name="my_subscriptions">Мои подписки</string>
@@ -35,6 +37,8 @@
     <string name="surname">Фамилия</string>
     <string name="edit">Редактировать</string>
     <string name="to_subscript">Подписаться</string>
+    <string name="update_data_success">Данные успешно обновлены</string>
+    <string name="update_data_failure">Ошибка при обновлении</string>
     <string name="registration_via_email"><b>Зарегистрироваться</b> через <b>e-mail</b> </string>
     <string name="if_have_registration">Уже есть учетная запись? <b>ВХОД</b></string>
     <string name="resume_without_registr">Продолжить без регистрации</string>

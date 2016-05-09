@@ -46,9 +46,12 @@ public class CarModeFragmentActivity extends AppCompatActivity implements   Seek
 
 		View header = findViewById(R.id.header);
 		 headerTitle =(ImageView) header.findViewById(R.id.car_mode_header_title);
+
 		 headerPlayer = (LinearLayout)header.findViewById(R.id.car_mode_header_player);
 		 headerPlayerTitleCanal = (TextView)header.findViewById(R.id.car_mode_header_title_canal);
+		headerPlayerTitleCanal.setOnClickListener(mediaPlayerClickListener);
 		 headerPlayerTitleNews = (TextView)header.findViewById(R.id.car_mode_header_title_news);
+		headerPlayerTitleNews.setOnClickListener(mediaPlayerClickListener);
 		 headerPlayerPlayButton = (ImageButton)header.findViewById(R.id.car_mode_header_play);
 		headerPlayerDuringSeekBar  = (SeekBar)header.findViewById(R.id.car_mode_header_during_seekBar);
 		FrameLayout streamTab = (FrameLayout)findViewById(R.id.car_mode_tab_stream);
@@ -140,7 +143,13 @@ public class CarModeFragmentActivity extends AppCompatActivity implements   Seek
 			}
 		});
 	}
-
+	private View.OnClickListener mediaPlayerClickListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Intent i = new Intent(CarModeFragmentActivity.this, MediaPlayerFragmentActivity.class);
+			startActivity(i);
+		}
+	};
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -257,6 +266,7 @@ public class CarModeFragmentActivity extends AppCompatActivity implements   Seek
 	public void onResume() {
 		super.onResume();
 		headerTitle.setVisibility(View.VISIBLE);
+		headerPlayer.setVisibility(View.GONE);
 		if(musicBound)
 		{
 			if(musicSrv != null)
@@ -276,5 +286,11 @@ public class CarModeFragmentActivity extends AppCompatActivity implements   Seek
 	public void onPause() {
 		super.onPause();
 		mHandler.removeCallbacks(mUpdateTimeTask);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unbindService(musicConnection);
 	}
 }

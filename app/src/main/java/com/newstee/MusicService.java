@@ -31,6 +31,10 @@ public class MusicService extends Service implements
     private boolean paused = true;
     private MediaPlayer player;
     private int mBufferPosition;
+
+
+
+    private String idNews = "";
     private String songTitle="";
     private String songContent="";
     private String canalTitle;
@@ -71,7 +75,13 @@ public class MusicService extends Service implements
    // private List<News> mNews;
     //current position
 
+    public String getIdNews() {
+        return idNews;
+    }
 
+    public void setIdNews(String idNews) {
+        this.idNews = idNews;
+    }
     public String getSongTitle() {
         return songTitle;
     }
@@ -363,6 +373,8 @@ public class MusicService extends Service implements
         Notification not = builder.build();
         startForeground(NOTIFY_ID, not);*/
         News n = PlayList.getInstance().getNewsList().get(songPosition);
+    //    PlayList.getInstance().setCurrent(n);
+        idNews = n.getId();
         songTitle = n.getTitle();
         canalTitle = AuthorLab.getInstance().getAuthor( n.getIdauthor()).getName();
         songContent = n.getContent();

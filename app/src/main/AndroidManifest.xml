@@ -17,15 +17,23 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
+        <activity android:name="com.facebook.FacebookActivity"
+                  android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  android:label="@string/app_name" />
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan" >
            
         </activity>
+
+        <activity android:name="com.vk.sdk.VKServiceActivity" android:label="ServiceActivity" android:theme="@style/VK.Transparent" />
         <activity
             android:name=".CarModeListActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTop" />
 
         <activity
@@ -54,7 +62,6 @@
             android:launchMode="singleTop" />
         <activity
             android:name=".MediaPlayerFragmentActivity"
-            android:screenOrientation="portrait"
             android:label="@string/app_name"
             android:launchMode="singleTop" />
         <activity
@@ -89,6 +96,10 @@
 
 
         <service android:name="com.newstee.MusicService" />
+        <provider
+            android:name="com.facebook.FacebookContentProvider"
+            android:authorities="com.facebook.app.FacebookContentProvider1017578851657800"
+            android:exported="true" />
     </application>
 
 </manifest>

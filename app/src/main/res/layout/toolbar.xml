@@ -1,42 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
-               xmlns:app="http://schemas.android.com/apk/res-auto"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:orientation="vertical">
+
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.v4.widget.SwipeRefreshLayout
+
+        android:id="@+id/toolbar_swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="false">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?android:attr/actionBarSize"
+                    android:background="@drawable/toolbar_back"
+                    app:layout_scrollFlags="scroll|enterAlways"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"
+                    >
+                </android.support.v7.widget.Toolbar>
+
+                <ImageView
+                    android:id="@+id/imageView6"
+                    android:layout_width="@dimen/logo_title_width"
+                    android:layout_height="@dimen/logo_title_height"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/logo_title"
+                    />
+
+    </FrameLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.v7.widget.Toolbar
-          android:id="@+id/toolbar"
-          android:layout_width="match_parent"
-          android:layout_height="?android:attr/actionBarSize"
-          android:background="@drawable/toolbar_back"
-
-
-          app:popupTheme="@style/AppTheme.PopupOverlay"
-          app:layout_scrollFlags="scroll|enterAlways"
-        >
-      </android.support.v7.widget.Toolbar>
-
-        <ImageView
-            android:layout_width="@dimen/logo_title_width"
-            android:layout_height="@dimen/logo_title_height"
-            android:id="@+id/imageView6"
-            android:background="@android:color/transparent"
-            android:src="@drawable/logo_title"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginTop="@dimen/outer_margin_medium"
-            />
+        android:layout_height="72dp">
     </FrameLayout>
 
-    <include layout="@layout/media_player_small" android:id="@+id/main_media_player"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           />
-
 </LinearLayout>
+        </ScrollView>
+
+</android.support.v4.widget.SwipeRefreshLayout>
+
+</FrameLayout>
 
 

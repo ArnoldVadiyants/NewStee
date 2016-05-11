@@ -145,7 +145,7 @@ public class RegisterActivity extends Activity {
 
                                 if (result.equals(Constants.RESULT_SUCCESS)) {
                                     User data = response.body().getData().get(0);
-                                    db.addUser(data.getUserLogin(), email, password);
+                                    db.addUser(data.getUserLogin(), email, password, null);
                                     UserLab.getInstance().setUser(data);
                                     UserLab.isLogin = true;
                                     hideDialog();
@@ -284,10 +284,6 @@ public class RegisterActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(
-                RegisterActivity.this,
-                MainActivity.class);
-        startActivity(intent);
         finish();
     }
 }

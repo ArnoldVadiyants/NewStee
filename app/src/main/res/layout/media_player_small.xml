@@ -15,16 +15,16 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="@dimen/outer_margin_medium"
-            android:layout_marginBottom="2dp">
+            android:padding="@dimen/outer_margin"
+            >
 
             <ImageView
                 android:layout_width="@dimen/thread_media_player_picture_width"
                 android:layout_height="@dimen/thread_media_player_picture_height"
                 android:id="@+id/media_player_small_picture_ImageView"
                 tools:background="@drawable/test_canal_icon"
-                android:layout_gravity="center_vertical"
-                android:scaleType="centerInside"/>
+                android:scaleType="centerInside"
+                android:layout_gravity="center_vertical"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -59,8 +59,9 @@
             android:layout_gravity="bottom"
             android:indeterminate="false"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_marginTop="-10dp"
-            android:layout_marginLeft="-7dp"/>
+            android:layout_marginTop="-8dp"
+            android:layout_marginLeft="-2dp"
+            android:layout_marginRight="-4dp"/>
     </LinearLayout>
 
 </FrameLayout>

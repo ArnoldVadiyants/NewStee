@@ -16,20 +16,20 @@ public class PlayList {
     public List<News> getNewsList() {
         return mNewsList;
     }
-    public int getPosition(String url)
+    public int getPosition(String id)
     {
-        if(url == null)
+        if(id == null)
         {
             return -1;
         }
-        String s = url.trim();
+        String s = id.trim();
         for(News n : mNewsList)
         {
-            if(n.getLinksong()== null)
+            if(n.getId()== null)
             {
                 continue;
             }
-           if(n.getLinksong().trim().equals(s))
+           if(n.getId().trim().equals(s))
            {
                return mNewsList.indexOf(n);
            }

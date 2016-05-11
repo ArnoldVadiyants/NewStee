@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +22,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.newstee.MusicService.MusicBinder;
 import com.newstee.model.data.DataPost;
 import com.newstee.model.data.News;
@@ -30,6 +33,14 @@ import com.newstee.network.interfaces.NewsTeeApiInterface;
 import com.newstee.utils.DisplayImageLoaderOptions;
 import com.newstee.utils.MPUtilities;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.sromku.simple.fb.SimpleFacebook;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKScope;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.dialogs.VKShareDialog;
+import com.vk.sdk.dialogs.VKShareDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +49,19 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.vk.sdk.VKSdk.login;
+
 /**
  * Created by Arnold on 17.02.2016.
  */
 public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarChangeListener {
+    private static String vkTokenKey = "VK_ACCESS_TOKEN";
+    private static String[] vkScope = new String[]{VKScope.WALL};
+
     private final static String TAG = "MediaPlayerFragment";
     private int newSongValue = -1;
     private boolean playingValue = false;
+    private SimpleFacebook mSimpleFacebook;
     private ImageButton btnPlay;
     private MediaConsumer mediaConsumer;
   //  private ImageButton btnForward;
@@ -54,6 +71,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     private ImageButton btnPrevious;
     private ImageButton btnPlaylist;
     private ImageButton btnLike;
+    private ImageButton btnShare;
     private ImageView songImageView;
     private SeekBar songProgressBar;
     private SeekBar volumeSeekBar;
@@ -84,6 +102,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mNewsList = new ArrayList<News>();
+        mSimpleFacebook = SimpleFacebook.getInstance(getActivity());
         getSongList();
 
         Log.d(TAG, "******onCreate*****");
@@ -110,6 +129,43 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         }
     }*/
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+            @Override
+            public void onResult(VKAccessToken res) {
+
+                // User passed Authorization
+            }
+            @Override
+            public void onError(VKError error) {
+                // User didn't pass Authorization
+            }
+        })) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+  /*  private final VKSdkListener vkSdkListener = new VKSdkListener() {
+        @Override
+        public void onCaptchaError(VKError captchaError) {
+            new VKCaptchaDialog(captchaError).show();
+        }
+        @Override
+        public void onTokenExpired(VKAccessToken expiredToken) {
+            VKSdk.authorize(vkScope, true, false);
+        }
+        @Override
+        public void onAccessDenied(VKError authorizationError) {
+            new AlertDialog.Builder(SocialNetworkActivity.this)
+                    .setMessage(authorizationError.errorMessage)
+                    .show();
+        }
+        @Override
+        public void onReceiveNewToken(VKAccessToken newToken) {
+            newToken.saveTokenToSharedPreferences(getApplicationContext(), vkTokenKey);
+        }
+    };*/
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -118,6 +174,7 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         View root = inflater.inflate(R.layout.media_conroller,container, false );
         btnPlay = (ImageButton) root.findViewById(R.id.pause);
         btnLike = (ImageButton)root.findViewById(R.id.like_imageButton);
+        btnShare = (ImageButton)root.findViewById(R.id.share_imageButton);
     //    btnForward = (ImageButton) root.findViewById(R.id.ffwd);
     //    btnBackward = (ImageButton) root.findViewById(R.id.rew);
         btnNext = (ImageButton) root.findViewById(R.id.next);
@@ -134,7 +191,40 @@ public class MediaPlayerFragment extends Fragment implements  SeekBar.OnSeekBarC
         newsDate = (TextView)root.findViewById(R.id.date_TextView);
         utils = new MPUtilities();
 
-
+btnShare.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        if(musicSrv==null)
+        {
+        return;
+        }
+        if(musicSrv.getIdNews()==null)
+        {
+            return;
+        }
+      //  vkontaktePublish(musicSrv.getSongContent(),
+      //          "http://213.231.4.68/music-web/app/php/page_show_news.php?id=" + musicSrv.getIdNews(),musicSrv.getSongTitle(),"dsf");*/
+        ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+                .setContentTitle(musicSrv.getSongTitle())
+                .setContentDescription(musicSrv.getSongContent())
+                .setContentUrl(Uri.parse("http://213.231.4.68/music-web/app/php/page_show_news.php?id=" + musicSrv.getIdNews()))
+                .setImageUrl(Uri.parse(musicSrv.getNewsPictureUrl()))
+                .build();
+        ShareDialog.show(getActivity(), shareLinkContent);
+      /*  Feed feed = new Feed.Builder()
+                .setName(musicSrv.getSongTitle())
+                .setDescription(musicSrv.getSongContent())
+                .setPicture(musicSrv.getNewsPictureUrl())
+                .setLink("http://213.231.4.68/music-web/app/php/page_show_news.php?id="+musicSrv.getIdNews())
+                .build();
+        mSimpleFacebook.publish(feed, true,onPublishListener);*/
+       /* Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        Uri screenshotUri = Uri.parse(musicSrv.getNewsPictureUrl());
+        sharingIntent.setType("image/png");
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
+        startActivity(Intent.createChooser(sharingIntent, "Share image using"));*/
+    }
+});
 btnLike.setOnClickListener(new View.OnClickListener() {
 
     @Override
@@ -334,6 +424,37 @@ btnLike.setOnClickListener(new View.OnClickListener() {
     }
 
 
+    public final void vkontaktePublish(String message, String link, String linkName, String imageURL) {
+        VKAccessToken token = VKAccessToken.tokenFromSharedPreferences(getActivity(), vkTokenKey);
+        if ((token == null) || token.isExpired()) {
+            login(getActivity(), vkScope);
+            Toast.makeText(getActivity(),"Требуется авторизация. После нее повторите попытку публикации",Toast.LENGTH_LONG);
+        } else {
+
+
+            new VKShareDialogBuilder()
+                    .setText(message)
+                    .setAttachmentLink(linkName, link)
+                    .setShareDialogListener(new VKShareDialog.VKShareDialogListener() {
+
+                        @Override
+                        public void onVkShareComplete(int postId) {
+
+                        }
+
+                        @Override
+                        public void onVkShareCancel() {
+
+                        }
+
+                        @Override
+                        public void onVkShareError(VKError error) {
+
+                        }
+                    }).show(getChildFragmentManager(), "VK_SHARE_DIALOG");
+        }
+    }
+
 
     //connect to the service
     private ServiceConnection musicConnection = new ServiceConnection(){
@@ -447,15 +568,15 @@ btnLike.setOnClickListener(new View.OnClickListener() {
         });*/
     }
 
-    public void  playSong(@Nullable String audioUrl){
+    public void  playSong(@Nullable String newsId){
         // Play song
-        String url = "";
-        Log.d(TAG,"@@@@@@@ url "+ audioUrl);
-        if(audioUrl !=null)
+        String currentId = "";
+     //   Log.d(TAG,"@@@@@@@ url "+ audioUrl);
+        if(newsId !=null)
         {
             try
             {
-                url = PlayList.getInstance().getNewsList().get(musicSrv.getSongPosition()).getLinksong();
+                currentId = PlayList.getInstance().getNewsList().get(musicSrv.getSongPosition()).getId();
             }
             catch (IndexOutOfBoundsException e)
             {
@@ -463,10 +584,10 @@ btnLike.setOnClickListener(new View.OnClickListener() {
             }
 
 
-         int location =    PlayList.getInstance().getPosition(audioUrl);
-            if(!(url.equals(audioUrl) && location == musicSrv.getSongPosition()))
+         int location =    PlayList.getInstance().getPosition(newsId);
+            if(!(currentId.equals(newsId) && location == musicSrv.getSongPosition()))
             {
-                Log.d(TAG,"@@@@@@@ playsong "+ audioUrl);
+                Log.d(TAG,"@@@@@@@ playsong "+ newsId);
                 musicSrv.setSong(location);
                 if(musicSrv.playSong())
                 {

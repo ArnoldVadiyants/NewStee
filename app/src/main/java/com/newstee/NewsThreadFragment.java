@@ -106,7 +106,7 @@ private NewsThreadListFragment newsFragment;
                     }
                     PlayList.getInstance().setNewsList(newsList);
                 Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
-                i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, newsList.get(0).getLinksong());
+                i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, newsList.get(0).getId());
                 startActivity(i);
 
                 }

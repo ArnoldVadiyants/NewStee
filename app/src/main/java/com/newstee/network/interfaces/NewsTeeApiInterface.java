@@ -62,6 +62,12 @@ public interface NewsTeeApiInterface {
     @FormUrlEncoded
     @POST("dispatcher.php?command=user_registration")
     Call<DataPost> createUser(@Field("username") String username, @Field("password") String password, @Field("repassword") String reenter_password, @Field("email") String email, @Field("language") String language);
+    @FormUrlEncoded
+    @POST("dispatcher.php?command=user_registration")
+    Call<DataPost> createUser(@Field("fbid")String fbId,@Field("language") String language);
+    @FormUrlEncoded
+    @POST("dispatcher.php?command=authentication")
+    Call<DataUserAuthentication> signIn(@Field("fbid")String fbId,@Field("language") String language);
 
     @FormUrlEncoded
     @POST("dispatcher.php?command=authentication")

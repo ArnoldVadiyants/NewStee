@@ -10,12 +10,19 @@ import java.util.List;
 
 
 public class UserLab {
+    private boolean isUpdated = false;
     private final static String TAG = "UserLab";
     public static boolean isLogin = false;
     private List<News> mAddedNews = new ArrayList<News>();
     private List<News> mLikedNews = new ArrayList<News>();
     private List<Tag> mAddedTags = new ArrayList<>();
+    public boolean isUpdated() {
+        return isUpdated;
+    }
 
+    public void setIsUpdated(boolean isUpdated) {
+        this.isUpdated = isUpdated;
+    }
     public List<News> getAddedNews() {
         return mAddedNews;
     }

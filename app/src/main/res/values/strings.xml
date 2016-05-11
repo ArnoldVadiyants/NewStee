@@ -1,4 +1,5 @@
 <resources>
+    <integer name="com_vk_sdk_AppId">5458110</integer>
     <string name="app_name">NewsTee</string>
     <string name="action_settings">Настройки</string>
     <string name="tab_profile">Мой профиль</string>
@@ -52,6 +53,9 @@
     <string name="btn_yes">Да</string>
     <string name="btn_no">Нет</string>
     <string name="btn_cancel">Отмена</string>
+    5458110
+    <string name="facebook_app_id">1017578851657800</string>
+    <string name="vk_app_id">5458110</string>
     
 
 

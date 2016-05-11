@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -33,19 +33,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.newstee.helper.InternetHelper;
+import com.facebook.login.LoginManager;
 import com.newstee.helper.SQLiteHandler;
 import com.newstee.helper.SessionManager;
-import com.newstee.model.data.AuthorLab;
-import com.newstee.model.data.DataAuthor;
-import com.newstee.model.data.DataNews;
 import com.newstee.model.data.DataPost;
-import com.newstee.model.data.DataTag;
-import com.newstee.model.data.DataUserAuthentication;
-import com.newstee.model.data.NewsLab;
-import com.newstee.model.data.Tag;
-import com.newstee.model.data.TagLab;
-import com.newstee.model.data.User;
 import com.newstee.model.data.UserLab;
 import com.newstee.network.FactoryApi;
 import com.newstee.network.interfaces.NewsTeeApiInterface;
@@ -53,16 +44,12 @@ import com.newstee.utils.DisplayImageLoaderOptions;
 import com.newstee.utils.MPUtilities;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity  implements  SeekBar.OnSeekBarChangeListener{
+public class MainActivity extends AppCompatActivity  implements  SeekBar.OnSeekBarChangeListener, SwipeRefreshLayout.OnRefreshListener {
+    SwipeRefreshLayout mSwipeRefreshLayout;
     private SessionManager session;
     private static String TAG = "MainActivity";
     private MusicService musicSrv;
@@ -109,12 +96,26 @@ private View mediaPlayer;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+       /* startActivity(new Intent(MainActivity.this, MediaPlayerFragmentActivity.class));
+        finish();*/
+
         db = new SQLiteHandler(getApplicationContext());
         session = new SessionManager(getApplicationContext());
+        if(session.isCarMode())
+        {
+            startActivity(new Intent(MainActivity.this, CarModeFragmentActivity.class));
+            finish();
+            return;
+        }
         utils = new MPUtilities();
         View view =  findViewById(R.id.main_toolbar);
-
-        mediaPlayer = view.findViewById(R.id.main_media_player);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.toolbar_swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        mediaPlayer = findViewById(R.id.main_media_player);
         mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
         mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_title_TextView);
         mpPicture =  (ImageView) mediaPlayer.findViewById(R.id.media_player_small_picture_ImageView);
@@ -142,6 +143,16 @@ private View mediaPlayer;
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
+       /* mPullToRefresh = (PullToRefreshScrollView)findViewById(R.id.main_pull_to_refresh);
+
+        mPullToRefresh.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
+                new LoadAsyncTask().execute();
+            }
+        });
+        mScrollView = mPullToRefresh.getRefreshableView();*/
+
         mProgress = (FrameLayout)findViewById(R.id.main_progress);
         mViewPager = (ViewPager) findViewById(R.id.container);
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -229,8 +240,28 @@ private View mediaPlayer;
             }
         }).start();
 */
+        if(UserLab.getInstance().isUpdated())
+        {
+            showContentData();
+        }
+        else
+        {
+            new LoadAsyncTask(this) {
+                @Override
+                void hideContent() {
+                    mProgress.setVisibility(View.VISIBLE);
+                }
 
-        new LoadAsyncTask().execute();
+
+                @Override
+                void showContent() {
+                    showContentData();
+                }
+            }.execute();
+
+        }
+
+
 /*
 new Thread(new Runnable() {
     @Override
@@ -264,6 +295,7 @@ new Thread(new Runnable() {
 D
     }
 }).start();*/
+
     }
     private View.OnClickListener mediaPlayerClickListener = new View.OnClickListener() {
         @Override
@@ -272,6 +304,22 @@ D
             startActivity(i);
         }
     };
+    @Override
+    public void onRefresh() {
+        new LoadAsyncTask(MainActivity.this) {
+            @Override
+            void hideContent() {
+           //     mProgress.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            void showContent() {
+                mSectionsPagerAdapter.notifyDataSetChanged();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        }.execute();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -290,6 +338,7 @@ D
             musicBound = true;
             if(musicSrv == null)
             {
+                musicBound = false;
                 return;
             }
             if(musicSrv.isPlaying())
@@ -318,115 +367,10 @@ D
         }
 
     }
-    public void updateData()
-    {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(!InternetHelper.getInstance(getApplicationContext()).isOnline())
-                {
-                    Toast.makeText(getApplicationContext(),getResources().getString(R.string.check_internet_con), Toast.LENGTH_LONG).show();
-                    return;
-                }
-            }
-        });
-
-        NewsTeeApiInterface api = FactoryApi.getInstance(this);
-        if(session.isLoggedIn()) {
-
-            HashMap<String, String> userData = db.getUserDetails();
-            String password = userData.get(SQLiteHandler.KEY_PASSWORD);
-            String email = userData.get(SQLiteHandler.KEY_EMAIL);
-            System.out.println("@@@@@@ Пароль " + password + "@@@@ mail" + email);
-            Call<DataUserAuthentication> userC = api.signIn(email, password, "ru");
-            try {
-                Response<DataUserAuthentication> userR = userC.execute();
-                String result = userR.body().getResult();
-                final String msg = userR.body().getMessage();
-                if (result.equals(Constants.RESULT_SUCCESS)) {
-                    User u = userR.body().getData().get(0);
-                    UserLab.getInstance().setUser(u);
-                } else {
-                    db.deleteUsers();
-                    session.setLogin(false);
-                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-            Call<DataAuthor> authorC = api.getAuthors();
-
-    try {
-        Response<DataAuthor> authorR = authorC.execute();
-        DataAuthor dataAuthor  = authorR.body();
-          AuthorLab.getInstance().setAuthors(dataAuthor.getData());
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-        String addedIds =  UserLab.getInstance().getUser().getNewsAddedIds();
-        if( addedIds !=null)
-        {
-            Call<DataNews> newsByIdC = api.getNewsByIds(addedIds);
-            try {
-                Response<DataNews>  newsByIdR = newsByIdC.execute();
-                UserLab.getInstance().setAddedNews(newsByIdR.body().getNews());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        String likedIds =  UserLab.getInstance().getUser().getNewsLikedIds();
-        if( likedIds !=null)
-        {
-            Call<DataNews> newsByIdC = api.getNewsByIds(likedIds);
-            try {
-                Response<DataNews>  newsByIdR = newsByIdC.execute();
-                UserLab.getInstance().setLikedNews(newsByIdR.body().getNews());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    Call<DataNews> newsC = api.getNews();
-
-    try {
-        Response<DataNews>  newsR = newsC.execute();
-        NewsLab.getInstance().setNews(newsR.body().getNews());
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-    Call<DataTag> tagC = api.getTags();
-
-    try {
-        Response<DataTag>  tagR = tagC.execute();
-        TagLab.getInstance().setTags(tagR.body().getData());
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-        String tagIds =  UserLab.getInstance().getUser().getTagsIds();
-        if(tagIds !=null)
-        {
-            String mas[] = tagIds.split(",");
-            for (int i = 0; i < mas.length; i++) {
-                mas[i] = mas[i].trim();
-            }
-            List<Tag>tags = TagLab.getInstance().getTags();
-            List<Tag>addedTags = new ArrayList<>();
-            for(Tag t : tags)
-            {
-                for (int i = 0; i < mas.length; i++) {
-                    if(t.getId().equals(mas[i]))
-                    {
-                       addedTags.add(t);
-                    }
-                }
-            }
-            UserLab.getInstance().setAddedTags(addedTags);
-            }
-        }
 
 
-    private void showContent() {
+
+    private void showContentData() {
         // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setCurrentItem(2);
@@ -459,9 +403,7 @@ D
         mProgress.setVisibility(View.GONE);
 
     }
-    private void hideContent() {
-        mProgress.setVisibility(View.VISIBLE);
-    }
+
     public void showCanalDeatails() {
         startActivity(new Intent(MainActivity.this, CanalFragmentActivity.class));
     }
@@ -592,27 +534,9 @@ D
         mHandler.removeCallbacks(mUpdateTimeTask);
     }
 
-    private  class LoadAsyncTask extends AsyncTask<String, String, Boolean>
-    {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-         hideContent();
-        }
 
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-            showContent();
-        }
 
-        @Override
-        protected Boolean doInBackground(String... params) {
 
-            updateData();
-            return true;
-        }
-    }
 
 
     @Override
@@ -665,6 +589,7 @@ D
                                 String msg = response.body().getMessage();
                                 if (result.equals(Constants.RESULT_SUCCESS))
                                 {
+                                    LoginManager.getInstance().logOut();
                                     db.deleteUsers();
                                     session.setLogin(false);
                                     UserLab.getInstance().deleteData();
@@ -699,7 +624,7 @@ Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show(
             }
             else
             {
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
                 finish();
             }
 
@@ -733,6 +658,11 @@ public class ProgressPagerAdapter extends FragmentPagerAdapter
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override
@@ -836,7 +766,11 @@ public class ProgressPagerAdapter extends FragmentPagerAdapter
         @Override
         protected void onDestroy() {
             super.onDestroy();
-            unbindService(musicConnection);
+            if(musicBound)
+            {
+                unbindService(musicConnection);
+            }
+
         //    stopService(new Intent(this, MusicService.class));
 
     }

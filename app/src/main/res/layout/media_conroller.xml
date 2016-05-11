@@ -178,8 +178,10 @@
             android:layout_width="@dimen/icon_size_small"
             android:layout_height="@dimen/icon_size_small"
             android:id="@+id/imageView2"
-            android:background="@drawable/ic_volume"
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_volume"
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside"/>
 
         <SeekBar
             android:layout_width="wrap_content"
@@ -199,7 +201,7 @@
             android:id="@+id/like_imageButton"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_like"
-            android:scaleType="centerInside"
+            android:scaleType="fitXY"
             android:padding="6dp"/>
 
         <ImageButton
@@ -209,7 +211,7 @@
             android:layout_gravity="center_vertical"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_share"
-            android:scaleType="centerInside"
+            android:scaleType="fitXY"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
             android:paddingLeft="12dp"/>

@@ -20,10 +20,13 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.newstee.helper.SessionManager;
+import com.newstee.model.data.UserLab;
 import com.newstee.utils.MPUtilities;
 
 public class CarModeFragmentActivity extends AppCompatActivity implements   SeekBar.OnSeekBarChangeListener{
 	private static  final String TAG = "CarModeFragmentActivity";
+	private FrameLayout mProgressLayout;
 	private ImageView headerTitle ;
 	private LinearLayout headerPlayer;
 	private MPUtilities utils = new MPUtilities();
@@ -42,6 +45,7 @@ public class CarModeFragmentActivity extends AppCompatActivity implements   Seek
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.car_mode_layout);
 
 		View header = findViewById(R.id.header);
@@ -54,6 +58,7 @@ public class CarModeFragmentActivity extends AppCompatActivity implements   Seek
 		headerPlayerTitleNews.setOnClickListener(mediaPlayerClickListener);
 		 headerPlayerPlayButton = (ImageButton)header.findViewById(R.id.car_mode_header_play);
 		headerPlayerDuringSeekBar  = (SeekBar)header.findViewById(R.id.car_mode_header_during_seekBar);
+		mProgressLayout = (FrameLayout)findViewById(R.id.car_mode_progress);
 		FrameLayout streamTab = (FrameLayout)findViewById(R.id.car_mode_tab_stream);
 		FrameLayout playlistTab = (FrameLayout)findViewById(R.id.car_mode_tab_playlist);
 		FrameLayout recentTab = (FrameLayout)findViewById(R.id.car_mode_tab_recent);
@@ -138,10 +143,36 @@ public class CarModeFragmentActivity extends AppCompatActivity implements   Seek
 		exitTab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				new SessionManager(getApplicationContext()).setCarMode(false);
 				startActivity(new Intent(CarModeFragmentActivity.this, MainActivity.class));
 				finish();
 			}
 		});
+		new SessionManager(getApplicationContext()).setCarMode(true);
+		if(UserLab.getInstance().isUpdated())
+		{
+			showContentData();
+		}
+		else {
+			new LoadAsyncTask(this) {
+				@Override
+				void hideContent() {
+					mProgressLayout.setVisibility(View.VISIBLE);
+				}
+
+				@Override
+				void showContent() {
+					showContentData();
+				}
+			}.execute();
+		}
+
+
+}
+	public void showContentData()
+	{
+		mProgressLayout.setVisibility(View.GONE);
+
 	}
 	private View.OnClickListener mediaPlayerClickListener = new View.OnClickListener() {
 		@Override

@@ -3,176 +3,192 @@
 
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-             android:background="@color/car_mode_back_color"
+              android:background="@color/car_mode_back_color"
               android:orientation="vertical">
-    <include layout="@layout/car_mode_header" android:id="@+id/header"
-             android:layout_width="match_parent"
-             android:layout_height="0dp"
-             android:layout_weight="0.38"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <FrameLayout
+        android:id="@+id/car_mode_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+    </FrameLayout>
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/car_mode_header"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="0.38"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/outer_margin_medium"
         android:layout_weight="0.62"
-        android:layout_marginBottom="@dimen/outer_margin_medium">
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.42"
             android:layout_marginLeft="@dimen/outer_margin_medium"
+            android:layout_weight="0.42"
+            android:orientation="vertical"
             >
 
             <FrameLayout
+                android:id="@+id/car_mode_tab_stream"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@drawable/car_mode_tab_back_land"
-                android:id="@+id/car_mode_tab_stream">
+                android:background="@drawable/car_mode_tab_back_land">
 
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
+                        android:id="@+id/imageView11"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/imageView11"
-                        android:background="@drawable/stream_clicked"
                         android:layout_gravity="center_horizontal"
+                        android:background="@drawable/stream_clicked"
                         />
 
                     <TextView
+                        android:id="@+id/textView13"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textAllCaps="true"
-                        android:text="@string/tab_stream"
-                        android:id="@+id/textView13"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/outer_margin_medium"
+                        android:text="@string/tab_stream"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="@color/white"/>
 
                 </LinearLayout>
             </FrameLayout>
 
             <FrameLayout
+                android:id="@+id/car_mode_tab_recent"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginTop="@dimen/outer_margin_medium"
                 android:layout_weight="1"
                 android:background="@drawable/car_mode_tab_back_land"
-                android:layout_marginTop="@dimen/outer_margin_medium"
                 android:clickable="true"
-                android:contextClickable="true"
-                android:id="@+id/car_mode_tab_recent">
+                android:contextClickable="true">
 
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:orientation="vertical"
                     >
 
                     <ImageView
+                        android:id="@+id/imageView13"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/imageView13"
-                        android:background="@drawable/ic_clock"
-                        android:layout_gravity="center_horizontal"/>
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/ic_clock"/>
 
                     <TextView
+                        android:id="@+id/textView15"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textAllCaps="true"
-                        android:text="@string/car_mode_tab_recent"
-                        android:id="@+id/textView15"
-                        android:gravity="center_horizontal"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="@dimen/outer_margin_medium"
-                        android:textColor="@color/white"
                         android:layout_marginLeft="@dimen/outer_margin_medium"
-                        android:layout_marginRight="@dimen/outer_margin_medium"/>
+                        android:layout_marginRight="@dimen/outer_margin_medium"
+                        android:layout_marginTop="@dimen/outer_margin_medium"
+                        android:gravity="center_horizontal"
+                        android:text="@string/car_mode_tab_recent"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="@color/white"/>
                 </LinearLayout>
             </FrameLayout>
 
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.42"
             android:layout_marginLeft="@dimen/outer_margin_medium"
+            android:layout_weight="0.42"
+            android:orientation="vertical"
             >
 
             <FrameLayout
+                android:id="@+id/car_mode_tab_playlist"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@drawable/car_mode_tab_back_land"
-                android:id="@+id/car_mode_tab_playlist">
+                android:background="@drawable/car_mode_tab_back_land">
 
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
+                        android:id="@+id/imageView12"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/imageView12"
-                        android:background="@drawable/play_clicked"
-                        android:layout_gravity="center_horizontal"/>
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/play_clicked"/>
 
                     <TextView
+                        android:id="@+id/textView14"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textAllCaps="true"
-                        android:text="@string/tab_play_list"
-                        android:id="@+id/textView14"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/outer_margin_medium"
+                        android:text="@string/tab_play_list"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="@color/white"/>
                 </LinearLayout>
             </FrameLayout>
 
             <FrameLayout
+                android:id="@+id/car_mode_tab_recommend"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="@drawable/car_mode_tab_back_land"
                 android:layout_marginTop="@dimen/outer_margin_medium"
-                android:id="@+id/car_mode_tab_recommend">
+                android:layout_weight="1"
+                android:background="@drawable/car_mode_tab_back_land">
 
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
+                        android:id="@+id/imageView14"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/imageView14"
-                        android:background="@drawable/ic_star"
-                        android:layout_gravity="center_horizontal"/>
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/ic_star"/>
 
                     <TextView
+                        android:id="@+id/textView16"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textAllCaps="true"
-                        android:text="@string/car_mode_tab_recommend"
-                        android:id="@+id/textView16"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="@dimen/outer_margin_medium"
+                        android:text="@string/car_mode_tab_recommend"
+                        android:textAllCaps="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="@color/white"
                         />
                 </LinearLayout>
@@ -180,17 +196,17 @@
         </LinearLayout>
 
         <Button
+            android:id="@+id/car_mode_tab_exit"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:id="@+id/car_mode_tab_exit"
-            android:layout_weight="0.16"
             android:layout_marginLeft="@dimen/outer_margin_medium"
             android:layout_marginRight="@dimen/outer_margin_medium"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textAllCaps="true"
+            android:layout_weight="0.16"
+            android:background="@drawable/car_mode_tab_exit_land"
             android:text="@string/car_mode_tab_exit_land"
-            android:textColor="@color/white"
-            android:background="@drawable/car_mode_tab_exit_land"/>
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/white"/>
     </LinearLayout>
 
 

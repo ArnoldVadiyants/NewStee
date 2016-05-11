@@ -124,7 +124,7 @@ public class LoginActivity extends Activity {
 
                 if (result.equals(Constants.RESULT_SUCCESS)) {
                     User data = response.body().getData().get(0);
-                    db.addUser(data.getUserLogin(), email, password);
+                    db.addUser(data.getUserLogin(), email, password, null);
                     UserLab.getInstance().setUser(data);
                     hideDialog();
                     session.setLogin(true);
@@ -250,10 +250,6 @@ Callback < DataPost > () {
     }
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(
-                LoginActivity.this,
-                MainActivity.class);
-        startActivity(intent);
         finish();
     }
 }

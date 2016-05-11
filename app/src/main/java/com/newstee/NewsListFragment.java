@@ -468,7 +468,7 @@ public abstract class NewsListFragment extends ListFragment {
                                             }
                                             setStatusImageButton(statusButton, status);
                                             Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
-                                            i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.getLinksong());
+                                            i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, newsId);
                                             startActivity(i);
 
                                         }
@@ -484,7 +484,7 @@ public abstract class NewsListFragment extends ListFragment {
                                 {
                                     PlayList.getInstance().setNewsList(UserLab.getInstance().getAddedNewsAndArticles());
                                     Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
-                                    i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.getLinksong());
+                                    i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, newsId);
                                     startActivity(i);
                                 }
                             }
@@ -492,7 +492,7 @@ public abstract class NewsListFragment extends ListFragment {
                             {
                                 PlayList.getInstance().setNewsList(NewsLab.getInstance().getNewsAndArticles());
                                 Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
-                                i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, item.getLinksong());
+                                i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, newsId);
                                 startActivity(i);
                             }
 

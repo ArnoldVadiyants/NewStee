@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 /**
  * Created by Arnold on 17.02.2016.
  */
-public class CarModeListFragment extends Fragment implements  SeekBar.OnSeekBarChangeListener {
+public class CarModeListFragment extends Fragment implements  SeekBar.OnSeekBarChangeListener,SwipeRefreshLayout.OnRefreshListener{
     private final static String TAG = "CarModeListFragment";
     private View mediaPlayer;
     private int newSongValue = -1;
@@ -41,7 +42,7 @@ public class CarModeListFragment extends Fragment implements  SeekBar.OnSeekBarC
     private SeekBar mpDuring;
     private boolean mpPlayingValue = false;
     private MPUtilities utils;
-
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private ImageLoader imageLoader = ImageLoader.getInstance();
 
     private Handler mHandler = new Handler();
@@ -65,6 +66,22 @@ ImageView icon;
     {
 
     }
+    @Override
+    public void onRefresh() {
+new LoadAsyncTask(getActivity()) {
+    @Override
+    void hideContent() {
+
+    }
+
+    @Override
+    void showContent() {
+mSwipeRefreshLayout.setRefreshing(false);
+        mPlayListPager.notifyDataSetChanged();
+    }
+}.execute();
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +93,12 @@ ImageView icon;
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mPlayListPager = new PlayListPager(getChildFragmentManager());
         View rootView = inflater.inflate(R.layout.fragment_car_mode, container, false);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.car_mode_swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
         mediaPlayer = rootView.findViewById(R.id.car_mode_list_media_player);
         mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
         mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_title_TextView);
@@ -334,10 +357,16 @@ ImageView icon;
     }
 
 
+
     public class PlayListPager extends FragmentPagerAdapter {
 
         public PlayListPager(FragmentManager fm) {
             super(fm);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         @Override

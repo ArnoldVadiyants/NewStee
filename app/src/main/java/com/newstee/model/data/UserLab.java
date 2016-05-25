@@ -26,7 +26,14 @@ public class UserLab {
     public List<News> getAddedNews() {
         return mAddedNews;
     }
-
+    public News getAddedNewsItem(String idNews) {
+        for (News n : mAddedNews) {
+            if (n.getId().equals(idNews)) {
+                return n;
+            }
+        }
+        return null;
+    }
     public void setAddedNews(List<News> addedNews) {
 
         mAddedNews.clear();

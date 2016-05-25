@@ -1,5 +1,6 @@
 package com.newstee;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -10,13 +11,45 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.newstee.helper.NewsTeeInstructionsDialogFragment;
+
 /**
  * Created by Arnold on 17.02.2016.
  */
 public class CatalogFragment extends Fragment {
     private final static String TAG = "CatalogFragment";
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser)
+        {
+            showDialog();
+        }
+    }
+    public void showDialog() {
+        if(!isFirstTime())
+        {
+            return;
+        }
 
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        NewsTeeInstructionsDialogFragment dialog = NewsTeeInstructionsDialogFragment.newInstance(R.drawable.catalogue,getResources().getString(R.string.tab_category),getResources().getString(R.string.instructions_catalog),false);
+        dialog.show(fm,NewsTeeInstructionsDialogFragment.DIALOG_INSTRUCTIONS);
+
+    }
+    private boolean isFirstTime()
+    {
+        SharedPreferences preferences = getActivity().getPreferences(getActivity().MODE_PRIVATE);
+        boolean ranBefore = preferences.getBoolean("RanBeforeCatalog", false);
+        if (!ranBefore) {
+            // first time
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("RanBeforeCatalog", true);
+            editor.commit();
+        }
+        return !ranBefore;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

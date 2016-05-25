@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newstee.helper.InternetHelper;
 import com.newstee.helper.SessionManager;
 import com.newstee.model.data.Author;
 import com.newstee.model.data.AuthorLab;
@@ -34,7 +35,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class CatalogListFragment extends ListFragment
+public class CatalogListFragment extends SwipeRefreshListFragment
 {
 	private final static String TAG = "CatalogListFragment";
 	private SessionManager session;
@@ -65,7 +66,7 @@ private CatalogListAdapter adapter;
 			if(adapter ==null) {
 				return;
 			}
-			update();
+			updateFragment();
 			adapter.notifyDataSetChanged();
 
 
@@ -76,7 +77,7 @@ private CatalogListAdapter adapter;
 		super.onCreate(savedInstanceState);
 		mIsCanal = getArguments().getBoolean(ARG_IS_CANAL);
 		session = new SessionManager(getActivity());
-		update();
+
 
 
 
@@ -180,11 +181,21 @@ private CatalogListAdapter adapter;
 
 						@Override
 						public void onClick(final View v) {
+							if (!InternetHelper.getInstance(getActivity()).isOnline()) {
+								Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.check_internet_con), Toast.LENGTH_LONG).show();
+								return;
+							}
 							if(!session.isLoggedIn())
 							{
 								Toast.makeText(getContext(),"Пожалуйста, авторизуйтесь", Toast.LENGTH_SHORT).show();
 								return;
 
+							}
+							UserLab.getInstance().addTag(TagLab.getInstance().getTag(id));
+							if (UserLab.getInstance().isAddedTag(id)) {
+								((ImageButton) v).setImageResource(R.drawable.ic_is_added);
+							} else {
+								((ImageButton) v).setImageResource(R.drawable.news_to_add_button);
 							}
 							NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
 							Call<DataPost> call = nApi.addTags(id);
@@ -192,13 +203,8 @@ private CatalogListAdapter adapter;
 								@Override
 								public void onResponse(Call<DataPost> call, Response<DataPost> response) {
 									if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
-										UserLab.getInstance().addTag(TagLab.getInstance().getTag(id));
 
-										if (UserLab.getInstance().isAddedTag(id)) {
-											((ImageButton) v).setImageResource(R.drawable.ic_is_added);
-										} else {
-											((ImageButton) v).setImageResource(R.drawable.news_to_add_button);
-										}
+
 
 
 									} else {
@@ -263,17 +269,51 @@ private void update()
 
 
 	}
+
 	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		adapter = new CatalogListAdapter(getActivity());
+		setListAdapter(adapter);
+		setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				new LoadAsyncTask(getActivity()) {
+					@Override
+					void hideContent() {
+
+					}
+
+					@Override
+					void showContent() {
+						update();
+						adapter.notifyDataSetChanged();
+						setRefreshing(false);
+					}
+				}.execute();
+			}
+		});
+		setColorScheme(R.color.colorAccent,
+				android.R.color.holo_green_light,
+				android.R.color.holo_orange_light,
+				android.R.color.holo_red_light);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return super.onCreateView(inflater, container, savedInstanceState);
+		//return inflater.inflate(R.layout.catalog_listview, container, false);
+	}
+/*@Override
 	 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 {
 	return inflater.inflate(R.layout.catalog_listview, container, false);
-}
+}*/
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-		adapter = new CatalogListAdapter(getActivity());
-		setListAdapter(adapter);
+
 	}
 }

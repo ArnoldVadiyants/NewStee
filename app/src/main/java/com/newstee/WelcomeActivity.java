@@ -2,6 +2,7 @@ package com.newstee;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -65,6 +66,9 @@ public class WelcomeActivity extends Activity {
         setContentView(R.layout.welcome_layout);
         db = new SQLiteHandler(getApplicationContext());
         session = new SessionManager(getApplicationContext());
+        if (isFirstTime()) {
+            // What you do when the Application is Opened First time Goes here
+        }
         if(session.isLoggedIn())
         {
             Intent intent = new Intent(WelcomeActivity.this,
@@ -255,7 +259,18 @@ public class WelcomeActivity extends Activity {
     }
 
 
-
+    private boolean isFirstTime()
+    {
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        boolean ranBefore = preferences.getBoolean("RanBefore", false);
+        if (!ranBefore) {
+            // first time
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("RanBefore", true);
+            editor.commit();
+        }
+        return !ranBefore;
+    }
 
 
 

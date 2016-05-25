@@ -1,6 +1,8 @@
 package com.newstee;
 
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.newstee.helper.NewsTeeInstructionsDialogFragment;
 import com.newstee.model.data.News;
 import com.newstee.model.data.UserLab;
 
@@ -22,6 +25,7 @@ import java.util.List;
  * Created by Arnold on 23.02.2016.
  */
 public class MyPlaylistFragment extends Fragment{
+
     public static boolean ifShowMediaPlayer = false;
     private LinearLayout startButton;
     private PlayListPager mPlayListPager;
@@ -37,6 +41,14 @@ public class MyPlaylistFragment extends Fragment{
      */
     private ViewPager mViewPager;
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser)
+        {
+            showDialog();
+        }
+    }
 
     @Override
     public void onResume() {
@@ -46,12 +58,36 @@ public class MyPlaylistFragment extends Fragment{
 
         }
 
+
     }
     @Override
     public View getView() {
         return super.getView();
     }
 
+    public void showDialog() {
+        if(!isFirstTime())
+        {
+            return;
+        }
+
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        NewsTeeInstructionsDialogFragment dialog = NewsTeeInstructionsDialogFragment.newInstance(R.drawable.play,getResources().getString(R.string.tab_play_list),getResources().getString(R.string.instructions_lenta),true);
+        dialog.show(fm,NewsTeeInstructionsDialogFragment.DIALOG_INSTRUCTIONS);
+
+    }
+    private boolean isFirstTime()
+    {
+        SharedPreferences preferences = getActivity().getPreferences(getActivity().MODE_PRIVATE);
+        boolean ranBefore = preferences.getBoolean("RanBeforePlayList", false);
+        if (!ranBefore) {
+            // first time
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("RanBeforePlayList", true);
+            editor.commit();
+        }
+        return !ranBefore;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_playlist, container, false);
@@ -106,6 +142,10 @@ public class MyPlaylistFragment extends Fragment{
                     if (n.getCategory().equals(category)) {
                         newsList.add(n);
                     }
+                }
+                if(newsList.isEmpty())
+                {
+                    return;
                 }
                 PlayList.getInstance().setNewsList(newsList);
                 Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);

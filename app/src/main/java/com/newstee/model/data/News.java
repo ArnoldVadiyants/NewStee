@@ -151,7 +151,40 @@ public class News {
     public String getLikes() {
         return likes;
     }
+    public void addLike() {
+        if(likes == null)
+        {
+            return;
+        }
+        int newLikes =0;
+        try
+        {
+            newLikes = Integer.parseInt(likes.trim());
+        }
+        catch (NumberFormatException e)
+        {
 
+        }
+        ++newLikes;
+        likes = ""+newLikes;
+    }
+    public void removeLike() {
+        if(likes == null)
+        {
+            return;
+        }
+        int newLikes =1;
+        try
+        {
+            newLikes = Integer.parseInt(likes.trim());
+        }
+        catch (NumberFormatException e)
+        {
+
+        }
+        --newLikes;
+        likes = ""+newLikes;
+    }
     /**
      *
      * @param likes

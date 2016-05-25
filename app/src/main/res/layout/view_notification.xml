@@ -1,0 +1,88 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white">
+
+    <ImageView
+        android:id="@+id/large_icon"
+        android:layout_width="@dimen/notification_expanded_height"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:src="@mipmap/ic_launcher"/>
+    <LinearLayout
+        android:id="@+id/buttons_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/large_icon"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        android:layout_alignRight="@+id/notify_text"
+        android:layout_alignEnd="@+id/notify_text">
+
+        <ImageButton
+            android:id="@+id/ib_rewind"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="@dimen/notification_button_height"
+            android:scaleType="centerInside"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_media_prev"
+            android:paddingTop="16dp"
+            android:paddingLeft="24dp"
+            android:paddingBottom="8dp"/>
+
+        <ImageButton
+            android:id="@+id/ib_play_pause"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="@dimen/notification_button_height"
+            android:scaleType="centerInside"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_media_pause"
+            android:paddingTop="12dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="4dp"/>
+
+        <ImageButton
+            android:id="@+id/ib_fast_forward"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="@dimen/notification_button_height"
+            android:scaleType="centerInside"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_media_next"
+            android:paddingRight="24dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/notify_text"
+        android:layout_above="@+id/buttons_row"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/destroy_notify_button"
+        android:layout_toRightOf="@+id/large_icon"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/notification_text_size"/>
+
+    <Button
+        android:layout_width="@dimen/icon_size_small"
+        android:layout_height="@dimen/icon_size_small"
+        android:id="@+id/destroy_notify_button"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/exit_image_dark"
+        android:layout_marginTop="@dimen/outer_margin"
+        android:layout_marginRight="@dimen/outer_margin"
+        android:layout_marginLeft="@dimen/outer_margin"/>
+
+</RelativeLayout>

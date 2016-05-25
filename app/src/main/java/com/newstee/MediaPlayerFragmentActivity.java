@@ -17,7 +17,7 @@ public class MediaPlayerFragmentActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_fragment);
 		FragmentManager fm = getSupportFragmentManager();
 		Fragment  fragment = MediaPlayerFragment.newInstance(getIntent().getStringExtra(ARG_AUDIO_ID));
-			fm.beginTransaction().add(R.id.fragmentContainer, fragment)
+			fm.beginTransaction().replace(R.id.fragmentContainer, fragment)
 					.commit();
 	}
 }

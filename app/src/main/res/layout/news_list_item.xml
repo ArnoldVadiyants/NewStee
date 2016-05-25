@@ -48,7 +48,9 @@
                     android:id="@+id/like_ImageView"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="@dimen/icon_margin"
-                    android:background="@drawable/ic_favourite"/>
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_like"
+                    android:scaleType="centerInside"/>
 
                 <TextView
                     android:layout_width="wrap_content"

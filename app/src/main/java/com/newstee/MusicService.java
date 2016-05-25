@@ -1,5 +1,7 @@
 package com.newstee;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -7,10 +9,13 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.newstee.model.data.AuthorLab;
 import com.newstee.model.data.News;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.IOException;
 import java.util.Random;
@@ -31,8 +36,11 @@ public class MusicService extends Service implements
     private boolean paused = true;
     private MediaPlayer player;
     private int mBufferPosition;
-
-
+    private boolean mIsPlaying = false;
+    public static final String ACTION_NOTIFICATION_PLAY_PAUSE = "action_notification_play_pause";
+    public static final String ACTION_NOTIFICATION_FAST_FORWARD = "action_notification_fast_forward";
+    public static final String ACTION_NOTIFICATION_REWIND = "action_notification_rewind";
+    public static final String ACTION_NOTIFICATION_DISMISS = "action_notification_dismiss";
 
     private String idNews = "";
     private String songTitle="";
@@ -64,7 +72,7 @@ public class MusicService extends Service implements
        newSongValue++;
     }
 
-
+    ImageLoader imageLoader;
     public boolean isPaused() {
         return paused;
     }
@@ -91,9 +99,112 @@ public class MusicService extends Service implements
     //notification id
 
 
+    private void handleIntent( Intent intent ) {
+        if( intent != null && intent.getAction() != null ) {
+            if( intent.getAction().equalsIgnoreCase( ACTION_NOTIFICATION_PLAY_PAUSE ) ) {
+                if (isPlaying())
+                {
+                    pausePlayer();
+                }
+                else
+                {
+                    go();
+                }
+            } else if( intent.getAction().equalsIgnoreCase( ACTION_NOTIFICATION_FAST_FORWARD ) ) {
+                playPrev();
+            } else if( intent.getAction().equalsIgnoreCase( ACTION_NOTIFICATION_REWIND ) ) {
+
+                playNext();
+            }
+        else if( intent.getAction().equalsIgnoreCase( ACTION_NOTIFICATION_DISMISS ) ) {
+
+                NotificationManager mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+                mNotificationManager.cancel(1);
+        }
+        }
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        handleIntent( intent );
+        return super.onStartCommand(intent, flags, startId);
+
+    }
+    private void showNotification() {
+        int icon = R.mipmap.ic_launcher;
+        long when = System.currentTimeMillis();
+
+      //  contentView.setImageViewResource(R.id.image, R.mipmap.ic_launcher);
+     //   contentView.setTextViewText(R.id.title, "Custom notification");
+     //   contentView.setTextViewText(R.id.text, "This is a custom layout");
+/*
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);*/
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(icon)
+                .setContent(getExpandedView())
+                .setContentTitle("Custom Notification")
+              //  .setContentIntent(contentIntent)
+                .setWhen(when)
+                .setOngoing(true);
+
+        NotificationManager mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+       // new RemoteViews(getPackageName(), R.layout.view_notification)
+    //    if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN ) {
+
+            //getExpandedView( isPlaying );
+    //    }
+       // notification.contentView = new RemoteViews(getPackageName(), R.layout.view_notification);
+
+        mNotificationManager.notify(1, notificationBuilder.build());
+
+    }
+
+    private RemoteViews getExpandedView() {
+        RemoteViews customView = new RemoteViews(getPackageName(), R.layout.view_notification );
+        customView.setTextViewText(R.id.notify_text,getSongTitle());
+        customView.setImageViewBitmap( R.id.large_icon,imageLoader.loadImageSync(getNewsPictureUrl()));
+        customView.setImageViewResource( R.id.ib_rewind, R.drawable.ic_media_prev );
+
+        if( isPlaying() )
+            customView.setImageViewResource( R.id.ib_play_pause, R.drawable.ic_media_pause );
+        else
+            customView.setImageViewResource( R.id.ib_play_pause, R.drawable.ic_media_play );
+
+        customView.setImageViewResource(R.id.ib_fast_forward, R.drawable.ic_media_next);
+
+       Intent intent = new Intent( getApplicationContext(), MusicService.class );
+      //  Intent intent = new Intent(this, MusicService.class);
+
+        intent.setAction(ACTION_NOTIFICATION_PLAY_PAUSE);
+        PendingIntent pendingIntent = PendingIntent.getService(this,
+                1, intent, 0);
+        customView.setOnClickPendingIntent(R.id.ib_play_pause, pendingIntent);
+
+        intent.setAction(ACTION_NOTIFICATION_FAST_FORWARD);
+        pendingIntent = PendingIntent.getService(this, 1, intent, 0);
+        customView.setOnClickPendingIntent(R.id.ib_fast_forward, pendingIntent);
+
+        intent.setAction(ACTION_NOTIFICATION_REWIND);
+        pendingIntent = PendingIntent.getService(this, 1, intent, 0);
+        customView.setOnClickPendingIntent(R.id.ib_rewind, pendingIntent);
+
+        intent.setAction(ACTION_NOTIFICATION_DISMISS);
+        pendingIntent = PendingIntent.getService(this, 1, intent, 0);
+        customView.setOnClickPendingIntent(R.id.destroy_notify_button, pendingIntent);
+
+        return customView;
+    }
+
+
     public void onCreate(){
         //create the service
         super.onCreate();
+         imageLoader = ImageLoader.getInstance();
+
         songPosition =-1;
         rand=new Random();
         player = new MediaPlayer();
@@ -114,6 +225,7 @@ public class MusicService extends Service implements
             }
         }).start();*/
     }
+
 
     public void initMusicPlayer(){
         //set play properties
@@ -191,7 +303,13 @@ public class MusicService extends Service implements
         return musicBind;
     }
 
-    //release resources when unbind
+    @Override
+    public boolean onUnbind(Intent intent) {
+
+        return super.onUnbind(intent);
+
+    }
+//release resources when unbind
   /*  @Override
     public boolean onUnbind(Intent intent){
         if(player != null) {
@@ -372,19 +490,20 @@ public class MusicService extends Service implements
                 .setContentText(songTitle);
         Notification not = builder.build();
         startForeground(NOTIFY_ID, not);*/
+
         News n = PlayList.getInstance().getNewsList().get(songPosition);
-    //    PlayList.getInstance().setCurrent(n);
+        //    PlayList.getInstance().setCurrent(n);
         idNews = n.getId();
         songTitle = n.getTitle();
-        canalTitle = AuthorLab.getInstance().getAuthor( n.getIdauthor()).getName();
+        canalTitle = AuthorLab.getInstance().getAuthor(n.getIdauthor()).getName();
         songContent = n.getContent();
         newsPictureUrl = n.getPictureNews();
         newsDate = n.getAdditionTime();
 
         paused = false;
         updateNewSongValue();
+        showNotification();
     }
-
 
     //playback methods
     public int getPosn(){
@@ -428,10 +547,12 @@ public class MusicService extends Service implements
         }
         try {
             player.pause();
+            showNotification();
         }
         catch (IllegalStateException e)
         {
         }
+
 
     }
 
@@ -457,6 +578,7 @@ public class MusicService extends Service implements
             return;
         }
         player.start();
+        showNotification();
     }
 
     //skip to previous track

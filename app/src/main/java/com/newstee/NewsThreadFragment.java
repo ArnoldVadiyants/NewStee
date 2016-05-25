@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -24,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newstee.helper.NewsTeeInstructionsDialogFragment;
 import com.newstee.model.data.News;
 import com.newstee.model.data.NewsLab;
 import com.newstee.model.data.Tag;
@@ -42,7 +44,7 @@ private NewsThreadListFragment newsFragment;
     private NewsThreadListFragment storyFragment;
     private LinearLayout startButton;
     private ArrayList<String> mFilterTagIds = new ArrayList<>();
-
+    private int isVisibleCount = 0;
     private ViewPager mViewPager;
     private PlayListPager mPlayListPager;
     private ImageButton filterButton;
@@ -72,7 +74,31 @@ private NewsThreadListFragment newsFragment;
        }
 
     }
+    public void showDialog() {
+        if(!isFirstTime())
+        {
+           return;
+        }
 
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        NewsTeeInstructionsDialogFragment dialog = NewsTeeInstructionsDialogFragment.newInstance(R.drawable.stream,getResources().getString(R.string.tab_stream),getResources().getString(R.string.instructions_thread),false);
+     //  dialog.get
+
+        dialog.show(fm,NewsTeeInstructionsDialogFragment.DIALOG_INSTRUCTIONS);
+
+    }
+    private boolean isFirstTime()
+    {
+        SharedPreferences preferences = getActivity().getPreferences(getActivity().MODE_PRIVATE);
+        boolean ranBefore = preferences.getBoolean("RanBeforeThread", false);
+        if (!ranBefore) {
+            // first time
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("RanBeforeThread", true);
+            editor.commit();
+        }
+        return !ranBefore;
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -104,6 +130,10 @@ private NewsThreadListFragment newsFragment;
                             newsList.add(n);
                         }
                     }
+                if(newsList.isEmpty())
+                {
+                    return;
+                }
                     PlayList.getInstance().setNewsList(newsList);
                 Intent i = new Intent(getActivity(), MediaPlayerFragmentActivity.class);
                 i.putExtra(MediaPlayerFragmentActivity.ARG_AUDIO_ID, newsList.get(0).getId());
@@ -403,17 +433,23 @@ private NewsThreadListFragment newsFragment;
 
     }
 
-   /* @Override
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser)
         {
+            ++isVisibleCount;
+            if(isVisibleCount>1)
+            {
+                showDialog();
+            }
+
             Log.d("@@@@ " + TAG, isVisibleToUser+ "");
+           /* newsFragment.setUserVisibleHint(true);
             newsFragment.setUserVisibleHint(true);
-            newsFragment.setUserVisibleHint(true);
-            newsFragment.setUserVisibleHint(true);
+            newsFragment.setUserVisibleHint(true);*/
         }
-    }*/
+    }
 
     public class PlayListPager extends FragmentPagerAdapter {
         public int current_position = 0;

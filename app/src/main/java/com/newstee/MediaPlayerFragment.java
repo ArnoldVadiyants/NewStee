@@ -16,6 +16,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -25,8 +27,10 @@ import android.widget.Toast;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 import com.newstee.MusicService.MusicBinder;
+import com.newstee.helper.InternetHelper;
 import com.newstee.model.data.DataPost;
 import com.newstee.model.data.News;
+import com.newstee.model.data.NewsLab;
 import com.newstee.model.data.UserLab;
 import com.newstee.network.FactoryApi;
 import com.newstee.network.interfaces.NewsTeeApiInterface;
@@ -231,12 +235,71 @@ btnLike.setOnClickListener(new View.OnClickListener() {
     public void onClick(final View v) {
         if(musicSrv == null)
         {
-         return;
+            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.msg_error), Toast.LENGTH_LONG).show();
+
+            return;
         }
         final String id = musicSrv.getIdNews();
         if(id == null)
         {
+            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.msg_error), Toast.LENGTH_LONG).show();
+
             return;
+        }
+        if (!InternetHelper.getInstance(getActivity()).isOnline()) {
+            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.check_internet_con), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+       Animation animation = AnimationUtils.loadAnimation(
+               getActivity(), R.anim.skale_animation);
+        UserLab.getInstance().likeNews(PlayList.getInstance().getNewsItem(id));
+        News threadNews = NewsLab.getInstance().getNewsItem(id);
+        News addedNews = UserLab.getInstance().getAddedNewsItem(id);
+        boolean isAdded  = false;
+        v.startAnimation(animation);
+        if (UserLab.getInstance().isLikedNews(id)) {
+            Log.d(TAG, "@@@@@@ liked");
+            ((ImageButton) v).setImageResource(R.drawable.ic_is_liked);
+            isAdded = true;
+        } else {
+            Log.d(TAG, "@@@@@@ removed");
+            ((ImageButton) v).setImageResource(R.drawable.ic_like);
+        }
+        if(NewsLab.getInstance().getNews().contains(addedNews))
+        {
+            if(isAdded)
+            {
+                addedNews.addLike();
+            }
+            else
+            {
+                addedNews.removeLike();
+            }
+        }
+        else if(threadNews != null && addedNews != null  )
+        {
+            if(isAdded)
+            {
+                addedNews.addLike();
+                threadNews.addLike();
+            }
+            else
+            {
+                addedNews.removeLike();
+                threadNews.removeLike();
+            }
+        }
+        else if(addedNews != null)
+        {
+            if(isAdded)
+            {
+                threadNews.addLike();
+            }
+            else
+            {
+                threadNews.removeLike();
+            }
         }
         NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
 
@@ -245,15 +308,9 @@ btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onResponse(Call<DataPost> call, Response<DataPost> response) {
                 if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
-                    UserLab.getInstance().likeNews(PlayList.getInstance().getNewsItem(id));
 
-                    if (UserLab.getInstance().isLikedNews(id)) {
-                        Log.d(TAG, "@@@@@@ liked");
-                                ((ImageButton) v).setImageResource(R.drawable.ic_is_liked);
-                    } else {
-                        Log.d(TAG, "@@@@@@ removed");
-                        ((ImageButton) v).setImageResource(R.drawable.ic_like);
-                    }
+
+
 
 
                 } else {
@@ -696,7 +753,7 @@ btnLike.setOnClickListener(new View.OnClickListener() {
         // forward or backward to certain seconds
         musicSrv.seek(currentPosition);
 
-        // update timer progress again
+        // updateFragment timer progress again
      updateMediaPlayer();
     }
 
@@ -722,6 +779,11 @@ btnLike.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(musicBound)
+        {
+            getActivity().unbindService(musicConnection);
+        }
+
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.newstee;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newstee.helper.InternetHelper;
 import com.newstee.model.data.DataPost;
 import com.newstee.model.data.Tag;
 import com.newstee.model.data.TagLab;
@@ -31,7 +34,8 @@ import retrofit2.Response;
 
 public class ProfileListFragment extends ListFragment
 {
-
+	private static final String TAG = "ProfileListFragment";
+	private UpdateDataInterface mUpdateDataInterface;
 	private  List<Item> items = new ArrayList<Item>();
 	private static final String ARG_IS_CANAL = "is_canal";
 	private ProfileListAdapter adapter;
@@ -40,7 +44,7 @@ public class ProfileListFragment extends ListFragment
 	 * Returns a new instance of this fragment for the given section
 	 * number.
 	 */
-	private void update()
+	private void updateCatalog()
 	{
 		items.clear();
 		List<Tag> tags = UserLab.getInstance().getAddedTags();
@@ -49,12 +53,46 @@ public class ProfileListFragment extends ListFragment
 		}
 	}
 	@Override
+	public void onAttach(Context context) {
+		//  super.onAttach(context);
+		Log.d(TAG, "onAttach");
+		Activity a;
+		if(context instanceof Activity)
+		{
+			a = (Activity)context;
+			onAttach(a);
+		}
+     /*   if (context instanceof  com.materialdesign.FeedConsumer){
+        // // Activity  activity=(Activity) context;
+         //   if (activity instanceof com.materialdesign.FeedConsumer) {
+            //    feedConsumer = (com.materialdesign.FeedConsumer) context;
+            onAttach(hostActivity);
+           }
+       // }*/
+	}
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		if (activity instanceof UpdateDataInterface) {
+			Log.d(TAG, "onAttachAct");
+			mUpdateDataInterface = (UpdateDataInterface) activity;
+		}
+	}
+
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		Log.d(TAG, "onDetach");
+		mUpdateDataInterface = null;
+	}
+	@Override
 	public void onResume() {
 		super.onResume();
 		if(adapter ==null) {
 			return;
 		}
-		update();
+		updateCatalog();
 		adapter.notifyDataSetChanged();
 
 
@@ -67,20 +105,19 @@ public class ProfileListFragment extends ListFragment
 			if(adapter ==null) {
 				return;
 			}
-				update();
+				updateCatalog();
 				adapter.notifyDataSetChanged();
 
 
 		}
 	}
+
 	public ProfileListFragment() {
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		update();
-
 	}
 
 
@@ -126,7 +163,7 @@ public class ProfileListFragment extends ListFragment
 		{
 			super(context, R.layout.catalog_item_title, items);
 		}
-		
+
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
@@ -170,6 +207,18 @@ public class ProfileListFragment extends ListFragment
 					holder.addBtn.setOnClickListener(new View.OnClickListener() {
 						@Override
 						public void onClick(final View v) {
+
+							if (!InternetHelper.getInstance(getActivity()).isOnline()) {
+								Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.check_internet_con), Toast.LENGTH_LONG).show();
+								return;
+							}
+							if (UserLab.getInstance().isAddedTag(id)) {
+								((ImageButton) v).setImageResource(R.drawable.news_to_add_button);
+							} else {
+								((ImageButton) v).setImageResource(R.drawable.ic_is_added);
+							}
+
+
 							NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
 							Call<DataPost> call = nApi.addTags(id);
 							call.enqueue(new Callback<DataPost>() {
@@ -183,7 +232,10 @@ public class ProfileListFragment extends ListFragment
 										} else {
 											((ImageButton) v).setImageResource(R.drawable.news_to_add_button);
 										}
-
+										if(mUpdateDataInterface !=null)
+										{
+											mUpdateDataInterface.updateData();
+										}
 
 									} else {
 										Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
@@ -215,11 +267,45 @@ public class ProfileListFragment extends ListFragment
 			return view;
 		}
 	}
-	
 
+/*	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return super.onCreateView(inflater, container, savedInstanceState);
+	}*/
 
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		adapter = new ProfileListAdapter(getActivity());
+		setListAdapter(adapter);
+		TextView emptyTextView = (TextView) getListView().getEmptyView();
+		emptyTextView.setText(getString(R.string.empty_my_catalog));
+	/*	*//**//*setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				new LoadAsyncTask(getActivity()) {
+					@Override
+					void hideContent() {
 
-	
+					}
+
+					@Override
+					void showContent() {
+						updateCatalog();
+						adapter.notifyDataSetChanged();
+						setRefreshing(false);
+
+					}
+				}.execute();
+			}
+		});
+		setColorScheme(R.color.colorAccent,
+				android.R.color.holo_green_light,
+				android.R.color.holo_orange_light,
+				android.R.color.holo_red_light);*//**//**/
+
+	}
+
 	@Override
 	 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 {
@@ -227,13 +313,10 @@ public class ProfileListFragment extends ListFragment
 }
 	
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState)
-	{
+	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		adapter = new ProfileListAdapter(getActivity());
-		setListAdapter(adapter);
-
-		TextView emptyTextView = (TextView) getListView().getEmptyView();
-		emptyTextView.setText(getString(R.string.empty_my_catalog));
 	}
+
+
+
 }

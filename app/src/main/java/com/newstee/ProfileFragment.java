@@ -1,6 +1,7 @@
 package com.newstee;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
@@ -21,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newstee.helper.NewsTeeInstructionsDialogFragment;
 import com.newstee.helper.SQLiteHandler;
 import com.newstee.helper.SessionManager;
 import com.newstee.model.data.User;
@@ -33,12 +35,14 @@ import java.util.HashMap;
 /**
  * Created by Arnold on 17.02.2016.
  */
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment  {
     private static final String TAG = "ProfileFragment";
+    private ProfileListFragment mProfileListFragment;
     private Button editButton;
     private SessionManager session;
     private SQLiteHandler db;
     private boolean update = false;
+
 
 ImageLoader imageLoader = ImageLoader.getInstance();
     LinearLayout profileInfo;
@@ -48,14 +52,19 @@ ImageLoader imageLoader = ImageLoader.getInstance();
     TextView name;
     TextView likes;
     TextView subscribes;
+    ViewPager mViewPager;
 
-  private ProfilePagerAdapter mProfilePagerAdapter;
+    TabLayout mTabLayout;
+
+
+    private ProfilePagerAdapter mProfilePagerAdapter;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        mProfileListFragment = new ProfileListFragment();
         session = new SessionManager(getActivity());
         db = new SQLiteHandler(getActivity());
     }
@@ -66,8 +75,19 @@ ImageLoader imageLoader = ImageLoader.getInstance();
     // private ViewPager mViewPager;
 public void update()
 {
+    mProfilePagerAdapter = new ProfilePagerAdapter(getChildFragmentManager());
+    mViewPager.setAdapter(mProfilePagerAdapter);
+    mViewPager.setCurrentItem(0);
+    mTabLayout.setupWithViewPager(mViewPager);
+
+    if(mProfilePagerAdapter != null)
+    {
+        mProfilePagerAdapter.notifyDataSetChanged();
+    }
+
     if(session.isLoggedIn())
-    {profileInfo.setVisibility(View.VISIBLE);
+    {profileInfo.setVisibility(View.GONE);
+        editButton.setVisibility(View.VISIBLE);
         //    name.setText(UserLab.getInstance().getUser().getUserLogin());
         User u = UserLab.getInstance().getUser();
         String name = u.getUserLogin();
@@ -98,7 +118,7 @@ public void update()
     {
         usernameTitle.setText(R.string.tab_profile);
         name.setVisibility(View.GONE);
-        profileInfo.setVisibility(View.GONE);
+        editButton.setVisibility(View.GONE);
     }
 }
 
@@ -107,7 +127,7 @@ public void update()
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
-
+                showDialog();
             update();
         }
     }
@@ -133,29 +153,33 @@ public void update()
         name = (TextView)rootView.findViewById(R.id.profile_name_TextView);
         backgroundImgView= (ImageView)rootView.findViewById(R.id.profile_background_imageView);
         avatarImgView = (ImageView)rootView.findViewById(R.id.profile_avatar_imageView);
+      //  mProfilePagerAdapter = new ProfilePagerAdapter(getChildFragmentManager());
+      mViewPager = (ViewPager)rootView.findViewById(R.id.profile_container);
+     //   mViewPager.setAdapter(mProfilePagerAdapter);
+      //  mViewPager.setCurrentItem(0);
+       mTabLayout = (TabLayout)rootView.findViewById(R.id.profile_tabs);
+      //  mTabLayout.setupWithViewPager(mViewPager);
 
        /* BitmapFactory.Options o=new BitmapFactory.Options();
                 o.inSampleSize = 4;
                 o.inDither=false;                     //Disable Dithering mode
                 o.inPurgeable=true;
                 avatarImgView.setImageBitmap(new CircleTransform().transform(BitmapFactory.decodeResource(getResources(), R.drawable.avatar_test, o)));
-               */ editButton = (Button)rootView.findViewById(R.id.profile_edit_btn);
-                editButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        getActivity().startActivity(new Intent(getContext(), EditProfileActivity.class));
-                        Toast.makeText(getActivity(), "edit profile clicked", Toast.LENGTH_SHORT).show();
+               */
+        editButton = (Button) rootView.findViewById(R.id.profile_edit_btn);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().startActivity(new Intent(getContext(), EditProfileActivity.class));
+                Toast.makeText(getActivity(), "edit profile clicked", Toast.LENGTH_SHORT).show();
                     }
-                });
+        });
+       // mProfilePagerAdapter = new ProfilePagerAdapter(getChildFragmentManager());
        update();
-         mProfilePagerAdapter = new ProfilePagerAdapter(getChildFragmentManager());
-        // Set up the ViewPager with the sections adapter.
-        ViewPager mViewPager = (ViewPager)rootView.findViewById(R.id.profile_container);
-        mViewPager.setAdapter(mProfilePagerAdapter);
-        mViewPager.setCurrentItem(0);
 
-        TabLayout tabLayout = (TabLayout)rootView.findViewById(R.id.profile_tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+        // Set up the ViewPager with the sections adapter.
+
+
        /* View article_view =  rootView.findViewById(R.id.theme_article_item);
             article_icon = (ImageView) article_view.findViewById(R.id.item_icon);
             article_titleTextView = (TextView) article_view.findViewById(R.id.item_title);
@@ -204,6 +228,37 @@ public void update()
         return bitmap;
     }
 
+    public void showDialog() {
+        if(!isFirstTime())
+        {
+            return;
+        }
+
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        NewsTeeInstructionsDialogFragment dialog = NewsTeeInstructionsDialogFragment.newInstance(R.drawable.profile,getResources().getString(R.string.tab_profile),getResources().getString(R.string.instructions_profile),false);
+        dialog.show(fm,NewsTeeInstructionsDialogFragment.DIALOG_INSTRUCTIONS);
+
+    }
+    private boolean isFirstTime()
+    {
+        SharedPreferences preferences = getActivity().getPreferences(getActivity().MODE_PRIVATE);
+        boolean ranBefore = preferences.getBoolean("RanBeforeProfile", false);
+        if (!ranBefore) {
+            // first time
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("RanBeforeProfile", true);
+            editor.commit();
+        }
+        return !ranBefore;
+    }
+
+    public void updatePager() {
+        mProfilePagerAdapter = new ProfilePagerAdapter(getChildFragmentManager());
+        mViewPager.setAdapter(mProfilePagerAdapter);
+        mViewPager.setCurrentItem(0);
+        mTabLayout.setupWithViewPager(mViewPager);
+    }
+
 
     /*
       int targetHeight= source.getHeight();
@@ -235,12 +290,17 @@ public class ProfilePagerAdapter extends FragmentPagerAdapter {
         super(fm);
     }
 
-    @Override
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
     public Fragment getItem(int position) {
 
         switch (position) {
             case 0:
-                return new ProfileListFragment();
+                return mProfileListFragment;
             case 1:
                 return MyPlaylistListFragment.newInstance(Constants.ARGUMENT_NEWS_LIKED,Constants.CATEGORY_ALL);
         }
@@ -274,9 +334,9 @@ public class ProfilePagerAdapter extends FragmentPagerAdapter {
 
         switch (position) {
             case 0:
-                return getActivity().getResources().getString(R.string.my_subscriptions);
+                return getActivity().getResources().getString(R.string.my_subscriptions) + " "+UserLab.getInstance().getAddedTags().size();
             case 1:
-                return getActivity().getResources().getString(R.string.my_likes);
+                return "     "+getActivity().getResources().getString(R.string.my_likes)+ " "+UserLab.getInstance().getLikedNews().size();
 
         }
 

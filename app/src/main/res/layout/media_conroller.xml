@@ -200,8 +200,8 @@
             android:layout_height="@dimen/icon_size"
             android:id="@+id/like_imageButton"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_like"
-            android:scaleType="fitXY"
+            android:src="@drawable/ic_is_liked"
+            android:scaleType="centerInside"
             android:padding="6dp"/>
 
         <ImageButton
@@ -210,8 +210,8 @@
             android:id="@+id/share_imageButton"
             android:layout_gravity="center_vertical"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_share"
-            android:scaleType="fitXY"
+            android:src="@drawable/ic_share_click"
+            android:scaleType="centerInside"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
             android:paddingLeft="12dp"/>

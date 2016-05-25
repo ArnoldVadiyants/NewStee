@@ -23,4 +23,7 @@
     <dimen name = "news_list_item_height">100dp</dimen>
     <dimen name = "logo_title_height">40dp</dimen>
     <dimen name = "logo_title_width">164dp</dimen>
+    <dimen name="notification_expanded_height">64dp</dimen>
+    <dimen name="notification_button_height">36dp</dimen>
+    <dimen name="notification_text_size">20sp</dimen>
 </resources>

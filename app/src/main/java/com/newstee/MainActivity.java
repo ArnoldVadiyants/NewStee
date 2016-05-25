@@ -15,7 +15,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -48,9 +48,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity  implements  SeekBar.OnSeekBarChangeListener, SwipeRefreshLayout.OnRefreshListener {
-    SwipeRefreshLayout mSwipeRefreshLayout;
+public class MainActivity extends AppCompatActivity  implements  SeekBar.OnSeekBarChangeListener, UpdateDataInterface{
     private SessionManager session;
+    private ProfileFragment profileFragment;
     private static String TAG = "MainActivity";
     private MusicService musicSrv;
     private SQLiteHandler db;
@@ -98,7 +98,7 @@ private View mediaPlayer;
         setContentView(R.layout.activity_main);
        /* startActivity(new Intent(MainActivity.this, MediaPlayerFragmentActivity.class));
         finish();*/
-
+        profileFragment = new ProfileFragment();
         db = new SQLiteHandler(getApplicationContext());
         session = new SessionManager(getApplicationContext());
         if(session.isCarMode())
@@ -109,12 +109,6 @@ private View mediaPlayer;
         }
         utils = new MPUtilities();
         View view =  findViewById(R.id.main_toolbar);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.toolbar_swipe_container);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
         mediaPlayer = findViewById(R.id.main_media_player);
         mpBtnPlay = (ImageButton) mediaPlayer.findViewById(R.id.media_player_small_play_button);
         mpTitle = (TextView) mediaPlayer.findViewById(R.id.media_player_small_title_TextView);
@@ -155,6 +149,12 @@ private View mediaPlayer;
 
         mProgress = (FrameLayout)findViewById(R.id.main_progress);
         mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mpBtnPlay.setOnClickListener(new View.OnClickListener() {
@@ -304,21 +304,7 @@ D
             startActivity(i);
         }
     };
-    @Override
-    public void onRefresh() {
-        new LoadAsyncTask(MainActivity.this) {
-            @Override
-            void hideContent() {
-           //     mProgress.setVisibility(View.VISIBLE);
-            }
 
-            @Override
-            void showContent() {
-                mSectionsPagerAdapter.notifyDataSetChanged();
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        }.execute();
-    }
 
     @Override
     protected void onStart() {
@@ -467,7 +453,7 @@ D
         // forward or backward to certain seconds
         musicSrv.seek(currentPosition);
 
-        // update timer progress again
+        // updateFragment timer progress again
         updateMediaPlayer();
     }
     public void updateMediaPlayer() {
@@ -570,6 +556,8 @@ D
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent i = new Intent(this, PreferencesActivity.class);
+            startActivity(i);
             return true;
         }
         if (id == R.id.action_logout) {
@@ -634,6 +622,12 @@ Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show(
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void updateData() {
+        Log.d(TAG, "@@@@@@@ MainActivity implements");
+        profileFragment.updatePager();
+    }
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -692,7 +686,7 @@ public class ProgressPagerAdapter extends FragmentPagerAdapter
                             // MediaPlayerFragment();
                 case 3:
 
-                    return new ProfileFragment();
+                    return profileFragment;
                 case 4:
 
                     return new CarModeFragment();

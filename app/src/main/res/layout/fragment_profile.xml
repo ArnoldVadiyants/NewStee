@@ -39,7 +39,18 @@
                 android:layout_weight="1"
                 android:textStyle="bold"/>
 
-                />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/icon_size"
+                android:text="@string/edit"
+                android:id="@+id/profile_edit_btn"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textAllCaps="true"
+                android:textColor="@color/colorPrimary"
+                android:background="@drawable/button_shape"
+                android:layout_gravity="center_vertical"/>
+
+            />
         </LinearLayout>
 
     <ImageView
@@ -86,7 +97,8 @@
             android:layout_marginLeft="@dimen/outer_margin_big"
             android:layout_marginRight="@dimen/outer_margin_big"
             android:id="@+id/profile_info_layout"
-            android:layout_marginTop="-16dp">
+            android:layout_marginTop="-16dp"
+            android:visibility="gone">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -155,22 +167,12 @@
                 android:layout_weight="4">
             </FrameLayout>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/icon_size"
-                android:text="@string/edit"
-                android:id="@+id/profile_edit_btn"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textAllCaps="true"
-                android:textColor="@color/colorPrimary"
-                android:background="@drawable/button_shape"
-                android:layout_gravity="center_vertical"/>
-
-        </LinearLayout>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginTop="-28dp">
 
         <android.support.design.widget.TabLayout
             android:id="@+id/profile_tabs"

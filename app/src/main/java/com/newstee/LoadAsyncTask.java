@@ -51,7 +51,7 @@ abstract public class LoadAsyncTask extends AsyncTask<String, String, Boolean>
 
     abstract void showContent();
 
-    public void update() {
+    private void update() {
         if (mAppContext instanceof Activity) {
             ((Activity) mAppContext).runOnUiThread(new Runnable() {
                 @Override

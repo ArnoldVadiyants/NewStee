@@ -1,131 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/car_mode_back_color">
-
-    <android.support.v4.widget.SwipeRefreshLayout
-
-        android:id="@+id/car_mode_swipe_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fillViewport="false">
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:layout_marginLeft="@dimen/outer_margin_medium"
-                android:layout_marginTop="@dimen/outer_margin_medium">
-
-                <ImageView
-                    android:layout_width="@dimen/icon_size_medium"
-                    android:layout_height="@dimen/icon_size_medium"
-                    android:id="@+id/car_mode_list_icon"
-                    android:layout_gravity="center_vertical"
-                    android:scaleType="fitXY"
-                    tools:src="@drawable/play_clicked"/>
-
-                <TextView
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textAllCaps="true"
-                    android:textColor="@color/white"
-                    tools:text="@string/tab_play_list"
-                    android:id="@+id/car_mode_list_title"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="@dimen/icon_margin"
-                    android:layout_weight="1"
-                    android:textStyle="bold"/>
-
-                <include layout="@layout/start_button_light" android:id="@+id/car_mode_list_start_button"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center_vertical"
-                         android:layout_marginLeft="@dimen/outer_margin_big"></include>
-                <ImageButton
-                    android:layout_width="@dimen/icon_size_big"
-                    android:layout_height="@dimen/icon_size_medium"
-                    android:id="@+id/car_mode_list_exitBtn"
-                    android:layout_gravity="left|center_vertical"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/exit_image_white"
-                    android:layout_marginLeft="@dimen/outer_margin_big"
-                    android:scaleType="centerInside"/>
-
-            </LinearLayout>
-        </ScrollView>
-
-    </android.support.v4.widget.SwipeRefreshLayout>
 
 
 
-<LinearLayout
-
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-    >
+        android:background="@color/car_mode_back_color">
 
-    <FrameLayout
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:layout_marginLeft="@dimen/outer_margin_medium"
+        android:layout_marginTop="@dimen/outer_margin_medium">
+
+        <ImageView
+            android:layout_width="@dimen/icon_size_medium"
+            android:layout_height="@dimen/icon_size_medium"
+            android:id="@+id/car_mode_list_icon"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitXY"
+            tools:src="@drawable/play_clicked"/>
+
+        <TextView
             android:orientation="horizontal"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:layout_marginLeft="@dimen/outer_margin_medium"
-            android:layout_marginTop="@dimen/outer_margin_medium"
-            android:visibility="invisible">
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            tools:text="@string/tab_play_list"
+            android:id="@+id/car_mode_list_title"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/icon_margin"
+            android:layout_weight="1"
+            android:textStyle="bold"/>
 
-            <ImageView
-                android:layout_width="@dimen/icon_size_medium"
-                android:layout_height="@dimen/icon_size_medium"
-                android:layout_gravity="center_vertical"
-                android:scaleType="fitXY"
-                tools:src="@drawable/play_clicked"/>
+        <include layout="@layout/start_button_light" android:id="@+id/car_mode_list_start_button"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_gravity="center_vertical"
+                 android:layout_marginLeft="@dimen/outer_margin_big"></include>
+        <ImageButton
+            android:layout_width="@dimen/icon_size_big"
+            android:layout_height="@dimen/icon_size_medium"
+            android:id="@+id/car_mode_list_exitBtn"
+            android:layout_gravity="left|center_vertical"
+            android:background="@android:color/transparent"
+            android:src="@drawable/exit_image_white"
+            android:layout_marginLeft="@dimen/outer_margin_big"
+            android:scaleType="centerInside"/>
 
-            <TextView
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                tools:text="@string/tab_play_list"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/icon_margin"
-                android:layout_weight="1"
-                android:textStyle="bold"/>
-
-            <include layout="@layout/start_button_light"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:layout_gravity="center_vertical"
-                     android:layout_marginLeft="@dimen/outer_margin_big"></include>
-            <ImageButton
-                android:layout_width="@dimen/icon_size_big"
-                android:layout_height="@dimen/icon_size_medium"
-                android:layout_gravity="left|center_vertical"
-                android:background="@android:color/transparent"
-                android:src="@drawable/exit_image_white"
-                android:layout_marginLeft="@dimen/outer_margin_big"
-                android:scaleType="centerInside"/>
-
-        </LinearLayout>
-    </FrameLayout>
+    </LinearLayout>
 
     <include layout="@layout/media_player_small_car_mode" android:id="@+id/car_mode_list_media_player"
              android:layout_width="match_parent"
@@ -165,4 +96,3 @@
         android:layout_marginRight="@dimen/outer_margin_big"/>
 
 </LinearLayout>
-</FrameLayout>

@@ -22,8 +22,7 @@ import retrofit2.http.Part;
 public interface NewsTeeApiInterface {
     String BASE_URL = "http://213.231.4.68/music-web/app/php/";
 
-    //* @GET("infoOutputJson.php?json=authors")
-    //  Call<List<AuthorLab>> getAuthors();
+
     @GET("dispatcher.php?command=get_tags")
     Call<DataTag> getTags();
 
@@ -62,12 +61,14 @@ public interface NewsTeeApiInterface {
     @FormUrlEncoded
     @POST("dispatcher.php?command=user_registration")
     Call<DataPost> createUser(@Field("username") String username, @Field("password") String password, @Field("repassword") String reenter_password, @Field("email") String email, @Field("language") String language);
+
     @FormUrlEncoded
     @POST("dispatcher.php?command=user_registration")
-    Call<DataPost> createUser(@Field("fbid")String fbId,@Field("language") String language);
+    Call<DataPost> createUser(@Field("fbid") String fbId, @Field("language") String language);
+
     @FormUrlEncoded
     @POST("dispatcher.php?command=authentication")
-    Call<DataUserAuthentication> signIn(@Field("fbid")String fbId,@Field("language") String language);
+    Call<DataUserAuthentication> signIn(@Field("fbid") String fbId, @Field("language") String language);
 
     @FormUrlEncoded
     @POST("dispatcher.php?command=authentication")
@@ -76,9 +77,9 @@ public interface NewsTeeApiInterface {
     @GET("dispatcher.php?command=logout")
     Call<DataPost> logOut();
 
-@Multipart
+    @Multipart
     @POST("dispatcher.php?command=update_user")
-    Call<DataUpdateUser> update_user(@Part("username") RequestBody username, @Part("email") RequestBody email,@Part("avatar\"; filename=\"pp.png\"") RequestBody avatar);
+    Call<DataUpdateUser> update_user(@Part("username") RequestBody username, @Part("email") RequestBody email, @Part("avatar\"; filename=\"pp.png\"") RequestBody avatar);
 
 
     //  @GET("your_endpoint") Call<YOUR_POJO> getWeather(@Query("from") String from);

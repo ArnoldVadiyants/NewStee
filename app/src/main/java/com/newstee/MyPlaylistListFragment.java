@@ -1,5 +1,6 @@
 package com.newstee;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -53,16 +54,26 @@ public class MyPlaylistListFragment extends NewsListFragment {
 
     @Override
     void setLikeView(TextView likeTextView, ImageView likeImageView, boolean isLiked) {
-        likeTextView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-        if(isLiked)
-        {
-            likeTextView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-            likeImageView.setImageResource(R.drawable.ic_favourited);
+        int color1;
+        int color2;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            color1 = getResources().getColor(android.R.color.holo_red_light,null);
+            color2 = getResources().getColor(R.color.colorPrimary,null);
         }
         else
         {
-            likeTextView.setTextColor(getResources().getColor(android.R.color.holo_red_light));
-            likeImageView.setImageResource(R.drawable.ic_favourite);
+            color1 = getResources().getColor(android.R.color.holo_red_light);
+            color2 = getResources().getColor(R.color.colorPrimary);
+        }
+        if(isLiked)
+        {
+            likeTextView.setTextColor(color1);
+            likeImageView.setImageResource(R.drawable.ic_is_liked);
+        }
+        else
+        {
+            likeTextView.setTextColor(color2);
+            likeImageView.setImageResource(R.drawable.ic_like);
         }
     }
 }

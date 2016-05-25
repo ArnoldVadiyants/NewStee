@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.newstee.helper.InternetHelper;
 import com.newstee.helper.SessionManager;
 import com.newstee.model.data.Author;
 import com.newstee.model.data.AuthorLab;
@@ -41,7 +42,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public abstract class NewsListFragment extends ListFragment {
+public abstract class NewsListFragment extends SwipeRefreshListFragment {
 
 
     private ArrayList<String> mFilterTagIds;
@@ -75,7 +76,7 @@ public abstract class NewsListFragment extends ListFragment {
                 Log.d("@@@@@@ " + TAG," adapter = null");
                 return;
             }
-            update();
+            updateFragment();
         }
 
 
@@ -87,7 +88,7 @@ public abstract class NewsListFragment extends ListFragment {
       if (adapter == null) {
             return;
         }
-        update();
+        updateFragment();
         update=true;
     }
     public ArrayList<String> getFilterTagIds() {
@@ -127,7 +128,7 @@ public abstract class NewsListFragment extends ListFragment {
 
     }
 
-    public void update() {
+    public void updateFragment() {
         mNews.clear();
         List<News> news = new ArrayList<>();
         if (mArgument.equals(Constants.ARGUMENT_NONE))
@@ -200,6 +201,7 @@ public abstract class NewsListFragment extends ListFragment {
 
 
     }
+
 
 
     /**
@@ -509,24 +511,30 @@ public abstract class NewsListFragment extends ListFragment {
                 holder.statusButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(final View v) {
+                        if (!InternetHelper.getInstance(getActivity()).isOnline()) {
+                            Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.check_internet_con), Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         if(!session.isLoggedIn())
                         {
                             Toast.makeText(getContext(),"Пожалуйста, авторизуйтесь", Toast.LENGTH_SHORT).show();
                             return;
 
                         }
+                        UserLab.getInstance().addNews(NewsLab.getInstance().getNewsItem(newsId));
+                        int status = Constants.STATUS_NOT_ADDED;
+                        if (UserLab.getInstance().isAddedNews(newsId)) {
+                            status = Constants.STATUS_WAS_ADDED;
+                        }
+                        setStatusImageButton((ImageButton) v, status);
+
                         NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
                         Call<DataPost> call = nApi.addNews(newsId);
                         call.enqueue(new Callback<DataPost>() {
                             @Override
                             public void onResponse(Call<DataPost> call, Response<DataPost> response) {
                                 if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
-                                    UserLab.getInstance().addNews(NewsLab.getInstance().getNewsItem(newsId));
-                                    int status = Constants.STATUS_NOT_ADDED;
-                                    if (UserLab.getInstance().isAddedNews(newsId)) {
-                                        status = Constants.STATUS_WAS_ADDED;
-                                    }
-                                    setStatusImageButton((ImageButton) v, status);
+
 
                                 } else {
                                     Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
@@ -618,27 +626,59 @@ private List<News> loadNewsByStory()
 
     abstract void setStatusImageButton(ImageButton statusImageButton, final int newsStatus);
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.news_listview, container, false);
-
-        return view;
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
+    /*@Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.news_listview, container, false);
+
+            return view;
+        }*/
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
 
         adapter = new ItemAdapter(getActivity());
         setListAdapter(adapter);
 
 
-    TextView     eptyTextView = (TextView) getListView().getEmptyView();
+       /* TextView     eptyTextView = (TextView) getListView().getEmptyView();
         //    TextView tv = (TextView)view.findViewById(R.id.empty);
         eptyTextView.setText(getEmpty());
-        eptyTextView.setTextColor(getTextColor());
+        eptyTextView.setTextColor(getTextColor());*/
+        setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //Log.i(LOG_TAG, "onRefresh called from SwipeRefreshLayout");
+
+                new LoadAsyncTask(getActivity()) {
+                    @Override
+                    void hideContent() {
+
+                    }
+
+                    @Override
+                    void showContent() {
+                        updateFragment();
+
+                        setRefreshing(false);
+                    }
+                }.execute();
+            }
+        });
+        setColorScheme(R.color.colorAccent,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
     }
 
     abstract String getEmpty();

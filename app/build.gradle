@@ -8,7 +8,7 @@ android {
         applicationId "com.newstee"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 1
+        versionCode 2
         versionName "1.0"
     }
     buildTypes {
@@ -35,6 +35,6 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.navercorp.pulltorefresh:library:3.2.0@aar'
     compile 'com.sromku:simple-fb:4.1.1'
-    compile 'com.vk:androidsdk:1.6.5'
+    compile project(':vksdk_library')
 
 }

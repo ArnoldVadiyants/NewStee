@@ -4,11 +4,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.newstee.helper.NewsTeeInstructionsDialogFragment;
 import com.newstee.helper.SessionManager;
 import com.newstee.model.data.UserLab;
 import com.newstee.utils.MPUtilities;
@@ -41,11 +44,34 @@ public class CarModeFragmentActivity extends AppCompatActivity implements   Seek
 	private MusicService musicSrv;
 	private Intent playIntent;
 	private boolean musicBound = false;
+	public void showDialog() {
+		if(!isFirstTime())
+		{
+			return;
+		}
+
+		FragmentManager fm = getSupportFragmentManager();
+		NewsTeeInstructionsDialogFragment dialog = NewsTeeInstructionsDialogFragment.newInstance(R.drawable.tab_image_car_mode,getResources().getString(R.string.tab_car_mode),getResources().getString(R.string.instructions_car_mode),false);
+		dialog.show(fm,NewsTeeInstructionsDialogFragment.DIALOG_INSTRUCTIONS);
+
+	}
+	private boolean isFirstTime()
+	{
+		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+		boolean ranBefore = preferences.getBoolean("RanBeforeCarMode", false);
+		if (!ranBefore) {
+			// first time
+			SharedPreferences.Editor editor = preferences.edit();
+			editor.putBoolean("RanBeforeCarMode", true);
+			editor.commit();
+		}
+		return !ranBefore;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+showDialog();
 		setContentView(R.layout.car_mode_layout);
 
 		View header = findViewById(R.id.header);
@@ -248,7 +274,7 @@ public class CarModeFragmentActivity extends AppCompatActivity implements   Seek
 		// forward or backward to certain seconds
 		musicSrv.seek(currentPosition);
 
-		// update timer progress again
+		// updateFragment timer progress again
 		updateMediaPlayer();
 	}
 	public void updateMediaPlayer() {

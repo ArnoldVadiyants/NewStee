@@ -5,10 +5,7 @@
               android:layout_height="match_parent"
              android:background="@color/car_mode_back_color"
               android:orientation="vertical">
-    <include layout="@layout/car_mode_header" android:id="@+id/header"
-             android:layout_width="match_parent"
-             android:layout_height="0dp"
-             android:layout_weight="0.33"/>
+
     <FrameLayout
         android:id="@+id/car_mode_progress"
         android:layout_width="match_parent"
@@ -21,6 +18,11 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
     </FrameLayout>
+
+    <include layout="@layout/car_mode_header" android:id="@+id/header"
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_weight="0.33"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -46,12 +48,12 @@
                 android:layout_gravity="center">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/icon_size_big"
+                    android:layout_height="@dimen/icon_size_big"
                     android:id="@+id/imageView11"
-                    android:background="@drawable/stream_clicked"
                     android:layout_gravity="center_horizontal"
-                    />
+                    android:scaleType="centerInside"
+                    android:src="@drawable/stream_clicked"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -82,11 +84,12 @@
                 android:layout_gravity="center">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/icon_size_big"
                     android:id="@+id/imageView12"
-                    android:background="@drawable/play_clicked"
-                    android:layout_gravity="center_horizontal"/>
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="@dimen/icon_size_big"
+                    android:src="@drawable/play_clicked"
+                    android:scaleType="centerInside"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -127,11 +130,12 @@
                 android:layout_gravity="center">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/icon_size_big"
+                    android:layout_height="@dimen/icon_size_big"
                     android:id="@+id/imageView13"
-                    android:background="@drawable/ic_clock"
-                    android:layout_gravity="center_horizontal"/>
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_clock"
+                    android:scaleType="centerInside"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -164,11 +168,12 @@
                 android:layout_gravity="center">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
                     android:id="@+id/imageView14"
-                    android:background="@drawable/ic_star"
-                    android:layout_gravity="center_horizontal"/>
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_star"
+                    android:scaleType="centerInside"/>
 
                 <TextView
                     android:layout_width="wrap_content"

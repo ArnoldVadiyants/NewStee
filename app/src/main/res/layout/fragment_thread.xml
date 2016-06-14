@@ -23,8 +23,9 @@
             android:layout_width="@dimen/icon_size_medium"
             android:layout_height="@dimen/icon_size_medium"
             android:id="@+id/imageView3"
-            android:background="@drawable/stream"
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/stream"
+            android:scaleType="centerInside"/>
 
         <TextView
             android:orientation="horizontal"

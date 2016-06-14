@@ -1,6 +1,6 @@
 <resources>
     <integer name="com_vk_sdk_AppId">5458110</integer>
-    <string name="app_name">NewsTee</string>
+    <string name="app_name">Follow24</string>
     <string name="action_settings">Настройки</string>
     <string name="tab_profile">Мой профиль</string>
     <string name="catalog">Каталог</string>
@@ -56,6 +56,7 @@
     <string name="btn_no">Нет</string>
     <string name="btn_cancel">Отмена</string>
     <string name="facebook_app_id">1017578851657800</string>
+    <string name="server_client_id">167718035248-tfrr4vub2ca9rvm6avrgvh7ge2s9235l.apps.googleusercontent.com</string>
     <string name="instructions_thread">В поток попадают все новости от приложения.
 Определенную новость из потока можно послушать нажав на нее, или добавить в плейлист.
 </string>
@@ -65,7 +66,7 @@
 </string>
 <string name="instructions_profile">Мой профиль содержит информацию о Вас (аватар, имя и фамилия), ваши подписки и список понравившихся новостей.</string>
     <string name="instructions_car_mode">В режиме Car Mode Вам удобнее прослушивать новости во ремя вождения автомобиля.</string>
-    <string name="instructions_welcome">Добро пожаловать в NewsTee! \n Слушайте и читайте новости, статьи, блоги от ваших любимых изданий и авторов.
+    <string name="instructions_welcome">Добро пожаловать в Follow24! \n Слушайте и читайте новости, статьи, блоги от ваших любимых изданий и авторов.
 </string>
 
 

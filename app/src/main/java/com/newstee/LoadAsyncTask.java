@@ -67,23 +67,36 @@ abstract public class LoadAsyncTask extends AsyncTask<String, String, Boolean>
 
         NewsTeeApiInterface api = FactoryApi.getInstance(mAppContext);
         if (session.isLoggedIn()) {
-
             HashMap<String, String> userData = db.getUserDetails();
             String password = userData.get(SQLiteHandler.KEY_PASSWORD);
             String email = userData.get(SQLiteHandler.KEY_EMAIL);
             System.out.println("@@@@@@ Пароль " + password + "@@@@ mail" + email);
-            Call<DataUserAuthentication> userC;
-            if(email == null)
-            {
-                String fbId = userData.get(SQLiteHandler.KEY_FB_ID);
-                userC = api.signIn(fbId, "ru");
-            }
-            else
-            {
+            Call<DataUserAuthentication> userC = null;
+            if (email == null) {
+                String key = userData.get(SQLiteHandler.KEY_SOCIAL_NETWORK_KEY);
+                String snId = userData.get(SQLiteHandler.KEY_SOCIAL_NETWORK_ID);
+                switch (key) {
+                    case SQLiteHandler.KEY_GG_ID:
+                        userC = api.signIn(snId, null, null, null, "ru");
+                        break;
+                    case SQLiteHandler.KEY_FB_ID:
+                        userC = api.signIn(null, snId, null, null, "ru");
+                        break;
+                    case SQLiteHandler.KEY_VK_ID:
+                        userC = api.signIn(null, null, snId, null, "ru");
+                        break;
+                    case SQLiteHandler.KEY_TW_ID:
+                        userC = api.signIn(null, null, null, snId, "ru");
+                        break;
+                }
+
+            } else {
                 userC = api.signIn(email, password, "ru");
             }
 
-
+            if (userC == null) {
+                return;
+            }
             try {
                 Response<DataUserAuthentication> userR = userC.execute();
                 String result = userR.body().getResult();
@@ -118,7 +131,14 @@ abstract public class LoadAsyncTask extends AsyncTask<String, String, Boolean>
                 e.printStackTrace();
             }
         }
-        String likedIds = UserLab.getInstance().getUser().getNewsLikedIds();
+        String likedIds = "";
+        if (session.isLoggedIn()) {
+            likedIds = UserLab.getInstance().getUser().getNewsLikedIds();
+        } else {
+            likedIds = UserLab.getInstance().getLikedNewsFromDevice(mAppContext);
+
+        }
+
         if (likedIds != null) {
             Call<DataNews> newsByIdC = api.getNewsByIds(likedIds);
             try {

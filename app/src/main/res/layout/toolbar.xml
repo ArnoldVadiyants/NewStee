@@ -12,24 +12,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?android:attr/actionBarSize"
-                    android:background="@drawable/toolbar_back"
-                    app:layout_scrollFlags="scroll|enterAlways"
-                    app:popupTheme="@style/AppTheme.PopupOverlay"
-                    >
-                </android.support.v7.widget.Toolbar>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/toolbar_back"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            >
+        </android.support.v7.widget.Toolbar>
 
-                <ImageView
-                    android:id="@+id/imageView6"
-                    android:layout_width="@dimen/logo_title_width"
-                    android:layout_height="@dimen/logo_title_height"
-                    android:layout_gravity="center"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/logo_title"
-                    />
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:src="@drawable/logo_title"
+            android:scaleType="centerInside"
+            android:layout_height="30dp"
+            />
 
     </FrameLayout>
 

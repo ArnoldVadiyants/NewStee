@@ -152,6 +152,7 @@ ImageView icon;
             }
             case CarModeListActivity.TAB_RECOMMEND:
             {
+                mArgument = Constants.ARGUMENT_NEWS_RECOMMENDED;
                 icon.setImageResource(R.drawable.ic_star);
                 title.setText(getResources().getText(R.string.car_mode_tab_recommend));
                 break;

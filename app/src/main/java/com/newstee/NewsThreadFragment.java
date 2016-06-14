@@ -509,5 +509,6 @@ private NewsThreadListFragment newsFragment;
             return null;
         }
     }
+
 }
 

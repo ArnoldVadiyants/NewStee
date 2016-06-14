@@ -253,7 +253,10 @@ btnLike.setOnClickListener(new View.OnClickListener() {
 
        Animation animation = AnimationUtils.loadAnimation(
                getActivity(), R.anim.skale_animation);
-        UserLab.getInstance().likeNews(PlayList.getInstance().getNewsItem(id));
+        if(!(UserLab.getInstance().likeNews(PlayList.getInstance().getNewsItem(id),getActivity())))
+        {
+            return;
+        }
         News threadNews = NewsLab.getInstance().getNewsItem(id);
         News addedNews = UserLab.getInstance().getAddedNewsItem(id);
         boolean isAdded  = false;
@@ -276,6 +279,8 @@ btnLike.setOnClickListener(new View.OnClickListener() {
             {
                 addedNews.removeLike();
             }
+
+
         }
         else if(threadNews != null && addedNews != null  )
         {
@@ -294,6 +299,17 @@ btnLike.setOnClickListener(new View.OnClickListener() {
         {
             if(isAdded)
             {
+                addedNews.addLike();
+            }
+            else
+            {
+                addedNews.removeLike();
+            }
+        }
+        else if(threadNews != null)
+        {
+            if(isAdded)
+            {
                 threadNews.addLike();
             }
             else
@@ -308,9 +324,6 @@ btnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onResponse(Call<DataPost> call, Response<DataPost> response) {
                 if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
-
-
-
 
 
                 } else {

@@ -6,13 +6,15 @@
              android:background="@color/car_mode_back_color">
 
     <ImageView
-        android:layout_width="@dimen/logo_title_width"
-        android:layout_height="@dimen/logo_title_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/car_mode_header_title"
         android:src="@drawable/logo_title"
         android:layout_gravity="center"
         android:layout_weight="0"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        android:scaleType="centerInside"
+        android:padding="48dp"/>
 
     <LinearLayout
         android:orientation="vertical"

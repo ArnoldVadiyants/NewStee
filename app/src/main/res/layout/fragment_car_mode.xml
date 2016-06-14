@@ -24,7 +24,7 @@
             android:layout_height="@dimen/icon_size_medium"
             android:id="@+id/car_mode_list_icon"
             android:layout_gravity="center_vertical"
-            android:scaleType="fitXY"
+            android:scaleType="centerInside"
             tools:src="@drawable/play_clicked"/>
 
         <TextView

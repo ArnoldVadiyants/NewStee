@@ -20,6 +20,7 @@ public class Constants {
     public final static String ARGUMENT_NEWS_LIKED = "liked";
     public final static String ARGUMENT_NEWS_BY_STORY = "by_story";
     public final static String ARGUMENT_NEWS_BY_CANAL = "by_canal";
+    public final static String ARGUMENT_NEWS_RECOMMENDED = "recommended";
 
 
 

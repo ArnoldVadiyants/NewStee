@@ -192,29 +192,28 @@ private CatalogListAdapter adapter;
 
 							}
 							UserLab.getInstance().addTag(TagLab.getInstance().getTag(id));
+							NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
+							Call<DataPost> call;
 							if (UserLab.getInstance().isAddedTag(id)) {
+								call = nApi.subscribe(id);
 								((ImageButton) v).setImageResource(R.drawable.ic_is_added);
 							} else {
+								call = nApi.unsubscribe(id);
 								((ImageButton) v).setImageResource(R.drawable.news_to_add_button);
 							}
-							NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
-							Call<DataPost> call = nApi.addTags(id);
+						//	NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
+						//	Call<DataPost> call = nApi.addTags(id);
 							call.enqueue(new Callback<DataPost>() {
 								@Override
 								public void onResponse(Call<DataPost> call, Response<DataPost> response) {
 									if (response.body().getResult().equals(Constants.RESULT_SUCCESS)) {
 
-
-
-
 									} else {
 										Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
 									}
 								}
-
 								@Override
 								public void onFailure(Call<DataPost> call, Throwable t) {
-
 									Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
 								}
 							});

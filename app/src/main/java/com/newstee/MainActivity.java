@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -43,6 +44,7 @@ import com.newstee.network.interfaces.NewsTeeApiInterface;
 import com.newstee.utils.DisplayImageLoaderOptions;
 import com.newstee.utils.MPUtilities;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.vk.sdk.VKSdk;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -101,12 +103,14 @@ private View mediaPlayer;
         profileFragment = new ProfileFragment();
         db = new SQLiteHandler(getApplicationContext());
         session = new SessionManager(getApplicationContext());
-        if(session.isCarMode())
+        if(session.isCarMode()|| (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("car_mode",false)&&UserLab.isFirstRun))
         {
+            UserLab.isFirstRun = false;
             startActivity(new Intent(MainActivity.this, CarModeFragmentActivity.class));
             finish();
             return;
         }
+        UserLab.isFirstRun = false;
         utils = new MPUtilities();
         View view =  findViewById(R.id.main_toolbar);
         mediaPlayer = findViewById(R.id.main_media_player);
@@ -543,7 +547,7 @@ D
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
@@ -563,6 +567,7 @@ D
         if (id == R.id.action_logout) {
             if(session.isLoggedIn())
             {
+                ////
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
                 alertDialogBuilder.setMessage(R.string.logout_msg);
                 alertDialogBuilder.setPositiveButton(R.string.btn_yes, new DialogInterface.OnClickListener() {
@@ -578,6 +583,7 @@ D
                                 if (result.equals(Constants.RESULT_SUCCESS))
                                 {
                                     LoginManager.getInstance().logOut();
+                                    VKSdk.logout();
                                     db.deleteUsers();
                                     session.setLogin(false);
                                     UserLab.getInstance().deleteData();

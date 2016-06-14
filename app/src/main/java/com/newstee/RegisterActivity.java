@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.newstee.helper.SQLiteHandler;
 import com.newstee.helper.SessionManager;
 import com.newstee.model.data.DataPost;
@@ -142,10 +144,16 @@ public class RegisterActivity extends Activity {
                             @Override
                         public void onResponse(Call<DataUserAuthentication> call, Response<DataUserAuthentication> response) {
                             String result = response.body().getResult();
-
                                 if (result.equals(Constants.RESULT_SUCCESS)) {
+                                    FirebaseMessaging.getInstance().subscribeToTopic("news");
+                                    Call<DataPost>keyCall  =  FactoryApi.getInstance(getApplicationContext()).add_user_key(FirebaseInstanceId.getInstance().getToken());
+                                    keyCall.enqueue(new Callback<DataPost>() {
+                                        @Override
+                                        public void onResponse(Call<DataPost> call, Response<DataPost> response) {}
+                                        @Override
+                                        public void onFailure(Call<DataPost> call, Throwable t) {}});
                                     User data = response.body().getData().get(0);
-                                    db.addUser(data.getUserLogin(), email, password, null);
+                                    db.addUser(data.getId(),data.getUserLogin(), email, password,null, null);
                                     UserLab.getInstance().setUser(data);
                                     UserLab.isLogin = true;
                                     hideDialog();

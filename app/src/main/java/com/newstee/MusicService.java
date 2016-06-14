@@ -10,6 +10,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -36,7 +38,7 @@ public class MusicService extends Service implements
     private boolean paused = true;
     private MediaPlayer player;
     private int mBufferPosition;
-    private boolean mIsPlaying = false;
+    private boolean mPlayerPhoneState = false;
     public static final String ACTION_NOTIFICATION_PLAY_PAUSE = "action_notification_play_pause";
     public static final String ACTION_NOTIFICATION_FAST_FORWARD = "action_notification_fast_forward";
     public static final String ACTION_NOTIFICATION_REWIND = "action_notification_rewind";
@@ -123,7 +125,6 @@ public class MusicService extends Service implements
         }
         }
     }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -208,6 +209,10 @@ public class MusicService extends Service implements
         songPosition =-1;
         rand=new Random();
         player = new MediaPlayer();
+        TelephonyManager mgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        if(mgr != null) {
+            mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        }
         initMusicPlayer();
         /*new Thread(new Runnable() {
             @Override
@@ -571,14 +576,48 @@ public class MusicService extends Service implements
         }
 
     }
+    PhoneStateListener phoneStateListener = new PhoneStateListener() {
+        @Override
+        public void onCallStateChanged(int state, String incomingNumber) {
+            if (state == TelephonyManager.CALL_STATE_RINGING) {
+                if(isPlaying())
+                {
+                    pausePlayer();
+                    mPlayerPhoneState = true;
+                }
+
+
+
+                //Incoming call: Pause music
+            } else if(state == TelephonyManager.CALL_STATE_IDLE) {
+                if(mPlayerPhoneState)
+                {
+                        mPlayerPhoneState = false;
+                go();
+                }
+                //Not in call: Play music
+              player.start();
+
+            } else if(state == TelephonyManager.CALL_STATE_OFFHOOK) {
+                //A call is dialing, active or on hold
+            }
+            super.onCallStateChanged(state, incomingNumber);
+        }
+    };
+
 
     public void go(){
         if( player == null)
         {
             return;
         }
-        player.start();
-        showNotification();
+        try {
+            player.start();
+            showNotification();
+        }
+        catch (IllegalStateException e)
+        {
+        }
     }
 
     //skip to previous track
@@ -606,6 +645,10 @@ public class MusicService extends Service implements
 
     @Override
     public void onDestroy() {
+        TelephonyManager mgr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        if(mgr != null) {
+            mgr.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE);
+        }
         stopForeground(true);
     }
 

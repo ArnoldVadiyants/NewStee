@@ -212,15 +212,20 @@ public class ProfileListFragment extends ListFragment
 								Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.check_internet_con), Toast.LENGTH_LONG).show();
 								return;
 							}
+							NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
+							Call<DataPost> call;
 							if (UserLab.getInstance().isAddedTag(id)) {
+
+								call = nApi.unsubscribe(id);
 								((ImageButton) v).setImageResource(R.drawable.news_to_add_button);
 							} else {
+								call = nApi.subscribe(id);
 								((ImageButton) v).setImageResource(R.drawable.ic_is_added);
 							}
 
 
-							NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
-							Call<DataPost> call = nApi.addTags(id);
+					//		NewsTeeApiInterface nApi = FactoryApi.getInstance(getActivity());
+						//	Call<DataPost> call = nApi.addTags(id);
 							call.enqueue(new Callback<DataPost>() {
 								@Override
 								public void onResponse(Call<DataPost> call, Response<DataPost> response) {

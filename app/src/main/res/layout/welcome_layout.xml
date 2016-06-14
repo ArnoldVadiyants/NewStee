@@ -30,7 +30,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4">
+            android:layout_weight="5">
         </FrameLayout>
 
         <LinearLayout
@@ -49,15 +49,18 @@
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:visibility="gone">
             </FrameLayout>
 
             <ImageButton
                 android:layout_width="@dimen/icon_size_big"
                 android:layout_height="@dimen/icon_size_big"
                 android:id="@+id/google_imageButton"
-                android:background="@drawable/ic_google"
-                android:visibility="gone"/>
+                android:visibility="visible"
+                android:src="@drawable/ic_google"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"/>
 
             <FrameLayout
                 android:layout_width="wrap_content"
@@ -65,13 +68,15 @@
                 android:layout_weight="1">
             </FrameLayout>
 
-            <com.facebook.login.widget.LoginButton
-                xmlns:fb="http://schemas.android.com/apk/res-auto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <ImageButton
+
+                android:layout_width="@dimen/icon_size_big"
+                android:layout_height="@dimen/icon_size_big"
                 android:id="@+id/facebook_imageButton"
                 android:scaleType="centerInside"
-                android:layout_gravity="center_vertical" />
+                android:layout_gravity="center_vertical"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_facebook"/>
            <!--     style="@style/FacebookLoginButton"-->
 
 
@@ -86,20 +91,23 @@
                 android:layout_height="@dimen/icon_size_big"
                 android:id="@+id/vk_imageButton"
                 android:background="@drawable/ic_vk"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
 
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:visibility="gone">
             </FrameLayout>
 
             <ImageButton
                 android:layout_width="@dimen/icon_size_big"
                 android:layout_height="@dimen/icon_size_big"
                 android:id="@+id/twitter_imageButton"
-                android:background="@drawable/ic_twitter"
-                android:visibility="gone"/>
+                android:background="@android:color/transparent"
+                android:visibility="gone"
+                android:src="@drawable/ic_twitter"
+                android:scaleType="centerInside"/>
 
             <FrameLayout
                 android:layout_width="0dp"
@@ -111,7 +119,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4">
+            android:layout_weight="2">
         </FrameLayout>
 
         <Button
@@ -173,7 +181,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4"/>
+            android:layout_weight="5"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -198,20 +206,23 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:layout_width="230dp"
-        android:layout_height="56dp"
-        android:id="@+id/imageView8"
-        android:background="@drawable/logo_title"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_below="@+id/imageView7"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="-46dp"/>
-
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/welcome_progress"
         android:layout_centerInParent="true"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView8"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginTop="42dp"
+        android:src="@drawable/logo_title"
+        android:scaleType="centerInside"
+        android:padding="32dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
 
 </RelativeLayout>

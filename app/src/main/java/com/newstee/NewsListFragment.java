@@ -23,6 +23,7 @@ import com.newstee.helper.InternetHelper;
 import com.newstee.helper.SessionManager;
 import com.newstee.model.data.Author;
 import com.newstee.model.data.AuthorLab;
+import com.newstee.model.data.DataIds;
 import com.newstee.model.data.DataNews;
 import com.newstee.model.data.DataPost;
 import com.newstee.model.data.News;
@@ -36,6 +37,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -141,7 +143,7 @@ public abstract class NewsListFragment extends SwipeRefreshListFragment {
         }
         else if(mArgument.equals(Constants.ARGUMENT_NEWS_LIKED))
         {
-            news = UserLab.getInstance().getLikedNews();
+                news = UserLab.getInstance().getLikedNews();
         }
         else if(mArgument.equals(Constants.ARGUMENT_NEWS_BY_CANAL))
         {
@@ -152,7 +154,16 @@ public abstract class NewsListFragment extends SwipeRefreshListFragment {
             new LoadNewsByStoryTask().execute();
             return;
         }
+        else if(mArgument.equals(Constants.ARGUMENT_NEWS_RECOMMENDED))
+        {
+            new LoadNewsRecommendedTask().execute();
+            return;
+        }
+        sortByCategory(news);
+        applyFilter();
+    }
 
+    public void sortByCategory(List<News> news) {
         if(mCategory.equals(Constants.CATEGORY_ALL))
         {int i =0;
             for (News n : news) {
@@ -186,10 +197,7 @@ public abstract class NewsListFragment extends SwipeRefreshListFragment {
                 }
             }
         }
-        applyFilter();
     }
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -565,7 +573,8 @@ public abstract class NewsListFragment extends SwipeRefreshListFragment {
 
             public void onClick(View v) {
                 if (v.getId() == statusButton.getId()) {
-
+//test
+                    Log.d(TAG, "ids");
                 } else {
 
                 }
@@ -595,7 +604,48 @@ private List<News> loadNewsByStory()
     }
     return new ArrayList<>();
 }
+    private List<News> loadNewsRecommended()
+    {
 
+        NewsTeeApiInterface api = FactoryApi.getInstance(getActivity());
+        Call<DataIds> idsC = api.getRecommended();
+        Log.d(TAG,"@@@@@ idStory = "+ mIdStory);
+        try {
+            Response<DataIds>  idsR = idsC.execute();
+            List<Integer> ids =   idsR.body().getData();
+
+            if(ids == null)
+            {
+
+                return new ArrayList<>();
+            }
+            if(ids.isEmpty())
+            {
+                return new ArrayList<>();
+            }
+            StringBuilder strbul  = new StringBuilder();
+            Iterator<Integer> iter = ids.iterator();
+            while(iter.hasNext())
+            {
+                strbul.append(iter.next());
+                if(iter.hasNext()){
+                    strbul.append(",");
+                }
+            }
+            String idsString = strbul.toString();
+            Log.d(TAG, "@@@@@ recommended:" + idsString);
+            Call<DataNews> newsC = api.getNewsByIds(idsString);
+            try {
+                Response<DataNews>  newsR = newsC.execute();
+                return newsR.body().getNews();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
 
 
     public String getTime(long milliseconds) {
@@ -721,4 +771,43 @@ private class LoadNewsByStoryTask extends AsyncTask<Boolean,Integer, List<News> 
 
 }
 
+    private class LoadNewsRecommendedTask extends AsyncTask<Boolean,Integer, List<News> >
+    {
+        ProgressDialog dialog;
+        LoadNewsRecommendedTask()
+        {
+            Log.d(TAG,"loadNewsRecommended");
+        /*    dialog  = new ProgressDialog(getActivity());
+            dialog.setMessage("");
+            dialog.*/
+        }
+
+        @Override
+        protected List<News> doInBackground(Boolean... params) {
+
+            return  loadNewsRecommended();
+        }
+
+
+
+        @Override
+        protected void onPostExecute(List<News> newses) {
+            super.onPostExecute(newses);
+            mNews.clear();
+            sortByCategory(newses);
+            applyFilter();
+            Log.d(TAG, "onPost");
+        //    dialog.dismiss();
+        }
+        //
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d(TAG, "onPre");
+
+      //      dialog.show();
+        }
+
+
+    }
 }

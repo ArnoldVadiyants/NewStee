@@ -113,11 +113,11 @@
             android:inputType="textPersonName"
             android:ems="8"
             android:id="@+id/edit_profile_name_editText"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:text="Вазген Гургенович"
+            android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="false"
-            android:layout_centerVertical="true"/>
+            android:layout_alignParentEnd="true"/>
 
     </RelativeLayout>
     <FrameLayout

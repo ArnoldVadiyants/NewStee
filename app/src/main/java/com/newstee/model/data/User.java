@@ -47,6 +47,10 @@ public class User {
      * @return
      * The id
      */
+    User()
+    {
+
+    }
     public String getId() {
         return id;
     }

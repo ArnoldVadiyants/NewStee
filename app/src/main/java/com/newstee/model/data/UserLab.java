@@ -1,25 +1,31 @@
 package com.newstee.model.data;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.newstee.Constants;
+import com.newstee.helper.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class UserLab {
+
+    private final static String LIKED_FILENAME = "liked.json";
+    private final static String JSON_LIKED = "liked_news";
     private boolean isUpdated = false;
     private final static String TAG = "UserLab";
     public static boolean isLogin = false;
+    public static boolean isFirstRun = true;
     private List<News> mAddedNews = new ArrayList<News>();
     private List<News> mLikedNews = new ArrayList<News>();
     private List<Tag> mAddedTags = new ArrayList<>();
     public boolean isUpdated() {
         return isUpdated;
     }
-
+    //private Context mAppContext;
     public void setIsUpdated(boolean isUpdated) {
         this.isUpdated = isUpdated;
     }
@@ -103,7 +109,8 @@ public class UserLab {
     private User mUser = new User();
     private static UserLab sUserLab;
 
-    private UserLab() {
+    private UserLab( ) {
+
 
     }
 
@@ -151,23 +158,57 @@ public class UserLab {
 
     }
 
-    public void likeNews(News news) {
+    public boolean likeNews(News news, Context context) {
         String id = news.getId().trim();
+        if (new SessionManager(context).isLoggedIn()) {
+            News n = null;
+            for (News n2 : mLikedNews) {
+                if (n2.getId().trim().equals(id)) {
+                    n = n2;
+                    break;
+                }
+            }
+            if (n == null) {
 
-        News n = null;
-        for (News n2 : mLikedNews) {
-            if (n2.getId().trim().equals(id)) {
-                n = n2;
-                break;
+                mLikedNews.add(news);
+            } else {
+                mLikedNews.remove(n);
+            }
+        } else {
+            if (likeNewsToDevice(id, context))
+            {
+                mLikedNews.add(news);
+            }
+            else
+            {
+                return false;
             }
         }
-        if (n == null) {
-
-            mLikedNews.add(news);
-        } else {
-            mLikedNews.remove(n);
-        }
+return true;
     }
+
+    private boolean likeNewsToDevice(String id,Context context) {
+        boolean isContent = false;
+        String likedIds = new SessionManager(context).getLikedIds();
+        String likedIdsArray[] = likedIds.split(",");
+        for (int i = 0; i < likedIdsArray.length; i++) {
+            if (likedIdsArray[i].equals(id)) {
+                isContent = true;
+            }
+        }
+        if (!isContent) {
+            if (likedIdsArray.length == 0) {
+                likedIds = id;
+            } else {
+                likedIds = likedIds.concat("," + id);
+            }
+            saveLikedNewsToDevice(likedIds, context);
+            return true;
+        }
+return false;
+
+    }
+
 
     public List<News> getAddedNewsAndArticles() {
         List<News> news = new ArrayList<>();
@@ -223,6 +264,7 @@ public class UserLab {
         mAddedNews.clear();
         mLikedNews.clear();
         mAddedTags.clear();
+        isUpdated = false;
     }
 
     /* public void signIn(Context c)
@@ -246,6 +288,60 @@ public class UserLab {
         }
         news.removeAll(nullNews);
     }
+    public String getLikedNewsFromDevice(Context context) {
+        return new SessionManager(context).getLikedIds();
+    }
+      /*  NewsIntentJSONSerializer serializer = new NewsIntentJSONSerializer(mAppContext, LIKED_FILENAME);
+        String likedIdList = "";
+       // LinkedHashSet<String>likedIdList = new LinkedHashSet<>();
+        try {
+            JSONArray array = serializer.loadLkedNewsId();
+            for (int i = 0; i < array.length(); i++) {
+                if(i == 0)
+                {
 
+                }
+                likedIdList = likedIdList.concat(","+(array.getJSONObject(i)).getString(JSON_LIKED));
+                likedIdList.add();
+            }
+            Log.d(TAG, "loading reminders: ");
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading reminders: ", e);
+        }
+        String s[];
+
+        String s = s.
+        return likedIdList;
+
+    }*/
+    private void saveLikedNewsToDevice(String likedIds, Context context)
+    {
+        new SessionManager(context).setLkedIds(likedIds);
+    }
+        /*NewsIntentJSONSerializer serializer = new NewsIntentJSONSerializer(mAppContext, LIKED_FILENAME);
+        JSONArray array = new JSONArray();
+        Iterator<String> iterator = lkedIdList.iterator();
+        try
+        {
+            while(!lkedIdList.isEmpty())
+            {
+                JSONObject json = new JSONObject();
+                json.put(JSON_LIKED, iterator.next().toString());
+                array.put(json);
+                iterator.remove();
+            }
+        }catch(JSONException e)
+        {
+        }
+
+        try {
+            serializer.saveLkedNewsId(array);
+            Log.d(TAG, "snoozedIdList saved to file");
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving snoozedIdList: ", e);
+            return false;
+        }
+    }*/
 
 }
